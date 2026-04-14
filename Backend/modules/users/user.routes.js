@@ -1,5 +1,4 @@
 const { Router } = require("express")
-const { data } = require("react-router-dom")
 
 const router = Router()
 
@@ -18,6 +17,5 @@ router.get('/', (req, res) => {
         data: usuarios
     })
 })
-
 
 module.exports = router
