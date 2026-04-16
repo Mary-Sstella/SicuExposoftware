@@ -11,3 +11,5 @@ function LoginPage() {
 }
 
 export default LoginPage
+
+{/*pantalla completa del login, con un fondo gris claro y el formulario centrado*/}
