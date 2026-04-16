@@ -25,7 +25,7 @@ function LoginForm() {
     setAdminError('')
     setAdminLoading(true)
     try {
-      const data = await loginUsuario({ username: adminUser, password: adminPassword })
+      const data = await loginUsuario({ credencial: adminUser, password: adminPassword })
       localStorage.setItem('token', data.token)
       localStorage.setItem('rol', data.rol)
       // navigate('/admin/dashboard')  ← descomenta cuando tengas la ruta
@@ -40,9 +40,9 @@ function LoginForm() {
     setStudentError('')
     setStudentLoading(true)
     try {
-      const data = await loginUsuario({ username: studentUser, password: studentPassword })
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('rol', data.rol)
+      const data = await loginUsuario({ credencial: studentUser, password: studentPassword })
+      localStorage.setItem('token', data.token) 
+      localStorage.setItem('rol', data.rol) 
       // navigate('/estudiante/dashboard')  ← descomenta cuando tengas la ruta
     } catch {
       setStudentError('Usuario o contraseña incorrectos')
@@ -170,7 +170,7 @@ function LoginForm() {
 
         <div className="relative z-10 mt-10">
           <h2 className="text-white text-3xl font-bold leading-tight">
-            {isStudent ? 'Hola,\nBienvenido' : 'Panel\nAbministrativo'}
+            {isStudent ? 'Hola,\nBienvenido' : 'Panel\nAdministrativo'}
           </h2>
           <p className="text-white/70 text-sm mt-3">
             {isStudent
