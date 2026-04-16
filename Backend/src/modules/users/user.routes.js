@@ -1,21 +1,12 @@
-const { Router } = require("express")
+const { Router } = require('express')
+const controller = require('./user.controller')
 
 const router = Router()
 
-const usuarios = [
-    'Andrea',
-    'Andrea',
-    'Andrea',
-    'Andrea',
-    'Andrea',
-    'Andrea'
-]
-
-router.get('/', (req, res) => {
-    res.json({ 
-        msg: 'Ok users',
-        data: usuarios
-    })
-})
+router.get('/', controller.getUsuarios)
+router.get('/:id', controller.getUsuarioById)
+router.post('/', controller.createUsuario)
+router.put('/:id', controller.updateUsuario)
+router.delete('/:id', controller.deleteUsuario)
 
 module.exports = router

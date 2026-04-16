@@ -59,16 +59,16 @@ const updateEstudiante = async (id, data) => {
             id
         ]
     )
-    return result.rows[0]
+    return result
 }
 
 //Borrar un estudiante
 const deleteEstudiante = async (id) => {
-    await pool.query(
-        'DELETE FROM estudiante WHERE id_estudiante = $1',
+    const result = await pool.query(
+        'DELETE FROM estudiante WHERE id_estudiante = $1 RETURNING *',
         [id]
     )
-    return { msg: 'Estudiante eliminado' }
+    return result
 }
 
 

@@ -1,5 +1,8 @@
+const env = require('./config/env')
 const app = require('./app')
 
-app.listen(3000, () => {
-    console.log('Servidor se levantó en el puerto 3000')
+const PORT = env.port || 3000
+
+app.listen(PORT, () => {
+    console.log(`Servidor se levantó en el puerto ${PORT}`)
 })
