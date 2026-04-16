@@ -170,7 +170,7 @@ function LoginForm() {
 
         <div className="relative z-10 mt-10">
           <h2 className="text-white text-3xl font-bold leading-tight">
-            {isStudent ? 'Hola,\nBienvenido' : 'Panel\nAbministrativo'}
+            {isStudent ? 'Hola,\nBienvenido' : 'Panel\nAdministrativo'}
           </h2>
           <p className="text-white/70 text-sm mt-3">
             {isStudent
