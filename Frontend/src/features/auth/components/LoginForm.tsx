@@ -28,7 +28,7 @@ function LoginForm() {
       const data = await loginUsuario({ credencial: adminUser, password: adminPassword })
       localStorage.setItem('token', data.token)
       localStorage.setItem('rol', data.rol)
-      // navigate('/admin/dashboard')  ← descomenta cuando tengas la ruta
+      // navigate('/admin/dashboard')  descomentar cuando tenga la ruta
     } catch {
       setAdminError('Usuario o contraseña incorrectos')
     } finally {
@@ -43,7 +43,7 @@ function LoginForm() {
       const data = await loginUsuario({ credencial: studentUser, password: studentPassword })
       localStorage.setItem('token', data.token) 
       localStorage.setItem('rol', data.rol) 
-      // navigate('/estudiante/dashboard')  ← descomenta cuando tengas la ruta
+      // navigate('/estudiante/dashboard')   descomentar cuando tenga la ruta
     } catch {
       setStudentError('Usuario o contraseña incorrectos')
     } finally {
@@ -63,7 +63,7 @@ function LoginForm() {
         </div>
 
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">Usuario</label>
+          <label className="text-sm font-medium text-gray-700 mb-1 block">Correo</label>
           <input
             type="text"
             value={adminUser}
@@ -99,7 +99,7 @@ function LoginForm() {
 
         <p className="text-center text-sm text-gray-400">
           ¿Eres estudiante?{' '}
-          <button type="button" onClick={() => setIsStudent(true)}
+          <button type="button" onClick={() => { setIsStudent(true); setAdminUser(''); setAdminPassword(''); setAdminError('') }}
             className="text-purple-500 font-semibold hover:underline">
             Ingresa aquí
           </button>
@@ -115,7 +115,7 @@ function LoginForm() {
         </div>
 
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">Usuario o Correo</label>
+          <label className="text-sm font-medium text-gray-700 mb-1 block">Usuario</label>
           <input
             type="text"
             value={studentUser}
@@ -151,7 +151,7 @@ function LoginForm() {
 
         <p className="text-center text-sm text-gray-400">
           ¿Eres administrador?{' '}
-          <button type="button" onClick={() => setIsStudent(false)}
+          <button type="button" onClick={() => { setIsStudent(false); setStudentUser(''); setStudentPassword(''); setStudentError('') }}
             className="text-purple-500 font-semibold hover:underline">
             Ingresa aquí
           </button>
@@ -160,7 +160,7 @@ function LoginForm() {
 
       {/* Panel morado deslizante */}
       <div
-        className="absolute inset-y-0 w-1/2 bg-gradient-to-br from-purple-600 via-purple-500 to-pink-400 flex flex-col justify-between p-10 rounded-3xl transition-all duration-700 ease-in-out z-20"
+        className="absolute inset-y-0 w-1/2 bg-gradient-to-br from-purple-600 via-purple-500 to-pink-400 flex flex-col justify-between p-10 rounded-2xl transition-all duration-700 ease-in-out z-20"
         style={{ left: isStudent ? '0%' : '50%' }}
       >
         <div className="absolute top-10 right-10 w-24 h-24 rounded-full bg-white/10" />
@@ -168,15 +168,17 @@ function LoginForm() {
         <div className="absolute bottom-16 left-8 w-32 h-32 rounded-full bg-white/10" />
         <div className="absolute bottom-8 left-16 w-16 h-16 rounded-full bg-pink-300/20" />
 
-        <div className="relative z-10 mt-10">
-          <h2 className="text-white text-3xl font-bold leading-tight">
-            {isStudent ? 'Hola,\nBienvenido' : 'Panel\nAbministrativo'}
-          </h2>
-          <p className="text-white/70 text-sm mt-3">
-            {isStudent
-              ? 'Gestiona tu almuerzo y muchos mas desde tu portal estudiantil'
-              : 'Gestiona el comedor universitario desde un solo lugar'}
-          </p>
+        <div className="relative z-10 mt-10 h-32 overflow-hidden">
+          {/*Texto administrativo*/}
+          <div className={`absolute transition-all duration-700 ease-in-out ${isStudent ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}>
+            <h2 className="text-white text-3xl font-bold leading-tight">Panel<br/>Administrativo</h2>
+            <p className="text-white/70 text-sm mt-3">Gestiona el Comedor universitario desde un solo lugar</p>
+          </div>
+          {/*Texto estudiantil*/}
+          <div className={`absolute transition-all duration-700 ease-in-out ${isStudent ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}`}>
+            <h2 className="text-white text-3xl font-bold leading-tight">Hola,<br/>Bienvenido</h2>
+            <p className="text-white/70 text-sm mt-3">Gestiona tu almuerzo y mucho más desde tu portal estudiantil</p>
+          </div>
         </div>
 
         <p className="text-white/40 text-xs relative z-10">Universidad Popular del Cesar</p>
