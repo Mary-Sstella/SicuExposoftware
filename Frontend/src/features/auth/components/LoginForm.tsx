@@ -56,19 +56,21 @@ function LoginForm() {
 
       {/* Panel admin */}
       <div className="w-1/2 p-10 flex flex-col justify-center gap-4 z-10">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-pink-500 mx-auto shadow-lg" />
+       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-pink-500 mx-auto shadow-lg flex items-center justify-center">
+        <span className="text-white font-bold text-lg">S</span>
+        </div>
         <div>
           <h2 className="text-2xl font-bold text-gray-800 text-center">Bienvenido de Vuelta</h2>
           <p className="text-gray-400 text-sm mt-1 text-center">Accede al panel administrativo</p>
         </div>
 
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">Correo</label>
+          <label className="text-sm font-medium text-gray-700 mb-1 block">Usuario</label>
           <input
             type="text"
             value={adminUser}
             onChange={e => setAdminUser(e.target.value)} //se usa el estado para actualizar el valor del input
-            placeholder="ejemplo@unicesar.edu.co"
+            placeholder="Ingrese Usuario"
             className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-gray-50"
           />
         </div>
@@ -80,7 +82,7 @@ function LoginForm() {
               type={showPassword ? 'text' : 'password'}
               value={adminPassword}
               onChange={e => setAdminPassword(e.target.value)}
-              placeholder="••••••"
+              placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
               className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-gray-50"
             />
             <button type="button" onClick={() => setShowPassword(!showPassword)}
@@ -108,19 +110,21 @@ function LoginForm() {
 
       {/* Panel estudiante */}
       <div className="w-1/2 p-10 flex flex-col justify-center gap-4 z-10">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-pink-500 mx-auto shadow-lg" />
+       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-pink-500 mx-auto shadow-lg flex items-center justify-center">
+        <span className="text-white font-bold text-lg">S</span>
+        </div>
         <div>
           <h2 className="text-2xl font-bold text-gray-800 text-center">Portal Estudiantil</h2>
           <p className="text-gray-400 text-sm mt-1 text-center">Accede con tus credenciales</p>
         </div>
 
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">Usuario</label>
+          <label className="text-sm font-medium text-gray-700 mb-1 block">Correo Institucional</label>
           <input
-            type="text"
+            type="email"
             value={studentUser}
             onChange={e => setStudentUser(e.target.value)}
-            placeholder="Usuario"
+            placeholder="ejemplo@unicesar.edu.co"
             className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-gray-50"
           />
         </div>
@@ -132,7 +136,7 @@ function LoginForm() {
               type={showStudentPassword ? 'text' : 'password'}
               value={studentPassword}
               onChange={e => setStudentPassword(e.target.value)}
-              placeholder="••••••"
+              placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
               className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-gray-50"
             />
             <button type="button" onClick={() => setShowStudentPassword(!showStudentPassword)}
@@ -171,14 +175,25 @@ function LoginForm() {
         <div className="relative z-10 mt-10 h-32 overflow-hidden">
           {/*Texto administrativo*/}
           <div className={`absolute transition-all duration-700 ease-in-out ${isStudent ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}>
-            <h2 className="text-white text-3xl font-bold leading-tight">Panel<br/>Administrativo</h2>
-            <p className="text-white/70 text-sm mt-3">Gestiona el Comedor universitario desde un solo lugar</p>
+            <h2 className="text-white text-4xl font-bold leading-tight">Panel<br/>Administrativo</h2>
           </div>
           {/*Texto estudiantil*/}
           <div className={`absolute transition-all duration-700 ease-in-out ${isStudent ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}`}>
-            <h2 className="text-white text-3xl font-bold leading-tight">Hola,<br/>Bienvenido</h2>
-            <p className="text-white/70 text-sm mt-3">Gestiona tu almuerzo y mucho más desde tu portal estudiantil</p>
+            <h2 className="text-white text-4xl font-bold leading-tight">Hola,<br/>Bienvenido</h2>
           </div>
+        </div>
+
+        <div className="relative h-64 overflow-hidden">
+          <img
+            src="/admin.png"
+            alt="Administrador"
+            className={`w-70 mx-auto absolute inset-x-0 top-0 transition-all duration-700 ease-in-out ${isStudent ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}
+          />
+          <img
+            src="/estudiante.png"
+            alt="Estudiante"
+            className={`w-70 mx-auto absolute inset-x-0 top-0 transition-all duration-700 ease-in-out ${isStudent ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'}`}
+          />
         </div>
 
         <p className="text-white/40 text-xs relative z-10">Universidad Popular del Cesar</p>
