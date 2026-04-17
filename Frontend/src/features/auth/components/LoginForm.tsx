@@ -3,21 +3,21 @@ import { useState } from "react"
 import { loginUsuario } from "../services/authService"
 
 function LoginForm() {
-  const [isStudent, setIsStudent] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [showStudentPassword, setShowStudentPassword] = useState(false)
+  const [isStudent, setIsStudent] = useState(false) //para controlar qué panel mostrar
+  const [showPassword, setShowPassword] = useState(false) //para mostrar u ocultar contraseña en el panel admin
+  const [showStudentPassword, setShowStudentPassword] = useState(false) //para mostrar u ocultar contraseña en el panel estudiante
 
   // Admin
-  const [adminUser, setAdminUser] = useState('')
-  const [adminPassword, setAdminPassword] = useState('')
-  const [adminError, setAdminError] = useState('')
-  const [adminLoading, setAdminLoading] = useState(false)
+  const [adminUser, setAdminUser] = useState('') //para controlar el input del usuario en el panel del admin 
+  const [adminPassword, setAdminPassword] = useState('') //para controlar el input de la contraseña en el panel del admin
+  const [adminError, setAdminError] = useState('') //para mostrar un mensaje de error si el login falla en el panel del admin
+  const [adminLoading, setAdminLoading] = useState(false) //para mostrar un estado de carga mientras se procesa el login en el panel del admin
 
   // Estudiante
-  const [studentUser, setStudentUser] = useState('')
-  const [studentPassword, setStudentPassword] = useState('')
-  const [studentError, setStudentError] = useState('')
-  const [studentLoading, setStudentLoading] = useState(false)
+  const [studentUser, setStudentUser] = useState('') //para controlar el input del correo en el panel del estudiante
+  const [studentPassword, setStudentPassword] = useState('') //para controlar el input de la contraseña en el panel del estudiante
+  const [studentError, setStudentError] = useState('') //para mostrar un mensaje de error si el login falla en el panel del estudiante
+  const [studentLoading, setStudentLoading] = useState(false) //para mostrar un estado de carga mientras se procesa el login en el panel del estudiante
 
   //const navigate = useNavigate()
 
