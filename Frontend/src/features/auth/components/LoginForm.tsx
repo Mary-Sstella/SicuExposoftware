@@ -1,55 +1,19 @@
 import { useState } from "react"
-//import { useNavigate } from "react-router-dom"
-import { loginUsuario } from "../services/authService"
+import { useAuth } from "../hooks/useAuth"
 
 function LoginForm() {
-  const [isStudent, setIsStudent] = useState(false) //para controlar qué panel mostrar
-  const [showPassword, setShowPassword] = useState(false) //para mostrar u ocultar contraseña en el panel admin
-  const [showStudentPassword, setShowStudentPassword] = useState(false) //para mostrar u ocultar contraseña en el panel estudiante
+  const [isStudent, setIsStudent] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showStudentPassword, setShowStudentPassword] = useState(false)
 
-  // Admin
-  const [adminUser, setAdminUser] = useState('') //para controlar el input del usuario en el panel del admin 
-  const [adminPassword, setAdminPassword] = useState('') //para controlar el input de la contraseña en el panel del admin
-  const [adminError, setAdminError] = useState('') //para mostrar un mensaje de error si el login falla en el panel del admin
-  const [adminLoading, setAdminLoading] = useState(false) //para mostrar un estado de carga mientras se procesa el login en el panel del admin
-
-  // Estudiante
-  const [studentUser, setStudentUser] = useState('') //para controlar el input del correo en el panel del estudiante
-  const [studentPassword, setStudentPassword] = useState('') //para controlar el input de la contraseña en el panel del estudiante
-  const [studentError, setStudentError] = useState('') //para mostrar un mensaje de error si el login falla en el panel del estudiante
-  const [studentLoading, setStudentLoading] = useState(false) //para mostrar un estado de carga mientras se procesa el login en el panel del estudiante
-
-  //const navigate = useNavigate()
-
-  const handleAdminLogin = async () => {
-    setAdminError('')
-    setAdminLoading(true)
-    try {
-      const data = await loginUsuario({ credencial: adminUser, password: adminPassword })
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('rol', data.rol)
-      // navigate('/admin/dashboard')  descomentar cuando tenga la ruta
-    } catch {
-      setAdminError('Usuario o contraseña incorrectos')
-    } finally {
-      setAdminLoading(false)
-    }
-  }
-
-  const handleStudentLogin = async () => {
-    setStudentError('')
-    setStudentLoading(true)
-    try {
-      const data = await loginUsuario({ credencial: studentUser, password: studentPassword })
-      localStorage.setItem('token', data.token) 
-      localStorage.setItem('rol', data.rol) 
-      // navigate('/estudiante/dashboard')   descomentar cuando tenga la ruta
-    } catch {
-      setStudentError('Usuario o contraseña incorrectos')
-    } finally {
-      setStudentLoading(false)
-    }
-  }
+  const { //se extraen los estados y funciones del hook useAuth para ser usados en el componente
+    adminUser, setAdminUser,
+    adminPassword, setAdminPassword,
+    adminError, setAdminError, adminLoading, handleAdminLogin,
+    studentUser, setStudentUser,
+    studentPassword, setStudentPassword,
+    studentError, setStudentError, studentLoading, handleStudentLogin,
+  } = useAuth()
 
   return (
     <div className="flex w-full rounded-2xl shadow-2xl overflow-hidden bg-white relative" style={{ minHeight: '520px' }}>
