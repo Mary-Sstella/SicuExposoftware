@@ -1,13 +1,15 @@
 const { Router } = require('express')
 const controller = require('./estudiante.controller')
-const { verifyToken } = require('../auth/auth.middleware')
+const { verifyToken, verifyRole } = require('../auth/auth.middleware')
+const { validate } = require('../../shared/middleware/validate.middleware')
+const { createEstudianteValidator, updateEstudianteValidator } = require('./estudiante.validator')
 
 const router = Router()
 
 router.get('/', verifyToken, controller.getEstudiantes)
 router.get('/:id', verifyToken, controller.getEstudianteById)
-router.post('/', verifyToken, controller.createEstudiante)
-router.put('/:id', verifyToken, controller.updateEstudiante)
-router.delete('/:id', verifyToken, controller.deleteEstudiante)
+router.post('/', verifyToken, verifyRole('ADMIN'), createEstudianteValidator, validate, controller.createEstudiante)
+router.put('/:id', verifyToken, verifyRole('ADMIN'), updateEstudianteValidator, validate, controller.updateEstudiante)
+router.delete('/:id', verifyToken, verifyRole('ADMIN'), controller.deleteEstudiante)
 
 module.exports = router
