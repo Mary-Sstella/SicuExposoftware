@@ -29,12 +29,12 @@ function LoginForm() {
         </div>
 
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">Usuario</label>
+          <label className="text-sm font-medium text-gray-700 mb-1 block">Correo</label>
           <input
-            type="text"
+            type="email"
             value={adminUser}
             onChange={e => setAdminUser(e.target.value)} //se usa el estado para actualizar el valor del input
-            placeholder="Ingrese Usuario"
+            placeholder="Ingrese su Correo"
             className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-gray-50"
           />
         </div>
@@ -83,12 +83,12 @@ function LoginForm() {
         </div>
 
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">Correo Institucional</label>
+          <label className="text-sm font-medium text-gray-700 mb-1 block">Usuario</label>
           <input
-            type="email"
+            type="text"
             value={studentUser}
             onChange={e => setStudentUser(e.target.value)}
-            placeholder="ejemplo@unicesar.edu.co"
+            placeholder="Ingrese Usuario"
             className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-gray-50"
           />
         </div>
