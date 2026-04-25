@@ -8,7 +8,7 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-app.use('/api', routes)
+app.use('/sicu', routes)
 
 //Probando conexión a la base de datos
 pool.connect()
