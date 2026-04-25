@@ -20,7 +20,7 @@ function Sidebar() {
   const navigate = useNavigate()
 
   return (
-    <div className={`relative flex flex-col h-screen bg-purple-600 rounded-r-3xl transition-all duration-300 ${collapsed ? 'w-20' : 'w-60'}`}>
+    <div className={`relative flex flex-col h-screen bg-violet-500 transition-all duration-300 ${collapsed ? 'w-20' : 'w-60'}`}>
 
       {/* Logo */}
       <div className={`flex items-center gap-3 px-5 py-6 ${collapsed ? 'justify-center' : ''}`}>
