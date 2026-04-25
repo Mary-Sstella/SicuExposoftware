@@ -5,6 +5,7 @@ const routes = require('./routes')
 const pool = require('./config/db')
 const { apiLimiter } = require('./shared/middleware/rateLimiter.middleware')
 const { errorHandler } = require('./shared/middleware/error.middleware')
+const { loggerMiddleware } = require('./shared/middleware/logger.middleware')
 
 const app = express()
 
@@ -12,10 +13,16 @@ const app = express()
 app.use(helmet())
 app.use(cors())
 app.use(express.json())
+app.use(loggerMiddleware)
 
 // Rutas
 app.use('/sicu', apiLimiter)
 app.use('/sicu', routes)
+
+// Health check
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() })
+})
 
 // Error handler 
 app.use(errorHandler)
