@@ -10,6 +10,14 @@ interface Estudiante {
   programa: string
   estado: 'ACTIVO' | 'INACTIVO'
   contador_inasistencias: number
+  turno: number | null
+  dias: {
+        lunes: boolean
+        martes: boolean
+        miercoles: boolean
+        jueves: boolean
+        viernes: boolean
+  } | null
 }
 
 
@@ -18,7 +26,7 @@ interface Props {
 }
 
 function EstudiantesTable({ estudiantes }: Props) {
-  const [estudianteSeleccionado, setEstudianteSeleccionado] = useState<{ id: number, nombres: string, apellidos: string } | null>(null)
+  const [estudianteSeleccionado, setEstudianteSeleccionado] = useState<{ id: number, nombres: string, apellidos: string, dias: {lunes: boolean, martes: boolean, miercoles: boolean, jueves: boolean, viernes: boolean} | null } | null>(null)
   return (
     <div className="overflow-x-auto rounded-xl border border-gray-100">
       <table className="w-full text-sm">
@@ -44,10 +52,10 @@ function EstudiantesTable({ estudiantes }: Props) {
               <td className="px-4 py-3 text-gray-800 font-semibold">{est.nombres} {est.apellidos}</td>
               <td className="px-4 py-3 text-gray-500">{est.numero_identificacion}</td>
               <td className="px-4 py-3 text-gray-500">{est.programa}</td>
-              <td className="px-4 py-3 text-gray-400">--</td>
+              <td className="px-4 py-3 text-gray-400">{est.turno ?? '--'}</td>
               <td className="px-4 py-3">
                 <button
-                onClick={() => setEstudianteSeleccionado({ id: est.id_estudiante, nombres: est.nombres, apellidos: est.apellidos })}
+                onClick={() => setEstudianteSeleccionado({ id: est.id_estudiante, nombres: est.nombres, apellidos: est.apellidos, dias: est.dias })}
                 className="text-xs px-3 py-1 bg-violet-100 text-violet-600 font-semibold rounded-xl hover:bg-violet-200 transition-colors">Ver días
                 </button>
               </td>
@@ -67,7 +75,7 @@ function EstudiantesTable({ estudiantes }: Props) {
         <DiasModal
           nombre={estudianteSeleccionado.nombres}
           apellido={estudianteSeleccionado.apellidos}
-          dias={null}
+          dias={estudianteSeleccionado.dias}
           onClose={() => setEstudianteSeleccionado(null)}
         />
       )}
