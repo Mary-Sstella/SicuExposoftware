@@ -26,6 +26,102 @@ const getEstudianteById = async (req, res, next) => {
     }
 }
 
+const getEstudiantesDias = async (req, res, next) => {
+    try {
+        const result = await pool.query(
+            `SELECT 
+                e.id_estudiante,
+                e.nombres,
+                e.apellidos,
+                e.numero_identificacion,
+                e.programa,
+                e.estado,
+                e.contador_inasistencias,
+                r.numero_turno AS turno,
+                r.lunes,
+                r.martes,
+                r.miercoles,
+                r.jueves,
+                r.viernes
+            FROM estudiante e
+            LEFT JOIN reservas r ON e.id_estudiante = r.id_estudiante
+            ORDER BY e.apellidos ASC`
+        )
+
+        res.json(result.rows.map(row => ({
+            id_estudiante: row.id_estudiante,
+            nombres: row.nombres,
+            apellidos: row.apellidos,
+            numero_identificacion: row.numero_identificacion,
+            programa: row.programa,
+            estado: row.estado,
+            contador_inasistencias: row.contador_inasistencias,
+            turno: row.turno,
+            dias: {
+                lunes: row.lunes,
+                martes: row.martes,
+                miercoles: row.miercoles,
+                jueves: row.jueves,
+                viernes: row.viernes
+            }
+        })))
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getEstudianteDias = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const result = await pool.query(
+            `SELECT 
+                e.id_estudiante,
+                e.nombres,
+                e.apellidos,
+                e.numero_identificacion,
+                e.programa,
+                e.estado,
+                e.contador_inasistencias,
+                r.numero_turno AS turno,
+                r.lunes,
+                r.martes,
+                r.miercoles,
+                r.jueves,
+                r.viernes
+            FROM estudiante e
+            LEFT JOIN reservas r ON e.id_estudiante = r.id_estudiante
+            WHERE e.id_estudiante = $1`,
+            [id]
+        )
+
+        if (result.rows.length === 0) {
+            throw new AppError(404, 'Estudiante no encontrado')
+        }
+
+        const row = result.rows[0]
+
+        res.json({
+            id_estudiante: row.id_estudiante,
+            nombres: row.nombres,
+            apellidos: row.apellidos,
+            numero_identificacion: row.numero_identificacion,
+            programa: row.programa,
+            estado: row.estado,
+            contador_inasistencias: row.contador_inasistencias,
+            turno: row.turno,
+            dias: {
+                lunes: row.lunes,
+                martes: row.martes,
+                miercoles: row.miercoles,
+                jueves: row.jueves,
+                viernes: row.viernes
+            }
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 const createEstudiante = async (req, res, next) => {
     try {
         const data = await estudianteService.createEstudiante(req.body)
@@ -87,6 +183,8 @@ const deleteEstudiante = async (req, res, next) => {
 module.exports = {
     getEstudiantes,
     getEstudianteById,
+    getEstudiantesDias,
+    getEstudianteDias,
     createEstudiante,
     updateEstudiante,
     deleteEstudiante
