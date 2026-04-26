@@ -1,74 +1,40 @@
 import { useState } from "react"
-//import { useNavigate } from "react-router-dom"
-import { loginUsuario } from "../services/authService"
+import { useAuth } from "../hooks/useAuth"
 
 function LoginForm() {
   const [isStudent, setIsStudent] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showStudentPassword, setShowStudentPassword] = useState(false)
 
-  // Admin
-  const [adminUser, setAdminUser] = useState('')
-  const [adminPassword, setAdminPassword] = useState('')
-  const [adminError, setAdminError] = useState('')
-  const [adminLoading, setAdminLoading] = useState(false)
-
-  // Estudiante
-  const [studentUser, setStudentUser] = useState('')
-  const [studentPassword, setStudentPassword] = useState('')
-  const [studentError, setStudentError] = useState('')
-  const [studentLoading, setStudentLoading] = useState(false)
-
-  //const navigate = useNavigate()
-
-  const handleAdminLogin = async () => {
-    setAdminError('')
-    setAdminLoading(true)
-    try {
-      const data = await loginUsuario({ credencial: adminUser, password: adminPassword })
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('rol', data.rol)
-      // navigate('/admin/dashboard')  ← descomenta cuando tengas la ruta
-    } catch {
-      setAdminError('Usuario o contraseña incorrectos')
-    } finally {
-      setAdminLoading(false)
-    }
-  }
-
-  const handleStudentLogin = async () => {
-    setStudentError('')
-    setStudentLoading(true)
-    try {
-      const data = await loginUsuario({ credencial: studentUser, password: studentPassword })
-      localStorage.setItem('token', data.token) 
-      localStorage.setItem('rol', data.rol) 
-      // navigate('/estudiante/dashboard')  ← descomenta cuando tengas la ruta
-    } catch {
-      setStudentError('Usuario o contraseña incorrectos')
-    } finally {
-      setStudentLoading(false)
-    }
-  }
+  const { //se extraen los estados y funciones del hook useAuth para ser usados en el componente
+    adminUser, setAdminUser,
+    adminPassword, setAdminPassword,
+    adminError, setAdminError, adminLoading, handleAdminLogin,
+    studentUser, setStudentUser,
+    studentPassword, setStudentPassword,
+    studentError, setStudentError, studentLoading, handleStudentLogin,
+  } = useAuth()
 
   return (
     <div className="flex w-full rounded-2xl shadow-2xl overflow-hidden bg-white relative" style={{ minHeight: '520px' }}>
 
       {/* Panel admin */}
       <div className="w-1/2 p-10 flex flex-col justify-center gap-4 z-10">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-pink-500 mx-auto shadow-lg" />
+       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-pink-500 mx-auto shadow-lg flex items-center justify-center">
+        <span className="text-white font-bold text-lg">S</span>
+        </div>
         <div>
           <h2 className="text-2xl font-bold text-gray-800 text-center">Bienvenido de Vuelta</h2>
           <p className="text-gray-400 text-sm mt-1 text-center">Accede al panel administrativo</p>
         </div>
 
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">Usuario</label>
+          <label className="text-sm font-medium text-gray-700 mb-1 block">Correo</label>
           <input
-            type="text"
+            type="email"
             value={adminUser}
             onChange={e => setAdminUser(e.target.value)} //se usa el estado para actualizar el valor del input
-            placeholder="ejemplo@unicesar.edu.co"
+            placeholder="Ingrese su Correo"
             className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-gray-50"
           />
         </div>
@@ -80,7 +46,7 @@ function LoginForm() {
               type={showPassword ? 'text' : 'password'}
               value={adminPassword}
               onChange={e => setAdminPassword(e.target.value)}
-              placeholder="••••••"
+              placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
               className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-gray-50"
             />
             <button type="button" onClick={() => setShowPassword(!showPassword)}
@@ -99,7 +65,7 @@ function LoginForm() {
 
         <p className="text-center text-sm text-gray-400">
           ¿Eres estudiante?{' '}
-          <button type="button" onClick={() => setIsStudent(true)}
+          <button type="button" onClick={() => { setIsStudent(true); setAdminUser(''); setAdminPassword(''); setAdminError('') }}
             className="text-purple-500 font-semibold hover:underline">
             Ingresa aquí
           </button>
@@ -108,19 +74,21 @@ function LoginForm() {
 
       {/* Panel estudiante */}
       <div className="w-1/2 p-10 flex flex-col justify-center gap-4 z-10">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-pink-500 mx-auto shadow-lg" />
+       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-pink-500 mx-auto shadow-lg flex items-center justify-center">
+        <span className="text-white font-bold text-lg">S</span>
+        </div>
         <div>
           <h2 className="text-2xl font-bold text-gray-800 text-center">Portal Estudiantil</h2>
           <p className="text-gray-400 text-sm mt-1 text-center">Accede con tus credenciales</p>
         </div>
 
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">Usuario o Correo</label>
+          <label className="text-sm font-medium text-gray-700 mb-1 block">Usuario</label>
           <input
             type="text"
             value={studentUser}
             onChange={e => setStudentUser(e.target.value)}
-            placeholder="Usuario"
+            placeholder="Ingrese Usuario"
             className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-gray-50"
           />
         </div>
@@ -132,7 +100,7 @@ function LoginForm() {
               type={showStudentPassword ? 'text' : 'password'}
               value={studentPassword}
               onChange={e => setStudentPassword(e.target.value)}
-              placeholder="••••••"
+              placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
               className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-gray-50"
             />
             <button type="button" onClick={() => setShowStudentPassword(!showStudentPassword)}
@@ -151,7 +119,7 @@ function LoginForm() {
 
         <p className="text-center text-sm text-gray-400">
           ¿Eres administrador?{' '}
-          <button type="button" onClick={() => setIsStudent(false)}
+          <button type="button" onClick={() => { setIsStudent(false); setStudentUser(''); setStudentPassword(''); setStudentError('') }}
             className="text-purple-500 font-semibold hover:underline">
             Ingresa aquí
           </button>
@@ -160,7 +128,7 @@ function LoginForm() {
 
       {/* Panel morado deslizante */}
       <div
-        className="absolute inset-y-0 w-1/2 bg-gradient-to-br from-purple-600 via-purple-500 to-pink-400 flex flex-col justify-between p-10 rounded-3xl transition-all duration-700 ease-in-out z-20"
+        className="absolute inset-y-0 w-1/2 bg-gradient-to-br from-purple-600 via-purple-500 to-pink-400 flex flex-col justify-between p-10 rounded-2xl transition-all duration-700 ease-in-out z-20"
         style={{ left: isStudent ? '0%' : '50%' }}
       >
         <div className="absolute top-10 right-10 w-24 h-24 rounded-full bg-white/10" />
@@ -168,15 +136,28 @@ function LoginForm() {
         <div className="absolute bottom-16 left-8 w-32 h-32 rounded-full bg-white/10" />
         <div className="absolute bottom-8 left-16 w-16 h-16 rounded-full bg-pink-300/20" />
 
-        <div className="relative z-10 mt-10">
-          <h2 className="text-white text-3xl font-bold leading-tight">
-            {isStudent ? 'Hola,\nBienvenido' : 'Panel\nAdministrativo'}
-          </h2>
-          <p className="text-white/70 text-sm mt-3">
-            {isStudent
-              ? 'Gestiona tu almuerzo y muchos mas desde tu portal estudiantil'
-              : 'Gestiona el comedor universitario desde un solo lugar'}
-          </p>
+        <div className="relative z-10 mt-10 h-32 overflow-hidden">
+          {/*Texto administrativo*/}
+          <div className={`absolute transition-all duration-700 ease-in-out ${isStudent ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}>
+            <h2 className="text-white text-4xl font-bold leading-tight">Panel<br/>Administrativo</h2>
+          </div>
+          {/*Texto estudiantil*/}
+          <div className={`absolute transition-all duration-700 ease-in-out ${isStudent ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}`}>
+            <h2 className="text-white text-4xl font-bold leading-tight">Hola,<br/>Bienvenido</h2>
+          </div>
+        </div>
+
+        <div className="relative h-64 overflow-hidden">
+          <img
+            src="/admin.png"
+            alt="Administrador"
+            className={`w-70 mx-auto absolute inset-x-0 top-0 transition-all duration-700 ease-in-out ${isStudent ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}
+          />
+          <img
+            src="/estudiante.png"
+            alt="Estudiante"
+            className={`w-70 mx-auto absolute inset-x-0 top-0 transition-all duration-700 ease-in-out ${isStudent ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'}`}
+          />
         </div>
 
         <p className="text-white/40 text-xs relative z-10">Universidad Popular del Cesar</p>
