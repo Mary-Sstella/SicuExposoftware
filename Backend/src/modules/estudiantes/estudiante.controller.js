@@ -1,5 +1,6 @@
 const estudianteService = require('./estudiante.service')
 const { AppError } = require('../../shared/middleware/error.middleware')
+const pool = require('../../config/db')
 
 const getEstudiantes = async (req, res, next) => {
     try {
@@ -28,6 +29,12 @@ const getEstudianteById = async (req, res, next) => {
 const createEstudiante = async (req, res, next) => {
     try {
         const data = await estudianteService.createEstudiante(req.body)
+
+        await pool.query(
+            `INSERT INTO actividades (tipo, descripcion, id_usuario) VALUES ($1, $2, $3)`,
+            ['ESTUDIANTE_CREADO', `Nuevo estudiante inscrito: ${data.nombres} ${data.apellidos}`, req.usuario.id]
+        )
+
         res.status(201).json(data)
     } catch (error) {
         if (error?.code === '23505') {
@@ -46,6 +53,11 @@ const updateEstudiante = async (req, res, next) => {
             throw new AppError(404, 'Estudiante no encontrado')
         }
 
+        await pool.query(
+            `INSERT INTO actividades (tipo, descripcion, id_usuario) VALUES ($1, $2, $3)`,
+            ['ESTUDIANTE_ACTUALIZADO', `Estudiante actualizado: ${rows[0].nombres} ${rows[0].apellidos}`, req.usuario.id]
+        )
+
         res.json({ msg: 'Estudiante actualizado', estudiante: rows[0] })
     } catch (error) {
         next(error)
@@ -60,6 +72,11 @@ const deleteEstudiante = async (req, res, next) => {
         if (rowCount === 0) {
             throw new AppError(404, 'Estudiante no encontrado')
         }
+
+        await pool.query(
+            `INSERT INTO actividades (tipo, descripcion, id_usuario) VALUES ($1, $2, $3)`,
+            ['ESTUDIANTE_ELIMINADO', `Estudiante eliminado: ${rows[0].nombres} ${rows[0].apellidos}`, req.usuario.id]
+        )
 
         res.json({ msg: 'Estudiante eliminado', estudiante: rows[0] })
     } catch (error) {
