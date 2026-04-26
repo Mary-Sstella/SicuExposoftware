@@ -62,7 +62,7 @@ function Sidebar() {
       {/* Toggle */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-8 w-6 h-6 bg-purple-600 border border-purple-400 text-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all"
+        className="absolute -right-3 top-8 z-10 w-6 h-6 bg-violet-500 border border-purple-400 text-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all"
       >
         {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
       </button>
