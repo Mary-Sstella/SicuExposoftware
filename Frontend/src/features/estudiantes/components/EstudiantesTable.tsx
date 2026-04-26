@@ -1,3 +1,7 @@
+import { useState } from 'react'
+import DiasModal from './DiasModal'
+
+
 interface Estudiante {
   id_estudiante: number
   numero_identificacion: string
@@ -14,6 +18,7 @@ interface Props {
 }
 
 function EstudiantesTable({ estudiantes }: Props) {
+  const [estudianteSeleccionado, setEstudianteSeleccionado] = useState<{ id: number, nombres: string, apellidos: string } | null>(null)
   return (
     <div className="overflow-x-auto rounded-xl border border-gray-100">
       <table className="w-full text-sm">
@@ -40,7 +45,12 @@ function EstudiantesTable({ estudiantes }: Props) {
               <td className="px-4 py-3 text-gray-500">{est.numero_identificacion}</td>
               <td className="px-4 py-3 text-gray-500">{est.programa}</td>
               <td className="px-4 py-3 text-gray-400">--</td>
-              <td className="px-4 py-3 text-gray-400">--</td>
+              <td className="px-4 py-3">
+                <button
+                onClick={() => setEstudianteSeleccionado({ id: est.id_estudiante, nombres: est.nombres, apellidos: est.apellidos })}
+                className="text-xs px-3 py-1 bg-violet-100 text-violet-600 font-semibold rounded-xl hover:bg-violet-200 transition-colors">Ver días
+                </button>
+              </td>
               <td className="px-4 py-3">
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                   est.estado === 'ACTIVO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-500'
@@ -53,6 +63,14 @@ function EstudiantesTable({ estudiantes }: Props) {
           ))}
         </tbody>
       </table>
+      {estudianteSeleccionado && (
+        <DiasModal
+          nombre={estudianteSeleccionado.nombres}
+          apellido={estudianteSeleccionado.apellidos}
+          dias={null}
+          onClose={() => setEstudianteSeleccionado(null)}
+        />
+      )}
     </div>
   )
 }
