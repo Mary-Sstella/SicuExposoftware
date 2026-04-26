@@ -27,17 +27,18 @@ export function useEstudiantes(){
     const [estudiantes,setEstudiantes ] = useState<Estudiante[]>([])
     const [loading, setLoading] = useState(true)
 
-    useEffect(()=>{
-        const fetchData = async () =>{
-            try{
-                const data = await getEstudiantes()
-                setEstudiantes(data)
-            }finally{
-                setLoading(false)
-            }
+    const fetchData = async () => {
+        try {
+            const data = await getEstudiantes()
+            setEstudiantes(data)
+        } finally {
+            setLoading(false)
         }
-        fetchData()
-    },[])
+    }
 
-    return {estudiantes, loading}
+    useEffect(() => {
+        fetchData()
+    }, [])
+
+    return { estudiantes, loading, refetch: fetchData }
 }

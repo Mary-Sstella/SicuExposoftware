@@ -1,11 +1,13 @@
 import { useEstudiantes } from '../hooks/useEstudiantes'
 import EstudiantesTable from '../components/EstudiantesTable'
 import { useState } from 'react'
+import InscribirEstudianteModal from '../components/InscribirEstudianteModal'
 
 function EstudiantesPage() {
-  const { estudiantes, loading } = useEstudiantes()
+  const { estudiantes, loading, refetch } = useEstudiantes()
   const [busqueda, setBusqueda] = useState('')
   const [filtroEstado, setFiltroEstado] = useState<'TODOS' | 'ACTIVO' | 'INACTIVO'>('TODOS')
+  const [modalAbierto, setModalAbierto] = useState(false)
   const estudiantesFiltrados = estudiantes
   .filter((est) =>
     `${est.nombres} ${est.apellidos}`.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -16,6 +18,7 @@ function EstudiantesPage() {
   
 
   return (
+    <>
     <div className="flex-1 p-8 overflow-y-auto bg-gray-50">
       <div className="bg-white rounded-2xl p-6 shadow-sm">
         <div className="mb-6">
@@ -37,7 +40,7 @@ function EstudiantesPage() {
                 <option value="ACTIVO">Activo</option>
                 <option value="INACTIVO">Inactivo</option>
             </select>
-            <button className='ml-auto px-5 py-2 bg-gradient-to-br from-purple-600 via-purple-500 to-pink-400 hover:opacity-90 text-white text-sm font-semibold rounded-2xl transition-opacity shadow-md'>
+            <button onClick={() => setModalAbierto(true)} className='ml-auto px-5 py-2 bg-gradient-to-br from-purple-600 via-purple-500 to-pink-400 hover:opacity-90 text-white text-sm font-semibold rounded-2xl transition-opacity shadow-md'>
               + Inscribir Estudiante
             </button>
         </div>
@@ -48,6 +51,13 @@ function EstudiantesPage() {
         )}
       </div>
     </div>
+    {modalAbierto && (
+      <InscribirEstudianteModal
+        onClose={() => setModalAbierto(false)}
+        onSuccess={refetch}
+      />
+    )}
+    </>
   )
 }
 
