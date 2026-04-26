@@ -1,5 +1,6 @@
 const userService = require('./user.service')
 const { AppError } = require('../../shared/middleware/error.middleware')
+const pool = require('../../config/db')
 
 // Obtener todos los usuarios
 const getUsuarios = async (req, res, next) => {
@@ -31,6 +32,12 @@ const getUsuarioById = async (req, res, next) => {
 const createUsuario = async (req, res, next) => {
     try {
         const data = await userService.createUsuario(req.body)
+
+        await pool.query(
+            `INSERT INTO actividades (tipo, descripcion, id_usuario) VALUES ($1, $2, $3)`,
+            ['USUARIO_CREADO', `Nuevo usuario creado: ${data.username || data.email}`, req.usuario.id]
+        )
+
         res.status(201).json(data)
     } catch (error) {
         if (error?.code === '23505') {
@@ -50,6 +57,11 @@ const updateUsuario = async (req, res, next) => {
             throw new AppError(404, 'Usuario no encontrado')
         }
 
+        await pool.query(
+            `INSERT INTO actividades (tipo, descripcion, id_usuario) VALUES ($1, $2, $3)`,
+            ['USUARIO_ACTUALIZADO', `Usuario actualizado: ${rows[0].username || rows[0].email}`, req.usuario.id]
+        )
+
         res.json({ msg: 'Usuario actualizado', usuario: rows[0] })
     } catch (error) {
         next(error)
@@ -65,6 +77,11 @@ const deleteUsuario = async (req, res, next) => {
         if (rowCount === 0) {
             throw new AppError(404, 'Usuario no encontrado')
         }
+
+        await pool.query(
+            `INSERT INTO actividades (tipo, descripcion, id_usuario) VALUES ($1, $2, $3)`,
+            ['USUARIO_ELIMINADO', `Usuario eliminado: ${rows[0].username || rows[0].email}`, req.usuario.id]
+        )
 
         res.json({ msg: 'Usuario eliminado', usuario: rows[0] })
     } catch (error) {
