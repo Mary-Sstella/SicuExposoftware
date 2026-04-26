@@ -4,14 +4,15 @@ import { useAuthStore } from '../../../features/auth/store/authStore'
 import { useNavigate } from 'react-router-dom'
 
 const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard' },
-  { icon: Users, label: 'Estudiantes' },
-  { icon: ClipboardCheck, label: 'Asistencia' },
-  { icon: Clock, label: 'Turnos' },
-  { icon: CreditCard, label: 'Cartera' },
-  { icon: MessageSquare, label: 'Comentarios' },
-  { icon: BarChart2, label: 'Estadísticas' },
+  { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
+  { icon: Users, label: 'Estudiantes', path: '/estudiantes' },
+  { icon: ClipboardCheck, label: 'Asistencia', path: '/asistencia' },
+  { icon: Clock, label: 'Turnos', path: '/turnos' },
+  { icon: CreditCard, label: 'Cartera', path: '/cartera' },
+  { icon: MessageSquare, label: 'Comentarios', path: '/comentarios' },
+  { icon: BarChart2, label: 'Estadísticas', path: '/estadisticas' },
 ]
+
 
 function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
@@ -33,10 +34,10 @@ function Sidebar() {
       {/* Nav */}
       <nav className="flex-1 px-3 flex flex-col gap-1"> {/*menú vertical con separación*/}
          {/*un arreglo para recorrer cada opcion*/}
-        {navItems.map(({ icon: Icon, label }) => (
+        {navItems.map(({ icon: Icon, label, path}) => (
           <button
             key={label}
-            onClick={() => setActive(label)}
+            onClick={() => { setActive(label); navigate(path) }}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 w-full text-left
               ${active === label
                 ? 'bg-white text-purple-600 font-semibold'
