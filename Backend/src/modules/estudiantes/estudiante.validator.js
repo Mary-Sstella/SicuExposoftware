@@ -18,7 +18,7 @@ const createEstudianteValidator = [
         .isString().withMessage('Los apellidos deben ser texto'),
 
     body('correo_personal')
-        .notEmpty().withMessage('El correo personal es requerido')
+        .optional()
         .isEmail().withMessage('El correo personal no es válido'),
 
     body('correo_institucional')
