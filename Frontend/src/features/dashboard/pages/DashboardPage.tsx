@@ -5,21 +5,6 @@ import '../../../styles/calendar.css'
 import StatCard from '../components/StatCard'
 import { useDashboard } from '../hooks/useDashboard'
 
-const asistenciaSemanal = [
-  { dia: 'Lun', presentes: 40, ausentes: 10 },
-  { dia: 'Mar', presentes: 35, ausentes: 15 },
-  { dia: 'Mie', presentes: 50, ausentes: 5  },
-  { dia: 'Jue', presentes: 45, ausentes: 8  },
-  { dia: 'Vie', presentes: 38, ausentes: 12 },
-]
-
-const actividadReciente = [
-  { texto: 'Se inscribió Juanito Pérez', tiempo: 'Hace 5 min' },
-  { texto: 'Inasistencia registrada para María López', tiempo: 'Hace 20 min' },
-  { texto: 'Nuevo comentario recibido', tiempo: 'Hace 1 hora' },
-  { texto: 'Pago registrado para Carlos Ruiz', tiempo: 'Hace 2 horas' },
-]
-
 
 const tooltipStyle = {
   borderRadius: '14px',
@@ -33,7 +18,7 @@ const yTickStyle = { fontSize: 11, fill: '#6b7280' }
 const legendStyle = { fontSize: '12px', paddingTop: '16px', color: '#111827' }
 
 function DashboardPage() {
-  const { summary, loading } = useDashboard()
+  const { summary, loading, asistenciaSemanal, actividades } = useDashboard()
 
   return (
     <div className="flex-1 p-8 overflow-y-auto bg-gray-50">
@@ -66,7 +51,7 @@ function DashboardPage() {
         />
         <StatCard
           title="Asistencias Hoy"
-          value="--"
+          value={loading ? '...' : summary?.asistencias_hoy ?? 0}
           icon={<CalendarCheck size={18} style={{ color: '#EC4899' }} />}
           iconBg="#FCE7F3"
           borderColor="#EC4899"
@@ -112,13 +97,13 @@ function DashboardPage() {
           <p className="text-xs text-gray-400 mt-0.5">Últimas acciones del sistema</p>
         </div>
         <ul className="flex flex-col gap-1">
-          {actividadReciente.map((item, i) => (
+          {actividades.map((item, i) => (
             <li key={i} className="flex flex-col gap-0.5 py-3 border-b border-gray-50 last:border-0 hover:bg-purple-50 rounded-xl px-2 transition-colors duration-150">
               <div className="flex items-start gap-2">
                 <div className="w-2 h-2 rounded-full bg-purple-400 flex-shrink-0 mt-1.5" />
-                <span className="text-sm text-gray-600 leading-snug">{item.texto}</span>
+                <span className="text-sm text-gray-600 leading-snug">{item.descripcion}</span>
               </div>
-              <span className="text-xs text-gray-400 pl-4">{item.tiempo}</span>
+              <span className="text-xs text-gray-400 pl-4">{new Date(item.fecha).toLocaleString('es-CO')}</span>
             </li>
           ))}
         </ul>
