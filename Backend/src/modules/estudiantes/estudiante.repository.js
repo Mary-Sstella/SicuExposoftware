@@ -62,6 +62,67 @@ const updateEstudiante = async (id, data) => {
     return result
 }
 
+const updateEstudianteDias = async (id, data) => {
+    // Actualizar datos del estudiante si vienen
+    if (data.nombres || data.apellidos || data.correo_personal || data.programa || data.estado) {
+        await pool.query(
+            `UPDATE estudiante SET
+            nombres = COALESCE($1, nombres),
+            apellidos = COALESCE($2, apellidos),
+            correo_personal = COALESCE($3, correo_personal),
+            programa = COALESCE($4, programa),
+            estado = COALESCE($5, estado)
+            WHERE id_estudiante = $6`,
+            [
+                data.nombres,
+                data.apellidos,
+                data.correo_personal,
+                data.programa,
+                data.estado,
+                id
+            ]
+        )
+    }
+
+    // Actualizar días de reserva si vienen
+    if (data.dias) {
+        const reservaExiste = await pool.query(
+            'SELECT id_reserva FROM reservas WHERE id_estudiante = $1 AND fecha = CURRENT_DATE',
+            [id]
+        )
+
+        if (reservaExiste.rows.length > 0) {
+            await pool.query(
+                `UPDATE reservas SET
+                lunes = $1,
+                martes = $2,
+                miercoles = $3,
+                jueves = $4,
+                viernes = $5
+                WHERE id_estudiante = $6
+                AND fecha = CURRENT_DATE`,
+                [
+                    data.dias.lunes,
+                    data.dias.martes,
+                    data.dias.miercoles,
+                    data.dias.jueves,
+                    data.dias.viernes,
+                    id
+                ]
+            )
+        } else {
+            throw new Error('SIN_RESERVA')
+        }
+    }
+
+    const result = await pool.query(
+        'SELECT * FROM estudiante WHERE id_estudiante = $1',
+        [id]
+    )
+
+    return result
+}
+
 //Borrar un estudiante
 const deleteEstudiante = async (id) => {
     const result = await pool.query(
@@ -78,5 +139,6 @@ module.exports = {
     getEstudianteById,
     createEstudiante,
     updateEstudiante,
+    updateEstudianteDias,
     deleteEstudiante
 }

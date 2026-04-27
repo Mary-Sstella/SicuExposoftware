@@ -17,7 +17,7 @@ const createEstudiante = async (data) => {
 
 // Actualizar
 const updateEstudiante = async (id, data) => {
-    return await estudianteRepository.updateEstudiante(id, data)
+    return await estudianteRepository.updateEstudianteDias(id, data)
 }
 
 // Eliminar

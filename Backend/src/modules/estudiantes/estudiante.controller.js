@@ -147,19 +147,22 @@ const createEstudiante = async (req, res, next) => {
 const updateEstudiante = async (req, res, next) => {
     try {
         const { id } = req.params
-        const { rows, rowCount } = await estudianteService.updateEstudiante(id, req.body)
+        const result = await estudianteService.updateEstudiante(id, req.body)
 
-        if (rowCount === 0) {
+        if (result.rows.length === 0) {
             throw new AppError(404, 'Estudiante no encontrado')
         }
 
         await pool.query(
             `INSERT INTO actividades (tipo, descripcion, id_usuario) VALUES ($1, $2, $3)`,
-            ['ESTUDIANTE_ACTUALIZADO', `Estudiante actualizado: ${rows[0].nombres} ${rows[0].apellidos}`, req.usuario.id]
+            ['ESTUDIANTE_ACTUALIZADO', `Estudiante actualizado: ${result.rows[0].nombres} ${result.rows[0].apellidos}`, req.usuario.id]
         )
 
-        res.json({ msg: 'Estudiante actualizado', estudiante: rows[0] })
+        res.json({ msg: 'Estudiante actualizado', estudiante: result.rows[0] })
     } catch (error) {
+        if (error.message === 'SIN_RESERVA') {
+            return next(new AppError(404, 'El estudiante no tiene reserva para hoy'))
+        }
         next(error)
     }
 }
