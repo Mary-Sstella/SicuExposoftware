@@ -4,6 +4,7 @@ const estudianteRoutes = require('../modules/estudiantes/estudiante.routes')
 const authRoutes = require('../modules/auth/auth.routes')
 const dashboardRoutes = require('../modules/dashboard/dashboard.routes')
 const reservaRoutes = require('../modules/reservas/reserva.routes')
+const asistenciaRoutes = require('../modules/asistencia/asistencia.routes')
 
 const router = Router()
 
@@ -12,5 +13,6 @@ router.use('/users', userRoutes)
 router.use('/estudiantes', estudianteRoutes)
 router.use('/dashboard', dashboardRoutes)
 router.use('/reservas', reservaRoutes)
+router.use('/asistencia', asistenciaRoutes)
 
 module.exports = router
