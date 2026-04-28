@@ -168,6 +168,24 @@ const updateEstudiante = async (req, res, next) => {
     }
 }
 
+const updateEstudianteDias = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const result = await estudianteService.updateEstudianteDias(id, req.body)
+
+        if (result.rows.length === 0) {
+            throw new AppError(404, MESSAGES.ESTUDIANTE_NO_ENCONTRADO)
+        }
+
+        res.json({ msg: MESSAGES.ESTUDIANTE_ACTUALIZADO, estudiante: result.rows[0] })
+    } catch (error) {
+        if (error.message === 'SIN_RESERVA') {
+            return next(new AppError(404, 'El estudiante no tiene reserva para esa fecha'))
+        }
+        next(error)
+    }
+}
+
 const deleteEstudiante = async (req, res, next) => {
     try {
         const { id } = req.params
@@ -195,5 +213,6 @@ module.exports = {
     getEstudianteDias,
     createEstudiante,
     updateEstudiante,
+    updateEstudianteDias,
     deleteEstudiante
 }
