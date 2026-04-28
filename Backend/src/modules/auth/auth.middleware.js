@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const env = require('../../config/env')
-const { MESSAGES } = require('../constants/messages')
-const { ROLES } = require('../constants/roles')
+const { MESSAGES } = require('../../shared/constants/messages')
+const { ROLES } = require('../../shared/constants/roles')
 
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers['authorization']
