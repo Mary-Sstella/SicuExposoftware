@@ -64,25 +64,27 @@ const updateEstudiante = async (id, data) => {
 
 const updateEstudianteDias = async (id, data) => {
     // Actualizar datos del estudiante si vienen
-    if (data.nombres || data.apellidos || data.correo_personal || data.programa || data.estado) {
-        await pool.query(
-            `UPDATE estudiante SET
-            nombres = COALESCE($1, nombres),
-            apellidos = COALESCE($2, apellidos),
-            correo_personal = COALESCE($3, correo_personal),
-            programa = COALESCE($4, programa),
-            estado = COALESCE($5, estado)
-            WHERE id_estudiante = $6`,
-            [
-                data.nombres,
-                data.apellidos,
-                data.correo_personal,
-                data.programa,
-                data.estado,
-                id
-            ]
-        )
-    }
+    if (data.nombres || data.apellidos || data.correo_personal || data.correo_institucional || data.programa || data.estado) {
+    await pool.query(
+        `UPDATE estudiante SET
+        nombres = COALESCE($1, nombres),
+        apellidos = COALESCE($2, apellidos),
+        correo_personal = COALESCE($3, correo_personal),
+        correo_institucional = COALESCE($4, correo_institucional),
+        programa = COALESCE($5, programa),
+        estado = COALESCE($6, estado)
+        WHERE id_estudiante = $7`,
+        [
+            data.nombres,
+            data.apellidos,
+            data.correo_personal,
+            data.correo_institucional,
+            data.programa,
+            data.estado,
+            id
+        ]
+    )
+}
 
     // Actualizar días de reserva si vienen
     if (data.dias) {
