@@ -1,12 +1,13 @@
 const jwt = require('jsonwebtoken')
 const env = require('../../config/env')
+const { MESSAGES } = require('../constants/messages')
 
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(' ')[1] // Bearer <token>
+    const token = authHeader && authHeader.split(' ')[1]
 
     if (!token) {
-        return res.status(401).json({ msg: 'Token requerido' })
+        return res.status(401).json({ msg: MESSAGES.NO_AUTORIZADO })
     }
 
     try {
@@ -14,14 +15,14 @@ const verifyToken = (req, res, next) => {
         req.usuario = decoded
         next()
     } catch (error) {
-        return res.status(403).json({ msg: 'Token inválido o expirado' })
+        return res.status(403).json({ msg: MESSAGES.TOKEN_INVALIDO })
     }
 }
 
 const verifyRole = (...roles) => {
     return (req, res, next) => {
         if (!roles.includes(req.usuario.rol)) {
-            return res.status(403).json({ msg: 'No tienes permisos para acceder a este recurso' })
+            return res.status(403).json({ msg: MESSAGES.SIN_PERMISOS })
         }
         next()
     }

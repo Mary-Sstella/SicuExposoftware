@@ -1,5 +1,6 @@
 const userService = require('./user.service')
 const { AppError } = require('../../shared/middleware/error.middleware')
+const { MESSAGES } = require('../../shared/constants/messages')
 const pool = require('../../config/db')
 
 // Obtener todos los usuarios
@@ -19,7 +20,7 @@ const getUsuarioById = async (req, res, next) => {
         const data = await userService.getUsuarioById(id)
 
         if (!data) {
-            throw new AppError(404, 'Usuario no encontrado')
+            throw new AppError(404, MESSAGES.USUARIO_NO_ENCONTRADO)
         }
 
         res.json(data)
@@ -41,7 +42,7 @@ const createUsuario = async (req, res, next) => {
         res.status(201).json(data)
     } catch (error) {
         if (error?.code === '23505') {
-            return next(new AppError(409, 'El correo o username ya está registrado'))
+            return next(new AppError(409, MESSAGES.USUARIO_DUPLICADO))
         }
         next(error)
     }
@@ -54,7 +55,7 @@ const updateUsuario = async (req, res, next) => {
         const { rows, rowCount } = await userService.updateUsuario(id, req.body)
 
         if (rowCount === 0) {
-            throw new AppError(404, 'Usuario no encontrado')
+            throw new AppError(404, MESSAGES.USUARIO_NO_ENCONTRADO)
         }
 
         await pool.query(
@@ -62,7 +63,7 @@ const updateUsuario = async (req, res, next) => {
             ['USUARIO_ACTUALIZADO', `Usuario actualizado: ${rows[0].username || rows[0].email}`, req.usuario.id]
         )
 
-        res.json({ msg: 'Usuario actualizado', usuario: rows[0] })
+        res.json({ msg: MESSAGES.USUARIO_ACTUALIZADO, usuario: rows[0] })
     } catch (error) {
         next(error)
     }
@@ -75,7 +76,7 @@ const deleteUsuario = async (req, res, next) => {
         const { rows, rowCount } = await userService.deleteUsuario(id)
 
         if (rowCount === 0) {
-            throw new AppError(404, 'Usuario no encontrado')
+            throw new AppError(404, MESSAGES.USUARIO_NO_ENCONTRADO)
         }
 
         await pool.query(
@@ -83,7 +84,7 @@ const deleteUsuario = async (req, res, next) => {
             ['USUARIO_ELIMINADO', `Usuario eliminado: ${rows[0].username || rows[0].email}`, req.usuario.id]
         )
 
-        res.json({ msg: 'Usuario eliminado', usuario: rows[0] })
+        res.json({ msg: MESSAGES.USUARIO_ELIMINADO, usuario: rows[0] })
     } catch (error) {
         next(error)
     }

@@ -1,5 +1,6 @@
 const estudianteService = require('./estudiante.service')
 const { AppError } = require('../../shared/middleware/error.middleware')
+const { MESSAGES } = require('../../shared/constants/messages')
 const pool = require('../../config/db')
 
 const getEstudiantes = async (req, res, next) => {
@@ -17,7 +18,7 @@ const getEstudianteById = async (req, res, next) => {
         const data = await estudianteService.getEstudianteById(id)
 
         if (!data) {
-            throw new AppError(404, 'Estudiante no encontrado')
+            throw new AppError(404, MESSAGES.ESTUDIANTE_NO_ENCONTRADO)
         }
 
         res.json(data)
@@ -98,7 +99,7 @@ const getEstudianteDias = async (req, res, next) => {
         )
 
         if (result.rows.length === 0) {
-            throw new AppError(404, 'Estudiante no encontrado')
+            throw new AppError(404, MESSAGES.ESTUDIANTE_NO_ENCONTRADO)
         }
 
         const row = result.rows[0]
@@ -138,7 +139,7 @@ const createEstudiante = async (req, res, next) => {
         res.status(201).json(data)
     } catch (error) {
         if (error?.code === '23505') {
-            return next(new AppError(409, 'El número de identificación ya está registrado'))
+            return next(new AppError(409, MESSAGES.ESTUDIANTE_DUPLICADO))
         }
         next(error)
     }
@@ -150,7 +151,7 @@ const updateEstudiante = async (req, res, next) => {
         const result = await estudianteService.updateEstudiante(id, req.body)
 
         if (result.rows.length === 0) {
-            throw new AppError(404, 'Estudiante no encontrado')
+            throw new AppError(404, MESSAGES.ESTUDIANTE_NO_ENCONTRADO)
         }
 
         await pool.query(
@@ -158,7 +159,7 @@ const updateEstudiante = async (req, res, next) => {
             ['ESTUDIANTE_ACTUALIZADO', `Estudiante actualizado: ${result.rows[0].nombres} ${result.rows[0].apellidos}`, req.usuario.id]
         )
 
-        res.json({ msg: 'Estudiante actualizado', estudiante: result.rows[0] })
+        res.json({ msg: MESSAGES.ESTUDIANTE_ACTUALIZADO, estudiante: result.rows[0] })
     } catch (error) {
         if (error.message === 'SIN_RESERVA') {
             return next(new AppError(404, 'El estudiante no tiene reserva para hoy'))
@@ -173,7 +174,7 @@ const deleteEstudiante = async (req, res, next) => {
         const { rows, rowCount } = await estudianteService.deleteEstudiante(id)
 
         if (rowCount === 0) {
-            throw new AppError(404, 'Estudiante no encontrado')
+            throw new AppError(404, MESSAGES.ESTUDIANTE_NO_ENCONTRADO)
         }
 
         await pool.query(
@@ -181,7 +182,7 @@ const deleteEstudiante = async (req, res, next) => {
             ['ESTUDIANTE_ELIMINADO', `Estudiante eliminado: ${rows[0].nombres} ${rows[0].apellidos}`, req.usuario.id]
         )
 
-        res.json({ msg: 'Estudiante eliminado', estudiante: rows[0] })
+        res.json({ msg: MESSAGES.ESTUDIANTE_ELIMINADO, estudiante: rows[0] })
     } catch (error) {
         next(error)
     }

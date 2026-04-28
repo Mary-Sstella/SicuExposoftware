@@ -1,5 +1,6 @@
 const turnoService = require('./turno.service')
 const { AppError } = require('../../shared/middleware/error.middleware')
+const { MESSAGES } = require('../../shared/constants/messages')
 const pool = require('../../config/db')
 
 const asignarTurnos = async (req, res, next) => {
@@ -17,10 +18,10 @@ const asignarTurnos = async (req, res, next) => {
             ['TURNOS_ASIGNADOS', `Turnos asignados para el día: ${fecha}`, req.usuario.id]
         )
 
-        res.json({ msg: data.mensaje, total: data.total })
+        res.json({ msg: MESSAGES.TURNOS_ASIGNADOS, total: data.total })
     } catch (error) {
         if (error.message === 'SIN_RESERVAS') {
-            return next(new AppError(404, 'No hay reservas para esa fecha'))
+            return next(new AppError(404, MESSAGES.SIN_RESERVAS))
         }
         next(error)
     }
@@ -47,7 +48,7 @@ const getTurnoEstudiante = async (req, res, next) => {
         const data = await turnoService.getTurnoEstudiante(id)
 
         if (!data) {
-            throw new AppError(404, 'No hay turno asignado para hoy')
+            throw new AppError(404, MESSAGES.TURNO_NO_ENCONTRADO)
         }
 
         res.json(data)

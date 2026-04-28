@@ -1,5 +1,6 @@
 const asistenciaService = require('./asistencia.service')
 const { AppError } = require('../../shared/middleware/error.middleware')
+const { MESSAGES } = require('../../shared/constants/messages')
 const pool = require('../../config/db')
 
 const registrarAsistencia = async (req, res, next) => {
@@ -13,13 +14,13 @@ const registrarAsistencia = async (req, res, next) => {
             ['ASISTENCIA_REGISTRADA', `Asistencia registrada para: ${data.nombre_estudiante}`, req.usuario.id]
         )
 
-        res.json({ msg: 'Asistencia registrada correctamente', reserva: data })
+        res.json({ msg: MESSAGES.ASISTENCIA_REGISTRADA, reserva: data })
     } catch (error) {
         if (error.message === 'SIN_RESERVA') {
-            return next(new AppError(404, 'El estudiante no tiene reserva para hoy'))
+            return next(new AppError(404, MESSAGES.SIN_RESERVA))
         }
         if (error.message === 'YA_REGISTRADA') {
-            return next(new AppError(409, 'La asistencia ya fue registrada'))
+            return next(new AppError(409, MESSAGES.YA_REGISTRADA))
         }
         next(error)
     }

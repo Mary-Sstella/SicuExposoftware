@@ -22,6 +22,19 @@ const MESSAGES = {
     // Auth
     CREDENCIALES_INCORRECTAS: 'Credenciales incorrectas',
     USUARIO_INACTIVO: 'Usuario inactivo',
+
+    // Asistencia
+    ASISTENCIA_REGISTRADA: 'Asistencia registrada correctamente',
+    YA_REGISTRADA: 'La asistencia ya fue registrada',
+    SIN_RESERVA: 'El estudiante no tiene reserva para hoy',
+
+    // Turnos
+    TURNO_NO_ENCONTRADO: 'No hay turno asignado para hoy',
+    SIN_RESERVAS: 'No hay reservas para esa fecha',
+    TURNOS_ASIGNADOS: 'Turnos asignados correctamente',
+
+    // Reservas
+    RESERVA_CREADA: 'Reserva creada correctamente',
 }
 
 module.exports = { MESSAGES }

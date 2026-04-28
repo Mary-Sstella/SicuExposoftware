@@ -1,5 +1,6 @@
 const reservaService = require('./reserva.service')
 const { AppError } = require('../../shared/middleware/error.middleware')
+const { MESSAGES } = require('../../shared/constants/messages')
 const pool = require('../../config/db')
 
 const createReserva = async (req, res, next) => {
@@ -11,7 +12,7 @@ const createReserva = async (req, res, next) => {
             ['RESERVA_CREADA', `Reserva creada para: ${data.nombre_estudiante}`, req.usuario.id]
         )
 
-        res.status(201).json({ msg: 'Reserva creada correctamente', reserva: data })
+        res.status(201).json({ msg: MESSAGES.RESERVA_CREADA, reserva: data })
     } catch (error) {
         next(error)
     }
