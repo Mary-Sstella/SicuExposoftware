@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const controller = require('./estudiante.controller')
-const { verifyToken, verifyRole } = require('../auth/auth.middleware')
+const { verifyToken, verifyRole } = require('../../shared/middleware/auth.middleware')
 const { validate } = require('../../shared/middleware/validate.middleware')
 const { createEstudianteValidator, updateEstudianteValidator } = require('./estudiante.validator')
 const { ROLES } = require('../../shared/constants/roles')

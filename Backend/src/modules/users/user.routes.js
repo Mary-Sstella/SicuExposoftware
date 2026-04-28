@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const controller = require('./user.controller')
-const { verifyToken, verifyRole } = require('../auth/auth.middleware')
+const { verifyToken, verifyRole } = require('../../shared/middleware/auth.middleware')
 const { validate } = require('../../shared/middleware/validate.middleware')
 const { createUsuarioValidator, updateUsuarioValidator } = require('./user.validator')
 const { ROLES } = require('../../shared/constants/roles')

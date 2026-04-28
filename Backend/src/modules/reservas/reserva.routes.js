@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const controller = require('./reserva.controller')
-const { verifyToken, verifyRole } = require('../auth/auth.middleware')
+const { verifyToken, verifyRole } = require('../../shared/middleware/auth.middleware')
 const { ROLES } = require('../../shared/constants/roles')
 
 const router = Router()
