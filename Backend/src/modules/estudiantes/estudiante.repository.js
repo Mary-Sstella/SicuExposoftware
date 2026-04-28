@@ -65,32 +65,34 @@ const updateEstudiante = async (id, data) => {
 const updateEstudianteDias = async (id, data) => {
     // Actualizar datos del estudiante si vienen
     if (data.nombres || data.apellidos || data.correo_personal || data.correo_institucional || data.programa || data.estado) {
-    await pool.query(
-        `UPDATE estudiante SET
-        nombres = COALESCE($1, nombres),
-        apellidos = COALESCE($2, apellidos),
-        correo_personal = COALESCE($3, correo_personal),
-        correo_institucional = COALESCE($4, correo_institucional),
-        programa = COALESCE($5, programa),
-        estado = COALESCE($6, estado)
-        WHERE id_estudiante = $7`,
-        [
-            data.nombres,
-            data.apellidos,
-            data.correo_personal,
-            data.correo_institucional,
-            data.programa,
-            data.estado,
-            id
-        ]
-    )
-}
+        await pool.query(
+            `UPDATE estudiante SET
+            nombres = COALESCE($1, nombres),
+            apellidos = COALESCE($2, apellidos),
+            correo_personal = COALESCE($3, correo_personal),
+            correo_institucional = COALESCE($4, correo_institucional),
+            programa = COALESCE($5, programa),
+            estado = COALESCE($6, estado)
+            WHERE id_estudiante = $7`,
+            [
+                data.nombres,
+                data.apellidos,
+                data.correo_personal,
+                data.correo_institucional,
+                data.programa,
+                data.estado,
+                id
+            ]
+        )
+    }
 
     // Actualizar días de reserva si vienen
     if (data.dias) {
+        const fecha = data.fecha || new Date().toISOString().split('T')[0]
+
         const reservaExiste = await pool.query(
-            'SELECT id_reserva FROM reservas WHERE id_estudiante = $1 AND fecha = CURRENT_DATE',
-            [id]
+            'SELECT id_reserva FROM reservas WHERE id_estudiante = $1 AND fecha = $2',
+            [id, fecha]
         )
 
         if (reservaExiste.rows.length > 0) {
@@ -102,14 +104,15 @@ const updateEstudianteDias = async (id, data) => {
                 jueves = $4,
                 viernes = $5
                 WHERE id_estudiante = $6
-                AND fecha = CURRENT_DATE`,
+                AND fecha = $7`,
                 [
                     data.dias.lunes,
                     data.dias.martes,
                     data.dias.miercoles,
                     data.dias.jueves,
                     data.dias.viernes,
-                    id
+                    id,
+                    fecha
                 ]
             )
         } else {
