@@ -50,6 +50,11 @@ const updateEstudianteValidator = [
     body('estado')
         .optional()
         .isIn(['ACTIVO', 'INACTIVO']).withMessage('El estado debe ser ACTIVO o INACTIVO'),
+        
+    body('correo_institucional')
+    .optional()
+    .isEmail().withMessage('El correo institucional no es válido')
+    .contains('@unicesar.edu.co').withMessage('Debe ser un correo institucional'),
 ]
 
 module.exports = { createEstudianteValidator, updateEstudianteValidator }
