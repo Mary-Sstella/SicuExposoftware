@@ -62,10 +62,7 @@ function EditarEstModal({ estudiante, onClose, onSuccess }: Props) {
     setLoading(true)
     setError(null)
     try {
-      await api.put(`/estudiantes/${estudiante.id_estudiante}`, {
-        ...form,
-        dias,
-      })
+      await api.put(`/estudiantes/${estudiante.id_estudiante}/dias`, { ...form, dias })
       onSuccess()
       onClose()
     } catch (err: unknown) {
