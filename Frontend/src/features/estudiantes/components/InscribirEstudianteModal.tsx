@@ -45,27 +45,42 @@ function InscribirEstudianteModal({ onClose, onSuccess }: Props) {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-    try {
-      const body: Record<string, unknown> = {
-        ...form,
-        estado: 'ACTIVO',
-        contador_inasistencias: 0,
-        limite_inasistencias: 0,
-      }
-      if (!body.correo_personal) delete body.correo_personal
-      await api.post('/estudiantes', body)
-      onSuccess()
-      onClose()
-    } catch (err: unknown) {
-      const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
-      setError(message || 'Error al inscribir estudiante')
-    } finally {
-      setLoading(false)
+  e.preventDefault()
+  setLoading(true)
+  setError(null)
+  try {
+    const body: Record<string, unknown> = {
+      ...form,
+      estado: 'ACTIVO',
+      contador_inasistencias: 0,
+      limite_inasistencias: 0,
     }
+    if (!body.correo_personal) delete body.correo_personal
+
+    const estudianteCreado = await api.post('/estudiantes', body)
+
+    await api.post('/reservas', {
+      id_estudiante: estudianteCreado.data.id_estudiante,
+      numero_identificacion: form.numero_identificacion,
+      nombre_estudiante: `${form.nombres} ${form.apellidos}`,
+      numero_turno: null,
+      lunes: dias.lunes,
+      martes: dias.martes,
+      miercoles: dias.miercoles,
+      jueves: dias.jueves,
+      viernes: dias.viernes,
+    })
+
+    onSuccess()
+    onClose()
+  } catch (err: unknown) {
+    const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+    setError(message || 'Error al inscribir estudiante')
+  } finally {
+    setLoading(false)
   }
+}
+
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={onClose}>

@@ -13,7 +13,6 @@ interface Estudiante {
     estado: 'ACTIVO' | 'INACTIVO'
     limite_inasistencia: number
     contador_inasistencias: number
-    turno: number | null
     dias: {
         lunes: boolean
         martes: boolean

@@ -10,7 +10,6 @@ interface Estudiante {
   programa: string
   estado: 'ACTIVO' | 'INACTIVO'
   contador_inasistencias: number
-  turno: number | null
   correo_institucional: string
   dias: {
         lunes: boolean
@@ -38,7 +37,6 @@ function EstudiantesTable({ estudiantes }: Props) {
             <th className="px-4 py-3 font-medium">Cédula</th>
             <th className="px-4 py-3 font-medium">Carrera</th>
             <th className="px-4 py-3 font-medium">Correo</th>
-            <th className="px-4 py-3 font-medium">Turno</th>
             <th className="px-4 py-3 font-medium">Días</th>
             <th className="px-4 py-3 font-medium">Estado</th>
             <th className="px-4 py-3 font-medium rounded-tr-xl">Inasistencias</th>
@@ -55,7 +53,6 @@ function EstudiantesTable({ estudiantes }: Props) {
               <td className="px-4 py-3 text-gray-500">{est.numero_identificacion}</td>
               <td className="px-4 py-3 text-gray-500">{est.programa}</td>
               <td className="px-4 py-3 text-gray-500">{est.correo_institucional}</td>
-              <td className="px-4 py-3 text-gray-400">{est.turno ?? '--'}</td>
               <td className="px-4 py-3">
                 <button
                 onClick={() => setEstudianteSeleccionado({ id: est.id_estudiante, nombres: est.nombres, apellidos: est.apellidos, dias: est.dias })}
