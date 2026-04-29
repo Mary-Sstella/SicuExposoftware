@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { LayoutDashboard, Users, ClipboardCheck, Clock, CreditCard, MessageSquare, BarChart2, ChevronLeft, ChevronRight, LogOut } from 'lucide-react'
 import { useAuthStore } from '../../../features/auth/store/authStore'
 import { useNavigate } from 'react-router-dom'
@@ -21,12 +21,12 @@ function Sidebar() {
   const navigate = useNavigate()
 
   return (
-    <div className={`relative flex flex-col h-screen bg-violet-500 transition-all duration-300 ${collapsed ? 'w-20' : 'w-60'}`}>
+    <div className={`relative flex flex-col h-screen bg-gradient-to-b from-purple-500 to-indigo-400 rounded-2xl my-3 ml-3 transition-all duration-300 ${collapsed ? 'w-20' : 'w-60'}`}>
 
       {/* Logo */}
       <div className={`flex items-center gap-3 px-5 py-6 ${collapsed ? 'justify-center' : ''}`}>
-        <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center flex-shrink-0 shadow-md">
-          <span className="font-black text-lg bg-gradient-to-br from-purple-600 to-pink-500 bg-clip-text text-transparent">S</span>
+        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 to-pink-400 flex items-center justify-center flex-shrink-0 shadow-md">
+          <span className="font-black text-lg text-white">S</span>
         </div>
         {!collapsed && <span className="text-white font-bold text-lg tracking-wide">SICU</span>}
       </div>
@@ -40,7 +40,7 @@ function Sidebar() {
             onClick={() => { setActive(label); navigate(path) }}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 w-full text-left
               ${active === label
-                ? 'bg-white text-purple-600 font-semibold'
+                ? 'bg-white text-violet-600 font-semibold'
                 : 'text-white/80 hover:bg-white/10 hover:text-white'
               }
               ${collapsed ? 'justify-center' : ''}
@@ -63,7 +63,7 @@ function Sidebar() {
       {/* Toggle */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-8 z-10 w-6 h-6 bg-violet-500 border border-purple-400 text-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all"
+        className="absolute -right-3 top-8 z-10 w-6 h-6 bg-purple-500 border border-indigo-300 text-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all"
       >
         {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
       </button>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import api from '../../../shared/api/axios'
 
 interface Estudiante {
@@ -93,19 +93,19 @@ function EditarEstModal({ estudiante, onClose, onSuccess }: Props) {
             <div>
               <label className="text-xs font-semibold text-gray-600 mb-1 block">Nombres</label>
               <input name="nombres" value={form.nombres} onChange={handleChange} required
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
+                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" />
             </div>
             <div>
               <label className="text-xs font-semibold text-gray-600 mb-1 block">Apellidos</label>
               <input name="apellidos" value={form.apellidos} onChange={handleChange} required
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
+                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" />
             </div>
           </div>
 
           <div>
             <label className="text-xs font-semibold text-gray-600 mb-1 block">Carrera / Programa</label>
             <input name="programa" value={form.programa} onChange={handleChange} required
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" />
           </div>
 
           <div>
@@ -113,18 +113,18 @@ function EditarEstModal({ estudiante, onClose, onSuccess }: Props) {
               Correo personal <span className="text-gray-400 font-normal">(opcional)</span>
             </label>
             <input name="correo_personal" type="email" value={form.correo_personal} onChange={handleChange}
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" />
           </div>
           <div>
             <label className="text-xs font-semibold text-gray-600 mb-1 block">Correo institucional</label>
             <input name="correo_institucional" type="email" value={form.correo_institucional} onChange={handleChange} required
-            className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
+            className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" />
           </div>
 
           <div>
             <label className="text-xs font-semibold text-gray-600 mb-1 block">Estado</label>
             <select name="estado" value={form.estado} onChange={handleChange}
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 bg-white text-gray-600">
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 bg-white text-gray-600">
               <option value="ACTIVO">Activo</option>
               <option value="INACTIVO">Inactivo</option>
             </select>
@@ -137,8 +137,8 @@ function EditarEstModal({ estudiante, onClose, onSuccess }: Props) {
                 <button type="button" key={key} onClick={() => handleDia(key)}
                   className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-colors ${
                     dias[key as keyof typeof dias]
-                      ? 'bg-violet-500 text-white'
-                      : 'bg-gray-100 text-gray-500 hover:bg-violet-100 hover:text-violet-600'
+                      ? 'bg-pink-500 text-white'
+                      : 'bg-gray-100 text-gray-500 hover:bg-pink-100 hover:text-pink-600'
                   }`}>
                   {label.slice(0, 3)}
                 </button>
@@ -154,7 +154,7 @@ function EditarEstModal({ estudiante, onClose, onSuccess }: Props) {
               Cancelar
             </button>
             <button type="submit" disabled={loading}
-              className="flex-1 py-2 rounded-xl bg-gradient-to-br from-purple-600 via-purple-500 to-pink-400 text-white text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-60">
+              className="flex-1 py-2 rounded-xl bg-gradient-to-br from-pink-500 via-pink-400 to-orange-400 text-white text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-60">
               {loading ? 'Guardando...' : 'Guardar cambios'}
             </button>
           </div>

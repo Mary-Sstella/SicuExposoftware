@@ -1,4 +1,4 @@
-interface Dias {
+﻿interface Dias {
   lunes?: boolean
   martes?: boolean
   miercoles?: boolean

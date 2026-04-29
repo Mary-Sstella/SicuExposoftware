@@ -1,4 +1,4 @@
-/*se hace el MainLayout para que el sidebar este en todo el sitio
+﻿/*se hace el MainLayout para que el sidebar este en todo el sitio
 pero no se pone en el main para evitar que aparezaca en el login por ejemplo*/
 
 import { useRef, useState } from "react";
@@ -16,7 +16,7 @@ function MainLayout() {
         lastScrollY.current = currentY
     }
   return (
-    <div className="flex h-screen bg-violet-500">
+    <div className="flex h-screen bg-gray-200">
       <Sidebar />
       <main className="flex-1 flex flex-col overflow-hidden bg-gray-50 rounded-3xl my-3 mr-3">
         <div className={`transition-transform duration-300 ${topbarVisible ? 'translate-y-0' : '-translate-y-full'}`}>
