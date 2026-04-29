@@ -56,9 +56,23 @@ const getTurnoEstudiante = async (req, res, next) => {
     }
 }
 
+const updateConfiguracion = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const data = await turnoService.updateConfiguracion(id, req.body)
+        res.json({ msg: 'Configuración actualizada', configuracion: data })
+    } catch (error) {
+        if (error.message === 'RANGO_NO_ENCONTRADO') {
+            return next(new AppError(404, 'El rango horario no existe'))
+        }
+        next(error)
+    }
+}
+
 module.exports = {
     getConfiguracionTurnos,
     getDisponibilidad,
     getTurnosPorFecha,
-    getTurnoEstudiante
+    getTurnoEstudiante,
+    updateConfiguracion
 }
