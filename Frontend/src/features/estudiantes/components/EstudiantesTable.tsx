@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import DiasModal from './DiasModal'
+import { Pencil } from 'lucide-react'
+import EditarEstModal from './EditarEstModal'
 
 
 interface Estudiante {
@@ -11,6 +13,7 @@ interface Estudiante {
   estado: 'ACTIVO' | 'INACTIVO'
   contador_inasistencias: number
   correo_institucional: string
+  correo_personal: string
   dias: {
         lunes: boolean
         martes: boolean
@@ -27,6 +30,7 @@ interface Props {
 
 function EstudiantesTable({ estudiantes }: Props) {
   const [estudianteSeleccionado, setEstudianteSeleccionado] = useState<{ id: number, nombres: string, apellidos: string, dias: {lunes: boolean, martes: boolean, miercoles: boolean, jueves: boolean, viernes: boolean} | null } | null>(null)
+  const [estudianteAEditar, setEstudianteAEditar] = useState<Estudiante | null>(null)
   return (
     <div className="overflow-x-auto rounded-xl border border-gray-100">
       <table className="w-full text-sm">
@@ -49,7 +53,15 @@ function EstudiantesTable({ estudiantes }: Props) {
               className={`border-t border-gray-100 hover:bg-purple-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
             >
               <td className="px-4 py-3 text-gray-400 font-medium">{String(index + 1).padStart(2, '0')}</td>
-              <td className="px-4 py-3 text-gray-800 font-semibold">{est.nombres} {est.apellidos}</td>
+              <td className="px-4 py-3 text-gray-800 font-semibold">
+                <div className="flex items-center gap-2">
+                  {est.nombres} {est.apellidos}
+                  <button className="text-gray-300 hover:text-violet-500 transition-colors">
+                    <Pencil size={14} 
+                    onClick={() => setEstudianteAEditar(est)}/>
+                  </button>
+                </div>
+              </td>
               <td className="px-4 py-3 text-gray-500">{est.numero_identificacion}</td>
               <td className="px-4 py-3 text-gray-500">{est.programa}</td>
               <td className="px-4 py-3 text-gray-500">{est.correo_institucional}</td>
@@ -79,6 +91,12 @@ function EstudiantesTable({ estudiantes }: Props) {
           onClose={() => setEstudianteSeleccionado(null)}
         />
       )}
+      {estudianteAEditar && (
+        <EditarEstModal
+        estudiante={estudianteAEditar}
+        onClose={() => setEstudianteAEditar(null)}
+        onSuccess={() => setEstudianteAEditar(null)}
+        />)}
     </div>
   )
 }
