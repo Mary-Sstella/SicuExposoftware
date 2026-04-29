@@ -1,28 +1,27 @@
 const turnoService = require('./turno.service')
 const { AppError } = require('../../shared/middleware/error.middleware')
 const { MESSAGES } = require('../../shared/constants/messages')
-const pool = require('../../config/db')
 
-const asignarTurnos = async (req, res, next) => {
+const getConfiguracionTurnos = async (req, res, next) => {
     try {
-        const { fecha } = req.body
+        const data = await turnoService.getConfiguracionTurnos()
+        res.json(data)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getDisponibilidad = async (req, res, next) => {
+    try {
+        const { fecha } = req.query
 
         if (!fecha) {
             throw new AppError(400, 'La fecha es requerida')
         }
 
-        const data = await turnoService.asignarTurnos(fecha)
-
-        await pool.query(
-            `INSERT INTO actividades (tipo, descripcion, id_usuario) VALUES ($1, $2, $3)`,
-            ['TURNOS_ASIGNADOS', `Turnos asignados para el día: ${fecha}`, req.usuario.id]
-        )
-
-        res.json({ msg: MESSAGES.TURNOS_ASIGNADOS, total: data.total })
+        const data = await turnoService.getDisponibilidad(fecha)
+        res.json(data)
     } catch (error) {
-        if (error.message === 'SIN_RESERVAS') {
-            return next(new AppError(404, MESSAGES.SIN_RESERVAS))
-        }
         next(error)
     }
 }
@@ -57,4 +56,9 @@ const getTurnoEstudiante = async (req, res, next) => {
     }
 }
 
-module.exports = { asignarTurnos, getTurnosPorFecha, getTurnoEstudiante }
+module.exports = {
+    getConfiguracionTurnos,
+    getDisponibilidad,
+    getTurnosPorFecha,
+    getTurnoEstudiante
+}

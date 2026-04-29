@@ -1,45 +1,81 @@
 const pool = require('../../config/db')
 
-const asignarTurnos = async (fecha) => {
-    // Obtener todas las reservas del día
-    const reservas = await pool.query(
-        `SELECT id_reserva FROM reservas
-        WHERE fecha = $1
-        ORDER BY id_reserva ASC`,
-        [fecha]
+// Obtener configuración de rangos horarios
+const getConfiguracionTurnos = async () => {
+    const result = await pool.query(
+        'SELECT * FROM configuracion_turnos WHERE activo = true ORDER BY hora_inicio ASC'
+    )
+    return result.rows
+}
+
+// Obtener disponibilidad por fecha
+const getDisponibilidad = async (fecha) => {
+    const configuracion = await pool.query(
+        'SELECT * FROM configuracion_turnos WHERE activo = true ORDER BY hora_inicio ASC'
     )
 
-    const total = reservas.rows.length
+    const disponibilidad = []
 
-    if (total === 0) {
-        throw new Error('SIN_RESERVAS')
-    }
-
-    // Dividir en 3 grupos
-    const porGrupo = Math.ceil(total / 3)
-
-    const horarios = [
-        { inicio: '11:00', fin: '12:00' },
-        { inicio: '12:00', fin: '13:00' },
-        { inicio: '13:00', fin: '14:00' }
-    ]
-
-    for (let i = 0; i < reservas.rows.length; i++) {
-        const grupoIndex = Math.min(Math.floor(i / porGrupo), 2)
-        const horario = horarios[grupoIndex]
-        const numeroTurno = i + 1
-
-        await pool.query(
-            `UPDATE reservas SET
-                numero_turno = $1,
-                hora_inicio = $2,
-                hora_fin = $3
-            WHERE id_reserva = $4`,
-            [numeroTurno, horario.inicio, horario.fin, reservas.rows[i].id_reserva]
+    for (const rango of configuracion.rows) {
+        const reservas = await pool.query(
+            `SELECT COUNT(*) FROM reservas 
+            WHERE fecha = $1 
+            AND hora_inicio = $2`,
+            [fecha, rango.hora_inicio]
         )
+
+        const ocupados = parseInt(reservas.rows[0].count)
+        const disponibles = rango.capacidad_maxima - ocupados
+
+        disponibilidad.push({
+            id_configuracion: rango.id_configuracion,
+            hora_inicio: rango.hora_inicio,
+            hora_fin: rango.hora_fin,
+            capacidad_maxima: rango.capacidad_maxima,
+            ocupados,
+            disponibles,
+            disponible: disponibles > 0
+        })
     }
 
-    return { total, mensaje: `${total} turnos asignados correctamente` }
+    return disponibilidad
+}
+
+// Asignar turno automáticamente al crear reserva
+const asignarTurnoAutomatico = async (id_estudiante, fecha, id_configuracion) => {
+    const config = await pool.query(
+        'SELECT * FROM configuracion_turnos WHERE id_configuracion = $1',
+        [id_configuracion]
+    )
+
+    if (config.rows.length === 0) {
+        throw new Error('RANGO_NO_ENCONTRADO')
+    }
+
+    const rango = config.rows[0]
+
+    // Verificar cupo disponible
+    const reservasExistentes = await pool.query(
+        `SELECT COUNT(*) FROM reservas 
+        WHERE fecha = $1 
+        AND hora_inicio = $2`,
+        [fecha, rango.hora_inicio]
+    )
+
+    const ocupados = parseInt(reservasExistentes.rows[0].count)
+
+    if (ocupados >= rango.capacidad_maxima) {
+        throw new Error('SIN_CUPO')
+    }
+
+    // Asignar siguiente número de turno
+    const numeroTurno = ocupados + 1
+
+    return {
+        numero_turno: numeroTurno,
+        hora_inicio: rango.hora_inicio,
+        hora_fin: rango.hora_fin
+    }
 }
 
 const getTurnosPorFecha = async (fecha) => {
@@ -56,7 +92,7 @@ const getTurnosPorFecha = async (fecha) => {
         FROM reservas r
         JOIN estudiante e ON r.id_estudiante = e.id_estudiante
         WHERE r.fecha = $1
-        ORDER BY r.numero_turno ASC`,
+        ORDER BY r.hora_inicio ASC, r.numero_turno ASC`,
         [fecha]
     )
     return result.rows
@@ -78,4 +114,10 @@ const getTurnoEstudiante = async (id_estudiante) => {
     return result.rows[0]
 }
 
-module.exports = { asignarTurnos, getTurnosPorFecha, getTurnoEstudiante }
+module.exports = {
+    getConfiguracionTurnos,
+    getDisponibilidad,
+    asignarTurnoAutomatico,
+    getTurnosPorFecha,
+    getTurnoEstudiante
+}
