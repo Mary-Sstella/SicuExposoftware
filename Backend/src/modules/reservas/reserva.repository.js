@@ -1,6 +1,17 @@
 const pool = require('../../config/db')
 
 const createReserva = async (data) => {
+    // Verificar que la reserva sea para mañana o después
+    const hoy = new Date()
+    hoy.setHours(0, 0, 0, 0)
+    const fechaReserva = new Date(data.fecha)
+    fechaReserva.setHours(0, 0, 0, 0)
+    const diferenciaDias = Math.floor((fechaReserva - hoy) / (1000 * 60 * 60 * 24))
+
+    if (diferenciaDias < 1) {
+        throw new Error('FECHA_INVALIDA')
+    }
+
     // Verificar cupo en el rango horario seleccionado
     const config = await pool.query(
         'SELECT * FROM configuracion_turnos WHERE id_configuracion = $1 AND activo = true',
@@ -13,7 +24,6 @@ const createReserva = async (data) => {
 
     const rango = config.rows[0]
 
-    // Contar reservas existentes para esa fecha y rango
     const reservasExistentes = await pool.query(
         `SELECT COUNT(*) FROM reservas 
         WHERE fecha = $1 
@@ -27,7 +37,6 @@ const createReserva = async (data) => {
         throw new Error('SIN_CUPO')
     }
 
-    // Asignar siguiente número de turno
     const numeroTurno = ocupados + 1
 
     const result = await pool.query(
