@@ -114,10 +114,28 @@ const getTurnoEstudiante = async (id_estudiante) => {
     return result.rows[0]
 }
 
+const updateConfiguracion = async (id, data) => {
+    const result = await pool.query(
+        `UPDATE configuracion_turnos SET
+        capacidad_maxima = COALESCE($1, capacidad_maxima),
+        activo = COALESCE($2, activo)
+        WHERE id_configuracion = $3
+        RETURNING *`,
+        [data.capacidad_maxima, data.activo, id]
+    )
+
+    if (result.rows.length === 0) {
+        throw new Error('RANGO_NO_ENCONTRADO')
+    }
+
+    return result.rows[0]
+}
+
 module.exports = {
     getConfiguracionTurnos,
     getDisponibilidad,
     asignarTurnoAutomatico,
     getTurnosPorFecha,
-    getTurnoEstudiante
+    getTurnoEstudiante,
+    updateConfiguracion
 }

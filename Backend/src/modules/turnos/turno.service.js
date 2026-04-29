@@ -20,10 +20,15 @@ const getTurnoEstudiante = async (id_estudiante) => {
     return await turnoRepository.getTurnoEstudiante(id_estudiante)
 }
 
+const updateConfiguracion = async (id, data) => {
+    return await turnoRepository.updateConfiguracion(id, data)
+}
+
 module.exports = {
     getConfiguracionTurnos,
     getDisponibilidad,
     asignarTurnoAutomatico,
     getTurnosPorFecha,
-    getTurnoEstudiante
+    getTurnoEstudiante,
+    updateConfiguracion
 }
