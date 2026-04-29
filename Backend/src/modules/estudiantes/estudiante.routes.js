@@ -10,10 +10,10 @@ const router = Router()
 router.get('/', verifyToken, controller.getEstudiantes)
 router.get('/dias', verifyToken, verifyRole(ROLES.ADMIN), controller.getEstudiantesDias)
 router.get('/:id', verifyToken, controller.getEstudianteById)
-router.put('/:id/dias', verifyToken, verifyRole(ROLES.ADMIN), updateEstudianteValidator, validate, controller.updateEstudiante)
+router.get('/:id/dias', verifyToken, verifyRole(ROLES.ADMIN), controller.getEstudianteDias)
 router.post('/', verifyToken, verifyRole(ROLES.ADMIN), createEstudianteValidator, validate, controller.createEstudiante)
-router.put('/:id/dias', verifyToken, verifyRole(ROLES.ADMIN), controller.updateEstudianteDias)
 router.put('/:id', verifyToken, verifyRole(ROLES.ADMIN), updateEstudianteValidator, validate, controller.updateEstudiante)
+router.put('/:id/dias', verifyToken, verifyRole(ROLES.ADMIN), controller.updateEstudianteDias)
 router.delete('/:id', verifyToken, verifyRole(ROLES.ADMIN), controller.deleteEstudiante)
 
 module.exports = router
