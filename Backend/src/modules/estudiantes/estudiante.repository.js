@@ -6,7 +6,6 @@ const getEstudiantes = async () => {
     return result.rows
 }
 
-
 //obtener por ID
 const getEstudianteById = async (id) => {
     const result = await pool.query(
@@ -62,6 +61,86 @@ const updateEstudiante = async (id, data) => {
     return result
 }
 
+const updateEstudianteDias = async (id, data) => {
+    if (data.nombres || data.apellidos || data.correo_personal || data.correo_institucional || data.programa || data.estado) {
+        await pool.query(
+            `UPDATE estudiante SET
+            nombres = COALESCE($1, nombres),
+            apellidos = COALESCE($2, apellidos),
+            correo_personal = COALESCE($3, correo_personal),
+            correo_institucional = COALESCE($4, correo_institucional),
+            programa = COALESCE($5, programa),
+            estado = COALESCE($6, estado)
+            WHERE id_estudiante = $7`,
+            [
+                data.nombres,
+                data.apellidos,
+                data.correo_personal,
+                data.correo_institucional,
+                data.programa,
+                data.estado,
+                id
+            ]
+        )
+    }
+
+    if (data.dias) {
+        const reservaExiste = await pool.query(
+            'SELECT id_reserva FROM reservas WHERE id_estudiante = $1',
+            [id]
+        )
+
+        if (reservaExiste.rows.length > 0) {
+            await pool.query(
+                `UPDATE reservas SET
+                lunes = $1,
+                martes = $2,
+                miercoles = $3,
+                jueves = $4,
+                viernes = $5
+                WHERE id_estudiante = $6`,
+                [
+                    data.dias.lunes,
+                    data.dias.martes,
+                    data.dias.miercoles,
+                    data.dias.jueves,
+                    data.dias.viernes,
+                    id
+                ]
+            )
+        } else {
+            const estudianteData = await pool.query(
+                'SELECT numero_identificacion, nombres, apellidos FROM estudiante WHERE id_estudiante = $1',
+                [id]
+            )
+            const est = estudianteData.rows[0]
+            await pool.query(
+                `INSERT INTO reservas
+                (id_estudiante, fecha, lunes, martes, miercoles, jueves, viernes, estado, numero_identificacion, nombre_estudiante, numero_turno)
+                VALUES ($1, CURRENT_DATE, $2, $3, $4, $5, $6, 'PENDIENTE', $7, $8, $9)`,
+                [
+                    id,
+                    data.dias.lunes,
+                    data.dias.martes,
+                    data.dias.miercoles,
+                    data.dias.jueves,
+                    data.dias.viernes,
+                    est.numero_identificacion,
+                    `${est.nombres} ${est.apellidos}`,
+                    null
+                ]
+            )
+        }
+    }
+
+    const result = await pool.query(
+        'SELECT * FROM estudiante WHERE id_estudiante = $1',
+        [id]
+    )
+
+    return result
+}
+
 //Borrar un estudiante
 const deleteEstudiante = async (id) => {
     const result = await pool.query(
@@ -71,12 +150,11 @@ const deleteEstudiante = async (id) => {
     return result
 }
 
-
-
 module.exports = {
     getEstudiantes,
     getEstudianteById,
     createEstudiante,
     updateEstudiante,
+    updateEstudianteDias,
     deleteEstudiante
 }

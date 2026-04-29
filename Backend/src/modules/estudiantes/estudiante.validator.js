@@ -18,7 +18,7 @@ const createEstudianteValidator = [
         .isString().withMessage('Los apellidos deben ser texto'),
 
     body('correo_personal')
-        .notEmpty().withMessage('El correo personal es requerido')
+        .optional()
         .isEmail().withMessage('El correo personal no es válido'),
 
     body('correo_institucional')
@@ -50,6 +50,11 @@ const updateEstudianteValidator = [
     body('estado')
         .optional()
         .isIn(['ACTIVO', 'INACTIVO']).withMessage('El estado debe ser ACTIVO o INACTIVO'),
+        
+    body('correo_institucional')
+    .optional()
+    .isEmail().withMessage('El correo institucional no es válido')
+    .contains('@unicesar.edu.co').withMessage('Debe ser un correo institucional'),
 ]
 
 module.exports = { createEstudianteValidator, updateEstudianteValidator }

@@ -103,7 +103,7 @@ function DashboardPage() {
                 <div className="w-2 h-2 rounded-full bg-purple-400 flex-shrink-0 mt-1.5" />
                 <span className="text-sm text-gray-600 leading-snug">{item.descripcion}</span>
               </div>
-              <span className="text-xs text-gray-400 pl-4">{new Date(item.fecha).toLocaleString('es-CO')}</span>
+              <span className="text-xs text-gray-400 pl-4">{new Date(item.fecha).toLocaleString('es-CO', { timeZone: 'America/Bogota' })}</span>
             </li>
           ))}
         </ul>

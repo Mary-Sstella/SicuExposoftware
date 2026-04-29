@@ -15,9 +15,14 @@ const createEstudiante = async (data) => {
     return await estudianteRepository.createEstudiante(data)
 }
 
-// Actualizar
+// Actualizar datos del estudiante
 const updateEstudiante = async (id, data) => {
     return await estudianteRepository.updateEstudiante(id, data)
+}
+
+// Actualizar días de reserva
+const updateEstudianteDias = async (id, data) => {
+    return await estudianteRepository.updateEstudianteDias(id, data)
 }
 
 // Eliminar
@@ -30,5 +35,6 @@ module.exports = {
     getEstudianteById,
     createEstudiante,
     updateEstudiante,
+    updateEstudianteDias,
     deleteEstudiante
 }

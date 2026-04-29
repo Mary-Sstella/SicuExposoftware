@@ -1,0 +1,43 @@
+import { useEffect, useState } from "react"
+import { getEstudiantes } from "../services/estudiantesService"
+
+interface Estudiante {
+    id_estudiante: number
+    numero_identificacion: string
+    tipo_identificacion: string 
+    nombres: string
+    apellidos: string
+    correo_personal: string
+    correo_institucional: string
+    programa: string
+    estado: 'ACTIVO' | 'INACTIVO'
+    limite_inasistencia: number
+    contador_inasistencias: number
+    dias: {
+        lunes: boolean
+        martes: boolean
+        miercoles: boolean
+        jueves: boolean
+        viernes: boolean
+    } | null
+}
+
+export function useEstudiantes(){
+    const [estudiantes,setEstudiantes ] = useState<Estudiante[]>([])
+    const [loading, setLoading] = useState(true)
+
+    const fetchData = async () => {
+        try {
+            const data = await getEstudiantes()
+            setEstudiantes(data)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        fetchData()
+    }, [])
+
+    return { estudiantes, loading, refetch: fetchData }
+}

@@ -1,5 +1,6 @@
 const authService = require('./auth.service')
 const { AppError } = require('../../shared/middleware/error.middleware')
+const { MESSAGES } = require('../../shared/constants/messages')
 
 const login = async (req, res, next) => {
     try {
@@ -8,10 +9,10 @@ const login = async (req, res, next) => {
         res.json(data)
     } catch (error) {
         if (error.message === 'Credenciales incorrectas') {
-            return next(new AppError(401, 'Credenciales incorrectas'))
+            return next(new AppError(401, MESSAGES.CREDENCIALES_INCORRECTAS))
         }
         if (error.message === 'Usuario inactivo') {
-            return next(new AppError(403, 'Usuario inactivo'))
+            return next(new AppError(403, MESSAGES.USUARIO_INACTIVO))
         }
         next(error)
     }
