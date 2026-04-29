@@ -6,7 +6,6 @@ const getEstudiantes = async () => {
     return result.rows
 }
 
-
 //obtener por ID
 const getEstudianteById = async (id) => {
     const result = await pool.query(
@@ -63,7 +62,6 @@ const updateEstudiante = async (id, data) => {
 }
 
 const updateEstudianteDias = async (id, data) => {
-    // Actualizar datos del estudiante si vienen
     if (data.nombres || data.apellidos || data.correo_personal || data.correo_institucional || data.programa || data.estado) {
         await pool.query(
             `UPDATE estudiante SET
@@ -86,7 +84,6 @@ const updateEstudianteDias = async (id, data) => {
         )
     }
 
-    // Actualizar días de reserva si vienen
     if (data.dias) {
         const reservaExiste = await pool.query(
             'SELECT id_reserva FROM reservas WHERE id_estudiante = $1',
@@ -111,8 +108,6 @@ const updateEstudianteDias = async (id, data) => {
                     id
                 ]
             )
-        } else {
-            throw new Error('SIN_RESERVA')
         }
     }
 
@@ -132,8 +127,6 @@ const deleteEstudiante = async (id) => {
     )
     return result
 }
-
-
 
 module.exports = {
     getEstudiantes,
