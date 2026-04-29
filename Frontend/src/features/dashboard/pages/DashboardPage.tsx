@@ -1,4 +1,4 @@
-import { Users, UserCheck, CreditCard, CalendarCheck } from 'lucide-react'
+﻿import { Users, UserCheck, CreditCard, CalendarCheck } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, Legend } from 'recharts'
 import Calendar from 'react-calendar'
 import '../../../styles/calendar.css'
@@ -28,33 +28,29 @@ function DashboardPage() {
         <StatCard
           title="Total Estudiantes"
           value={loading ? '...' : summary?.total_estudiantes ?? 0}
-          icon={<Users size={18} style={{ color: '#3B82F6' }} />}
-          iconBg="#DBEAFE"
-          borderColor="#3B82F6"
+          icon={<Users size={18} color="white" />}
+          gradient="bg-gradient-to-br from-pink-500 to-rose-400"
           description="Registrados en el sistema"
         />
         <StatCard
           title="Activos"
           value={loading ? '...' : summary?.estudiantes_activos ?? 0}
-          icon={<UserCheck size={18} style={{ color: '#10B981' }} />}
-          iconBg="#D1FAE5"
-          borderColor="#10B981"
+          icon={<UserCheck size={18} color="white" />}
+          gradient="bg-gradient-to-br from-purple-500 to-indigo-400"
           description="Con estado activo"
         />
         <StatCard
           title="Pagos Pendientes"
           value={loading ? '...' : summary?.pagos_pendientes ?? 0}
-          icon={<CreditCard size={18} style={{ color: '#F59E0B' }} />}
-          iconBg="#FEF3C7"
-          borderColor="#F59E0B"
+          icon={<CreditCard size={18} color="white" />}
+          gradient="bg-gradient-to-br from-cyan-400 to-blue-400"
           description="Por cobrar"
         />
         <StatCard
           title="Asistencias Hoy"
           value={loading ? '...' : summary?.asistencias_hoy ?? 0}
-          icon={<CalendarCheck size={18} style={{ color: '#EC4899' }} />}
-          iconBg="#FCE7F3"
-          borderColor="#EC4899"
+          icon={<CalendarCheck size={18} color="white" />}
+          gradient="bg-gradient-to-br from-orange-400 to-amber-300"
           description="Registradas hoy"
         />
       </div>
@@ -74,8 +70,8 @@ function DashboardPage() {
               <YAxis axisLine={false} tickLine={false} tick={yTickStyle} />
               <Tooltip contentStyle={tooltipStyle} labelStyle={{ fontWeight: 600, color: '#374151', marginBottom: 4 }} cursor={{ fill: '#f5f3ff' }} />
               <Legend wrapperStyle={legendStyle} iconType="circle" iconSize={8} />
-              <Bar dataKey="presentes" fill="#8b5cf6" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="ausentes" fill="#ff53e2d2" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="presentes" fill="#8B5CF6" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="ausentes" fill="#EC489960" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -98,9 +94,9 @@ function DashboardPage() {
         </div>
         <ul className="flex flex-col gap-1">
           {actividades.map((item, i) => (
-            <li key={i} className="flex flex-col gap-0.5 py-3 border-b border-gray-50 last:border-0 hover:bg-purple-50 rounded-xl px-2 transition-colors duration-150">
+            <li key={i} className="flex flex-col gap-0.5 py-3 border-b border-gray-50 last:border-0 hover:bg-pink-50 rounded-xl px-2 transition-colors duration-150">
               <div className="flex items-start gap-2">
-                <div className="w-2 h-2 rounded-full bg-purple-400 flex-shrink-0 mt-1.5" />
+                <div className="w-2 h-2 rounded-full bg-pink-400 flex-shrink-0 mt-1.5" />
                 <span className="text-sm text-gray-600 leading-snug">{item.descripcion}</span>
               </div>
               <span className="text-xs text-gray-400 pl-4">{new Date(item.fecha).toLocaleString('es-CO', { timeZone: 'America/Bogota' })}</span>

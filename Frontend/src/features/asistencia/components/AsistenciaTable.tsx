@@ -1,4 +1,4 @@
-interface Asistencia{
+﻿interface Asistencia{
     hora_reserva: string
     nombres: string
     apellidos: string
@@ -18,7 +18,7 @@ function AsistenciaTable ({asistencias}: Props){
         <div className="overflow-x-auto rounded-xl border border-gray-100">
             <table className="w-full text-sm">
                 <thead>
-                    <tr className="bg-violet-500 text-white text-left">
+                    <tr className="bg-violet-400 text-white text-left">
                     <th className="px-4 py-3 font-medium rounded-tl-xl">Hora</th>
                     <th className="px-4 py-3 font-medium">Estudiante</th>
                     <th className="px-4 py-3 font-medium">Cédula</th>

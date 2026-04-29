@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useAsistencia } from '../hooks/useAsistencia'
 import AsistenciaTable from '../components/AsistenciaTable'
 import { Fingerprint, Keyboard } from 'lucide-react'
@@ -66,7 +66,7 @@ function AsistenciaPage() {
           <button
             onClick={handleRegistrar}
             disabled={registrando}
-            className="w-full py-2 rounded-xl bg-gradient-to-br from-purple-600 via-purple-500 to-pink-400 text-white text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-60">
+            className="w-full py-2 rounded-xl bg-gradient-to-br from-violet-500 via-violet-400 to-purple-300 text-white text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-60">
             {registrando ? 'Registrando...' : 'Registrar Entrada'}
           </button>
         </div>
