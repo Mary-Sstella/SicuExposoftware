@@ -6,7 +6,7 @@ interface Asistencia{
     carrera: string
     turno: number | null
     metodo: 'HUELLA' | 'MANUAL' | null
-    estado: 'PENDIENTE' | 'CONFIRMADO'
+    estado: 'PENDIENTE' | 'CONFIRMADO' | 'ENTREGADA'
 }
 
 interface Props{
@@ -49,7 +49,7 @@ function AsistenciaTable ({asistencias}: Props){
         <td className="px-4 py-3 text-gray-500">{item.metodo ?? '--'}</td>
         <td className="px-4 py-3">
           <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-            item.estado === 'CONFIRMADO'
+            item.estado === 'CONFIRMADO' || item.estado === 'ENTREGADA'
               ? 'bg-green-100 text-green-700'
               : 'bg-yellow-100 text-yellow-700'
           }`}>

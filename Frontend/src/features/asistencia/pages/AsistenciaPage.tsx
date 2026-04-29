@@ -1,9 +1,32 @@
+import { useState } from 'react'
 import { useAsistencia } from '../hooks/useAsistencia'
 import AsistenciaTable from '../components/AsistenciaTable'
 import { Fingerprint, Keyboard } from 'lucide-react'
+import api from '../../../shared/api/axios'
 
 function AsistenciaPage() {
-  const { asistencias, loading } = useAsistencia()
+  const { asistencias, loading, refetch } = useAsistencia()
+  const [cedula, setCedula] = useState('')
+  const [registrando, setRegistrando] = useState(false)
+  const [mensaje, setMensaje] = useState<{ tipo: 'ok' | 'error', texto: string } | null>(null)
+
+
+  const handleRegistrar = async () => {
+    if (!cedula.trim()) return
+    setRegistrando(true)
+    setMensaje(null)
+    try {
+      const res = await api.post('/asistencia', { numero_identificacion: cedula })
+      setMensaje({ tipo: 'ok', texto: res.data.msg })
+      setCedula('')
+      refetch()
+    } catch (err: unknown) {
+      const texto = (err as { response?: { data?: { msg?: string } } })?.response?.data?.msg
+      setMensaje({ tipo: 'error', texto: texto || 'Error al registrar asistencia' })
+    } finally {
+      setRegistrando(false)
+    }
+  }
 
   return (
     <div className="flex-1 p-8 overflow-y-auto bg-gray-50">
@@ -30,10 +53,21 @@ function AsistenciaPage() {
           <input
             type="text"
             placeholder="Ingrese la cédula..."
+            value={cedula}
+            onChange={(e) => setCedula(e.target.value)} //cuando se escribe algo en el input, guarda lo que hay escrito en la variable cedula
+            onKeyDown={(e) => e.key === 'Enter' && handleRegistrar()} //cuando se usa el enter llama a handleRegistrar()
             className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 mb-3"
           />
-          <button className="w-full py-2 rounded-xl bg-gradient-to-br from-purple-600 via-purple-500 to-pink-400 text-white text-sm font-semibold hover:opacity-90 transition-opacity">
-            Registrar Entrada
+          {mensaje && (
+            <p className={`text-xs px-3 py-2 rounded-xl mb-2 ${mensaje.tipo === 'ok' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
+              {mensaje.texto}
+            </p>
+          )}
+          <button
+            onClick={handleRegistrar}
+            disabled={registrando}
+            className="w-full py-2 rounded-xl bg-gradient-to-br from-purple-600 via-purple-500 to-pink-400 text-white text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-60">
+            {registrando ? 'Registrando...' : 'Registrar Entrada'}
           </button>
         </div>
       </div>
