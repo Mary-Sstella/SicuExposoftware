@@ -88,11 +88,9 @@ const updateEstudianteDias = async (id, data) => {
 
     // Actualizar días de reserva si vienen
     if (data.dias) {
-        const fecha = data.fecha || new Date().toISOString().split('T')[0]
-
         const reservaExiste = await pool.query(
-            'SELECT id_reserva FROM reservas WHERE id_estudiante = $1 AND fecha = $2',
-            [id, fecha]
+            'SELECT id_reserva FROM reservas WHERE id_estudiante = $1',
+            [id]
         )
 
         if (reservaExiste.rows.length > 0) {
@@ -103,16 +101,14 @@ const updateEstudianteDias = async (id, data) => {
                 miercoles = $3,
                 jueves = $4,
                 viernes = $5
-                WHERE id_estudiante = $6
-                AND fecha = $7`,
+                WHERE id_estudiante = $6`,
                 [
                     data.dias.lunes,
                     data.dias.martes,
                     data.dias.miercoles,
                     data.dias.jueves,
                     data.dias.viernes,
-                    id,
-                    fecha
+                    id
                 ]
             )
         } else {
