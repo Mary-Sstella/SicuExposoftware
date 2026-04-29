@@ -66,7 +66,7 @@ function EditarEstModal({ estudiante, onClose, onSuccess }: Props) {
       onSuccess()
       onClose()
     } catch (err: unknown) {
-      const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+      const message = (err as { response?: { data?: { msg?: string } } })?.response?.data?.msg
       setError(message || 'Error al actualizar estudiante')
     } finally {
       setLoading(false)
