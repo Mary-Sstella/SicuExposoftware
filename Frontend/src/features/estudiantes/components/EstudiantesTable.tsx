@@ -26,9 +26,10 @@ interface Estudiante {
 
 interface Props {
   estudiantes: Estudiante[] //recibe la lista de estudiantes 
+  onEdit: () => void 
 }
 
-function EstudiantesTable({ estudiantes }: Props) {
+function EstudiantesTable({ estudiantes, onEdit }: Props) {
   const [estudianteSeleccionado, setEstudianteSeleccionado] = useState<{ id: number, nombres: string, apellidos: string, dias: {lunes: boolean, martes: boolean, miercoles: boolean, jueves: boolean, viernes: boolean} | null } | null>(null)
   const [estudianteAEditar, setEstudianteAEditar] = useState<Estudiante | null>(null)
   return (
@@ -95,7 +96,7 @@ function EstudiantesTable({ estudiantes }: Props) {
         <EditarEstModal
         estudiante={estudianteAEditar}
         onClose={() => setEstudianteAEditar(null)}
-        onSuccess={() => setEstudianteAEditar(null)}
+        onSuccess={() => { setEstudianteAEditar(null); onEdit() }}
         />)}
     </div>
   )

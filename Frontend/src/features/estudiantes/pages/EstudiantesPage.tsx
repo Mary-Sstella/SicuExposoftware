@@ -47,7 +47,7 @@ function EstudiantesPage() {
         {loading ? (
           <p className="text-sm text-gray-400">Cargando...</p>
         ) : (
-          <EstudiantesTable estudiantes={estudiantesFiltrados} />
+          <EstudiantesTable estudiantes={estudiantesFiltrados} onEdit={refetch} />
         )}
       </div>
     </div>

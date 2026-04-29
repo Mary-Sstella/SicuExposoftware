@@ -108,6 +108,28 @@ const updateEstudianteDias = async (id, data) => {
                     id
                 ]
             )
+        } else {
+            const estudianteData = await pool.query(
+                'SELECT numero_identificacion, nombres, apellidos FROM estudiante WHERE id_estudiante = $1',
+                [id]
+            )
+            const est = estudianteData.rows[0]
+            await pool.query(
+                `INSERT INTO reservas
+                (id_estudiante, fecha, lunes, martes, miercoles, jueves, viernes, estado, numero_identificacion, nombre_estudiante, numero_turno)
+                VALUES ($1, CURRENT_DATE, $2, $3, $4, $5, $6, 'PENDIENTE', $7, $8, $9)`,
+                [
+                    id,
+                    data.dias.lunes,
+                    data.dias.martes,
+                    data.dias.miercoles,
+                    data.dias.jueves,
+                    data.dias.viernes,
+                    est.numero_identificacion,
+                    `${est.nombres} ${est.apellidos}`,
+                    null
+                ]
+            )
         }
     }
 

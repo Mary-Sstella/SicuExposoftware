@@ -6,6 +6,7 @@ interface Estudiante {
   nombres: string
   apellidos: string
   correo_personal: string
+  correo_institucional: string
   programa: string
   estado: 'ACTIVO' | 'INACTIVO'
   dias: {
@@ -36,6 +37,7 @@ function EditarEstModal({ estudiante, onClose, onSuccess }: Props) {
     nombres: estudiante.nombres,
     apellidos: estudiante.apellidos,
     correo_personal: estudiante.correo_personal ?? '',
+    correo_institucional: estudiante.correo_institucional ?? '',
     programa: estudiante.programa,
     estado: estudiante.estado,
   })
@@ -62,7 +64,7 @@ function EditarEstModal({ estudiante, onClose, onSuccess }: Props) {
     setLoading(true)
     setError(null)
     try {
-      await api.put(`/estudiantes/${estudiante.id_estudiante}`, { ...form, dias })
+      await api.put(`/estudiantes/${estudiante.id_estudiante}/dias`, { ...form, dias })
       onSuccess()
       onClose()
     } catch (err: unknown) {
@@ -112,6 +114,11 @@ function EditarEstModal({ estudiante, onClose, onSuccess }: Props) {
             </label>
             <input name="correo_personal" type="email" value={form.correo_personal} onChange={handleChange}
               className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-gray-600 mb-1 block">Correo institucional</label>
+            <input name="correo_institucional" type="email" value={form.correo_institucional} onChange={handleChange} required
+            className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300" />
           </div>
 
           <div>
