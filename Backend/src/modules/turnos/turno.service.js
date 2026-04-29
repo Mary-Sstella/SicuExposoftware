@@ -12,8 +12,8 @@ const asignarTurnoAutomatico = async (id_estudiante, fecha, id_configuracion) =>
     return await turnoRepository.asignarTurnoAutomatico(id_estudiante, fecha, id_configuracion)
 }
 
-const getTurnosPorFecha = async (fecha) => {
-    return await turnoRepository.getTurnosPorFecha(fecha)
+const getTurnosPorFecha = async (fecha, buscar) => {
+    return await turnoRepository.getTurnosPorFecha(fecha, buscar)
 }
 
 const getTurnoEstudiante = async (id_estudiante) => {

@@ -28,13 +28,13 @@ const getDisponibilidad = async (req, res, next) => {
 
 const getTurnosPorFecha = async (req, res, next) => {
     try {
-        const { fecha } = req.query
+        const { fecha, buscar } = req.query
 
         if (!fecha) {
             throw new AppError(400, 'La fecha es requerida')
         }
 
-        const data = await turnoService.getTurnosPorFecha(fecha)
+        const data = await turnoService.getTurnosPorFecha(fecha, buscar)
         res.json(data)
     } catch (error) {
         next(error)

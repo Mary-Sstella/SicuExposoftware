@@ -78,9 +78,9 @@ const asignarTurnoAutomatico = async (id_estudiante, fecha, id_configuracion) =>
     }
 }
 
-const getTurnosPorFecha = async (fecha) => {
-    const result = await pool.query(
-        `SELECT
+const getTurnosPorFecha = async (fecha, buscar) => {
+    let query = `
+        SELECT
             r.numero_turno,
             r.hora_inicio,
             r.hora_fin,
@@ -91,10 +91,22 @@ const getTurnosPorFecha = async (fecha) => {
             r.estado
         FROM reservas r
         JOIN estudiante e ON r.id_estudiante = e.id_estudiante
-        WHERE r.fecha = $1
-        ORDER BY r.hora_inicio ASC, r.numero_turno ASC`,
-        [fecha]
-    )
+        WHERE r.fecha = $1`
+
+    const params = [fecha]
+
+    if (buscar) {
+        query += ` AND (
+            LOWER(e.nombres) LIKE $2 OR 
+            LOWER(e.apellidos) LIKE $2 OR 
+            e.numero_identificacion::text LIKE $2
+        )`
+        params.push(`%${buscar.toLowerCase()}%`)
+    }
+
+    query += ` ORDER BY r.hora_inicio ASC, r.numero_turno ASC`
+
+    const result = await pool.query(query, params)
     return result.rows
 }
 
