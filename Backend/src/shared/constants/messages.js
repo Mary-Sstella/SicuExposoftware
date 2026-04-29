@@ -35,6 +35,7 @@ const MESSAGES = {
 
     // Reservas
     RESERVA_CREADA: 'Reserva creada correctamente',
+    FECHA_INVALIDA: 'La reserva debe hacerse con al menos un día de anticipación',
 }
 
 module.exports = { MESSAGES }
