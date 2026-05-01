@@ -7,6 +7,7 @@ import EstudiantesPage from '../../features/estudiantes/pages/EstudiantesPage'
 import AsistenciaPage from '../../features/asistencia/pages/AsistenciaPage'
 import TurnosPage from '../../features/turnos/pages/TurnosPage'
 import StudentLayout from '../../shared/components/layout/StudentLayout'
+import EstudiantePage from '../../features/student/pages/EstudiantePage'
 
 
 function AppRouter() {
@@ -22,7 +23,7 @@ function AppRouter() {
           <Route path={ROUTES.TURNOS} element={<TurnosPage/>}/>
         </Route>
         <Route element={<StudentLayout />}>
-        <Route path={ROUTES.STUDENT} element={<div>Mis Turnos - próximamente</div>} />
+        <Route path={ROUTES.STUDENT} element={<EstudiantePage />} />
         </Route>
         <Route path="*" element={<Navigate to={ROUTES.LOGIN} />} />
         
