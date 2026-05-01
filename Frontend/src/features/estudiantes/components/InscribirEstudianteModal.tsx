@@ -59,17 +59,17 @@ function InscribirEstudianteModal({ onClose, onSuccess }: Props) {
 
     const estudianteCreado = await api.post('/estudiantes', body)
 
-    await api.post('/reservas', {
-      id_estudiante: estudianteCreado.data.id_estudiante,
-      numero_identificacion: form.numero_identificacion,
-      nombre_estudiante: `${form.nombres} ${form.apellidos}`,
-      numero_turno: null,
-      lunes: dias.lunes,
-      martes: dias.martes,
-      miercoles: dias.miercoles,
-      jueves: dias.jueves,
-      viernes: dias.viernes,
+    await api.put(`/estudiantes/${estudianteCreado.data.id_estudiante}/dias`, {
+      dias: {
+        lunes: dias.lunes,
+        martes: dias.martes,
+        miercoles: dias.miercoles,
+        jueves: dias.jueves,
+        viernes: dias.viernes,
+      }
     })
+
+
 
     onSuccess()
     onClose()

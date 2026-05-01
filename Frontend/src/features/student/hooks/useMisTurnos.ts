@@ -4,11 +4,16 @@ import { getMiTurnoHoy } from "../services/estudianteService"
 
 
 interface MiTurno {
-    numero_turno: number
-    hora_inicio: string
-    hora_fin: string
+    numero_turno: number | null
+    hora_inicio: string | null
+    hora_fin: string | null
     fecha: string
     estado: string
+    lunes: boolean
+    martes: boolean
+    miercoles: boolean
+    jueves: boolean
+    viernes: boolean
 }
 
 export function useMisTurnos(){

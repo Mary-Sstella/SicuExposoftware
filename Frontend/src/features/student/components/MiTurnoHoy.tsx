@@ -8,10 +8,10 @@ function MiTurnoHoy(){
 
     if(loading) return <p className="text-sm text-gray-400">Cargando...</p>
 
-    if(!turno) return(
+    if(!turno || !turno.numero_turno) return(
         <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col items-center gap-2">
             <AlertCircle size={32} className="text-gray-300"/>
-            <p className="text-sm text-gray-400 font-medium">No tienes turnos asignados para hoy</p>
+            <p className="text-sm text-gray-400 font-medium">No tienes turno asignado para hoy</p>
         </div>
     )
 
@@ -40,7 +40,7 @@ function MiTurnoHoy(){
             <div className={`flex items-center gap-2 px-3 py-2 rounded-xl ${llego ? 'bg-green-50' : 'bg-amber-50'}`}>
                 <CheckCircle size={16} className={llego ? 'text-green-500' : 'text-amber-400' } />
                 <span className={`text-xs font-semibold ${llego ? 'text-green-600' : 'text-amber-600'}`}>
-                    {llego ? 'Asistencia Confirmada' : 'Asistencia Pediente'}
+                    {llego ? 'Asistencia Confirmada' : 'Asistencia Pendiente'}
                 </span>
             </div>
         </div>
