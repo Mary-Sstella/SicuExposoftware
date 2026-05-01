@@ -23,11 +23,11 @@ export function useAuth() {
     setAdminLoading(true)
     try {
       const data = await loginUsuario({ credencial: adminUser, password: adminPassword }) //se llama a la función loginUsuario del auth, pasando el usuario y contraseña del admin, devuelve un objeto con el token, rol y username
-      if (data.rol !== 'admin') {
+      if (data.rol !== 'ADMIN') {
         setAdminError('Ingresa desde el portal estudiantil')
         return
       }
-      setAuth(data.token, data.rol, data.username)
+      setAuth(data.token, data.rol, data.username, null)
       navigate(ROUTES.DASHBOARD)
     } catch {
       setAdminError('Usuario o contraseña incorrectos')
@@ -41,11 +41,11 @@ export function useAuth() {
     setStudentLoading(true)
     try {
       const data = await loginUsuario({ credencial: studentUser, password: studentPassword })
-      if (data.rol === 'admin') {
+      if (data.rol === 'ADMIN') {
         setStudentError('Ingresa desde el panel administrativo')
         return
       }
-      setAuth(data.token, data.rol, data.username)
+      setAuth(data.token, data.rol, data.username,data.id_estudiante)
       navigate(ROUTES.STUDENT)
     } catch {
       setStudentError('Usuario o contraseña incorrectos')

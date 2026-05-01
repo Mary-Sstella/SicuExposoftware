@@ -32,21 +32,11 @@ const login = async ({ credencial, password }) => {
         { expiresIn: env.jwt.expiresIn }
     )
 
-    // Si es estudiante buscar su id_estudiante
-    let id_estudiante = null
-    if (usuario.rol === ROLES.ESTUDIANTE) {
-        const est = await pool.query(
-            'SELECT id_estudiante FROM estudiante WHERE correo_institucional = $1',
-            [usuario.email]
-        )
-        id_estudiante = est.rows[0]?.id_estudiante ?? null
-    }
-
     return {
         token,
         rol: usuario.rol,
         username: usuario.username || usuario.email,
-        id_estudiante
+        id_estudiante: usuario.id_estudiante ?? null
     }
 }
 
