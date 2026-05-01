@@ -34,7 +34,8 @@ const login = async ({ credencial, password }) => {
     return {
         token,
         rol: usuario.rol,
-        username: usuario.username || usuario.email
+        username: usuario.username || usuario.email,
+        id_estudiante: usuario.id_estudiante ?? null
     }
 }
 
