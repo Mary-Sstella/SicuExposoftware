@@ -9,7 +9,7 @@ const { loggerMiddleware } = require('./shared/middleware/logger.middleware')
 
 const app = express()
 
-const whitelist = ['http://localhost:5174']
+const whitelist = ['http://localhost:5174', 'http://localhost:5173']
 
 const corsOptions = {
     origin: function (origin, callback) {

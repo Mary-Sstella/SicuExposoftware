@@ -1,5 +1,5 @@
 const estudianteRepository = require('./estudiante.repository')
-const pool = require('../../config/db')
+const prisma = require('../../config/prisma')
 const bcrypt = require('bcryptjs')
 const { ROLES } = require('../../shared/constants/roles')
 
@@ -22,16 +22,14 @@ const createEstudiante = async (data) => {
     const passwordHash = await bcrypt.hash(data.numero_identificacion.toString(), 10)
 
     // Crear usuario automáticamente
-    await pool.query(
-        `INSERT INTO usuarios (email, password_hash, rol, id_estudiante)
-        VALUES ($1, $2, $3, $4)`,
-        [
-            estudiante.correo_institucional,
-            passwordHash,
-            ROLES.ESTUDIANTE,
-            estudiante.id_estudiante
-        ]
-    )
+    await prisma.usuarios.create({
+        data: {
+            email: estudiante.correo_institucional,
+            password_hash: passwordHash,
+            rol: ROLES.ESTUDIANTE,
+            id_estudiante: estudiante.id_estudiante
+        }
+    })
 
     return estudiante
 }

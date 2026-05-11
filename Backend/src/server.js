@@ -3,6 +3,10 @@ const env = require('./config/env')
 const app = require('./app')
 const { iniciarCronJobs } = require('./shared/utils/cronJobs')
 
+BigInt.prototype.toJSON = function() {
+    return this.toString()
+}
+
 const PORT = env.port || 3000
 
 const server = app.listen(PORT, () => {

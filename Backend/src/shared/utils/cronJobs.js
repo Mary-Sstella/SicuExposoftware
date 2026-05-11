@@ -1,63 +1,66 @@
 const cron = require('node-cron')
-const pool = require('../../config/db')
+const prisma = require('../../config/prisma')
 
 const marcarInasistencias = async () => {
     console.log('Ejecutando cron job: marcando inasistencias...')
 
     const diaSemana = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'][new Date().getDay()]
+    const hoy = new Date()
+    hoy.setHours(0, 0, 0, 0)
 
     // Obtener reservas pendientes del día actual
-    const reservasPendientes = await pool.query(
-        `SELECT r.*, e.id_estudiante, e.contador_inasistencias
-        FROM reservas r
-        JOIN estudiante e ON r.id_estudiante = e.id_estudiante
-        WHERE r.fecha = CURRENT_DATE
-        AND r.${diaSemana} = true
-        AND r.estado = 'PENDIENTE'`
-    )
+    const reservasPendientes = await prisma.reservas.findMany({
+        where: {
+            fecha: hoy,
+            [diaSemana]: true,
+            estado: 'PENDIENTE'
+        },
+        include: {
+            estudiante: true
+        }
+    })
 
-    for (const reserva of reservasPendientes.rows) {
+    for (const reserva of reservasPendientes) {
         // Cancelar la reserva
-        await pool.query(
-            `UPDATE reservas SET estado = 'CANCELADA' WHERE id_reserva = $1`,
-            [reserva.id_reserva]
-        )
+        await prisma.reservas.update({
+            where: { id_reserva: reserva.id_reserva },
+            data: { estado: 'CANCELADA' }
+        })
 
         // Incrementar contador de inasistencias
-        const resultado = await pool.query(
-            `UPDATE estudiante SET contador_inasistencias = contador_inasistencias + 1
-            WHERE id_estudiante = $1
-            RETURNING contador_inasistencias`,
-            [reserva.id_estudiante]
-        )
-
-        const nuevoContador = resultado.rows[0].contador_inasistencias
+        const estudianteActualizado = await prisma.estudiante.update({
+            where: { id_estudiante: reserva.id_estudiante },
+            data: { contador_inasistencias: { increment: 1 } }
+        })
 
         // Si llega a 3 inasistencias desactivar usuario
-        if (nuevoContador >= 3) {
-            await pool.query(
-                `UPDATE usuarios SET activo = false
-                WHERE id_estudiante = $1`,
-                [reserva.id_estudiante]
-            )
+        if (estudianteActualizado.contador_inasistencias >= 3) {
+            await prisma.usuarios.updateMany({
+                where: { id_estudiante: reserva.id_estudiante },
+                data: { activo: false }
+            })
 
-            await pool.query(
-                `INSERT INTO actividades (tipo, descripcion, id_usuario)
-                VALUES ($1, $2, $3)`,
-                ['USUARIO_DESACTIVADO', `Usuario desactivado por 3 inasistencias: ${reserva.nombre_estudiante}`, null]
-            )
+            await prisma.actividades.create({
+                data: {
+                    tipo: 'USUARIO_DESACTIVADO',
+                    descripcion: `Usuario desactivado por 3 inasistencias: ${reserva.nombre_estudiante}`,
+                    id_usuario: null
+                }
+            })
 
             console.log(`Usuario desactivado: ${reserva.nombre_estudiante}`)
         }
 
-        await pool.query(
-            `INSERT INTO actividades (tipo, descripcion, id_usuario)
-            VALUES ($1, $2, $3)`,
-            ['INASISTENCIA_REGISTRADA', `Inasistencia registrada para: ${reserva.nombre_estudiante}`, null]
-        )
+        await prisma.actividades.create({
+            data: {
+                tipo: 'INASISTENCIA_REGISTRADA',
+                descripcion: `Inasistencia registrada para: ${reserva.nombre_estudiante}`,
+                id_usuario: null
+            }
+        })
     }
 
-    console.log(`Inasistencias procesadas: ${reservasPendientes.rows.length}`)
+    console.log(`Inasistencias procesadas: ${reservasPendientes.length}`)
 }
 
 // Corre todos los días a las 2pm

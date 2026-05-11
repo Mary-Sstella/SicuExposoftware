@@ -1,58 +1,65 @@
-const pool = require('../../config/db')
+const prisma = require('../../config/prisma')
 
 // Registrar asistencia cambiando estado de reserva a ENTREGADA
 const registrarAsistencia = async (numero_identificacion) => {
-    const hoy = new Date().toISOString().split('T')[0]
+    const hoy = new Date()
+    hoy.setHours(0, 0, 0, 0)
+
     const diaSemana = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'][new Date().getDay()]
 
-    // Verificar que el estudiante tiene reserva para hoy
-    const reserva = await pool.query(
-        `SELECT r.* FROM reservas r
-         JOIN estudiante e ON r.id_estudiante = e.id_estudiante
-         WHERE e.numero_identificacion = $1
-         AND r.fecha = $2
-         AND r.${diaSemana} = true`,
-        [numero_identificacion, hoy]
-    )
+    // Buscar estudiante por número de identificación
+    const estudiante = await prisma.estudiante.findUnique({
+        where: { numero_identificacion: BigInt(numero_identificacion) }
+    })
 
-    if (reserva.rows.length === 0) {
+    if (!estudiante) {
         throw new Error('SIN_RESERVA')
     }
 
-    if (reserva.rows[0].estado === 'ENTREGADA') {
+    // Buscar reserva del estudiante para hoy
+    const reserva = await prisma.reservas.findFirst({
+        where: {
+            id_estudiante: estudiante.id_estudiante,
+            fecha: hoy,
+            [diaSemana]: true
+        }
+    })
+
+    if (!reserva) {
+        throw new Error('SIN_RESERVA')
+    }
+
+    if (reserva.estado === 'ENTREGADA') {
         throw new Error('YA_REGISTRADA')
     }
 
     // Cambiar estado a ENTREGADA
-    const result = await pool.query(
-        `UPDATE reservas SET estado = 'ENTREGADA'
-         WHERE id_reserva = $1
-         RETURNING *`,
-        [reserva.rows[0].id_reserva]
-    )
-
-    return result.rows[0]
+    return await prisma.reservas.update({
+        where: { id_reserva: reserva.id_reserva },
+        data: { estado: 'ENTREGADA' }
+    })
 }
 
 // Obtener asistencias por fecha
 const getAsistenciasPorFecha = async (fecha) => {
-    const result = await pool.query(
-        `SELECT 
-            r.id_reserva,
-            r.estado,
-            r.numero_turno,
-            r.fecha,
-            e.nombres,
-            e.apellidos,
-            e.numero_identificacion,
-            e.programa
-        FROM reservas r
-        JOIN estudiante e ON r.id_estudiante = e.id_estudiante
-        WHERE r.fecha = $1
-        ORDER BY r.numero_turno ASC, e.apellidos ASC`,
-        [fecha]
-    )
-    return result.rows
+    return await prisma.reservas.findMany({
+        where: {
+            fecha: new Date(fecha)
+        },
+        include: {
+            estudiante: {
+                select: {
+                    nombres: true,
+                    apellidos: true,
+                    numero_identificacion: true,
+                    programa: true
+                }
+            }
+        },
+        orderBy: [
+            { numero_turno: 'asc' }
+        ]
+    })
 }
 
 module.exports = { registrarAsistencia, getAsistenciasPorFecha }
