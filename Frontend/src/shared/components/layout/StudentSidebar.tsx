@@ -15,7 +15,7 @@ function StudentSidebar() {
   const navigate = useNavigate()
 
   return (
-    <div className={`relative flex flex-col h-screen bg-white/15 backdrop-blur-md border-r border-white/20 rounded-2xl my-3 ml-3 transition-all duration-300 ${collapsed ? 'w-20' : 'w-60'}`}>
+    <div className={`relative flex flex-col h-screen bg-gradient-to-b from-purple-500 to-indigo-400 rounded-2xl my-3 ml-3 transition-all duration-300 ${collapsed ? 'w-20' : 'w-60'}`}>
 
       {/* USUARIO */}
       <div className={`flex items-center gap-3 px-5 py-6 border-b border-white/20 ${collapsed ? 'justify-center' : ''}`}>
@@ -38,8 +38,9 @@ function StudentSidebar() {
             onClick={() => { setActive(label); navigate(path) }}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 w-full text-left
               ${active === label
-                ? 'bg-pink-400 text-white font-semibold shadow-md'
-                : 'text-white/80 hover:bg-white/15 hover:text-white'}
+                ? 'bg-white text-violet-600 font-semibold'
+                : 'text-white/80 hover:bg-white/10 hover:text-white'}
+
               ${collapsed ? 'justify-center' : ''}
             `}
           >
@@ -63,7 +64,7 @@ function StudentSidebar() {
       {/* TOGGLE */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-8 z-10 w-6 h-6 bg-pink-400 border border-pink-300 text-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all"
+        className="absolute -right-3 top-8 z-10 w-6 h-6 bg-purple-500 border border-indigo-300 text-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all"
       >
         {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
       </button>
