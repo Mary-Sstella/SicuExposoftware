@@ -62,7 +62,7 @@ const getAsistenciaHoy = async () => {
     const hoy = new Date()
     hoy.setHours(0, 0, 0, 0)
 
-    return await prisma.reservas.findMany({
+    const reservas = await prisma.reservas.findMany({
         where: {
             fecha: hoy,
             [diaSemana]: true
@@ -82,6 +82,17 @@ const getAsistenciaHoy = async () => {
             { numero_turno: 'asc' }
         ]
     })
+
+    return reservas.map(r => ({
+        hora_reserva: r.hora_inicio,
+        nombres: r.estudiante.nombres,
+        apellidos: r.estudiante.apellidos,
+        numero_identificacion: r.estudiante.numero_identificacion?.toString(),
+        carrera: r.estudiante.programa,
+        turno: r.numero_turno,
+        metodo: r.metodo,
+        estado: r.estado
+    }))
 }
 
 module.exports = { createReserva, getAsistenciaHoy }
