@@ -11,7 +11,7 @@ function EstudiantesPage() {
   const estudiantesFiltrados = estudiantes
   .filter((est) =>
     `${est.nombres} ${est.apellidos}`.toLowerCase().includes(busqueda.toLowerCase()) ||
-    est.numero_identificacion.includes(busqueda)
+    String(est.numero_identificacion).includes(busqueda)
   )
   .filter((est) => filtroEstado === 'TODOS' || est.estado === filtroEstado)
   //el tolowercase se usa para que no se pueda distinguir entre mayusculas y minusculas

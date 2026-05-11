@@ -31,25 +31,32 @@ const getEstudiantesDias = async (req, res, next) => {
     try {
         const result = await pool.query(
             `SELECT 
-                e.id_estudiante,
-                e.nombres,
-                e.apellidos,
-                e.numero_identificacion,
-                e.correo_institucional,
-                e.correo_personal,
-                e.programa,
-                e.estado,
-                e.contador_inasistencias,
-                r.numero_turno AS turno,
-                r.lunes,
-                r.martes,
-                r.miercoles,
-                r.jueves,
-                r.viernes
+            e.id_estudiante,
+            e.nombres,
+            e.apellidos,
+            e.numero_identificacion,
+            e.correo_institucional,
+            e.correo_personal,
+            e.programa,
+            e.estado,
+            e.contador_inasistencias,
+            r.numero_turno AS turno,
+            r.lunes,
+            r.martes,
+            r.miercoles,
+            r.jueves,
+            r.viernes
             FROM estudiante e
-            LEFT JOIN reservas r ON e.id_estudiante = r.id_estudiante
+            LEFT JOIN LATERAL (
+                SELECT numero_turno, lunes, martes, miercoles, jueves, viernes
+                FROM reservas
+                WHERE id_estudiante = e.id_estudiante
+                ORDER BY id_reserva DESC
+                LIMIT 1
+            ) r ON true
             ORDER BY e.apellidos ASC`
         )
+
 
         res.json(result.rows.map(row => ({
             id_estudiante: row.id_estudiante,
