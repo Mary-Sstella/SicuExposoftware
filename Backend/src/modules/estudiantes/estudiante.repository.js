@@ -1,4 +1,5 @@
 const prisma = require('../../config/prisma')
+const pool = require('../../config/db')
 
 // Obtener todos los estudiantes
 const getEstudiantes = async () => {
@@ -46,34 +47,41 @@ const updateEstudiante = async (id, data) => {
 
 // Actualizar estudiante y días de reserva
 const updateEstudianteDias = async (id, data) => {
-    if (data.nombres || data.apellidos || data.correo_personal || data.correo_institucional || data.programa || data.estado) {
-        await prisma.estudiante.update({
-            where: { id_estudiante: parseInt(id) },
-            data: {
-                nombres: data.nombres,
-                apellidos: data.apellidos,
-                correo_personal: data.correo_personal,
-                correo_institucional: data.correo_institucional,
-                programa: data.programa,
-                estado: data.estado
-            }
-        })
-    }
-
     if (data.dias) {
         const reservaExiste = await prisma.reservas.findFirst({
             where: { id_estudiante: parseInt(id) }
         })
 
         if (reservaExiste) {
-            await prisma.reservas.update({
-                where: { id_reserva: reservaExiste.id_reserva },
+            await prisma.reservas.updateMany({
+                where: { id_estudiante: parseInt(id) },
                 data: {
                     lunes: data.dias.lunes,
                     martes: data.dias.martes,
                     miercoles: data.dias.miercoles,
                     jueves: data.dias.jueves,
                     viernes: data.dias.viernes
+                }
+            })
+        } else {
+            const estudiante = await prisma.estudiante.findUnique({
+                where: { id_estudiante: parseInt(id) },
+                select: { numero_identificacion: true, nombres: true, apellidos: true }
+            })
+
+            await prisma.reservas.create({
+                data: {
+                    id_estudiante: parseInt(id),
+                    fecha: new Date(),
+                    lunes: data.dias.lunes,
+                    martes: data.dias.martes,
+                    miercoles: data.dias.miercoles,
+                    jueves: data.dias.jueves,
+                    viernes: data.dias.viernes,
+                    estado: 'PENDIENTE',
+                    numero_identificacion: estudiante.numero_identificacion,
+                    nombre_estudiante: `${estudiante.nombres} ${estudiante.apellidos}`,
+                    numero_turno: null
                 }
             })
         }
@@ -83,6 +91,7 @@ const updateEstudianteDias = async (id, data) => {
         where: { id_estudiante: parseInt(id) }
     })
 }
+
 
 // Eliminar estudiante
 const deleteEstudiante = async (id) => {
