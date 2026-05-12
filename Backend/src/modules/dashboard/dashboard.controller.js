@@ -1,24 +1,38 @@
-const pool = require('../../config/db')
+const prisma = require('../../config/prisma')
 const { AppError } = require('../../shared/middleware/error.middleware')
 
 const getSummary = async (req, res, next) => {
     try {
-        const totalEstudiantes = await pool.query('SELECT COUNT(*) FROM estudiante')
-        const estudiantesActivos = await pool.query("SELECT COUNT(*) FROM estudiante WHERE estado = 'ACTIVO'")
-        const estudiantesInactivos = await pool.query("SELECT COUNT(*) FROM estudiante WHERE estado = 'INACTIVO'")
-        const pagosPendientes = await pool.query("SELECT COUNT(*) FROM cartera WHERE estado = 'PENDIENTE'")
-        const asistenciasHoy = await pool.query(
-            `SELECT COUNT(*) FROM reservas 
-             WHERE estado = 'ENTREGADA' 
-             AND fecha = CURRENT_DATE`
-        )
+        const totalEstudiantes = await prisma.estudiante.count()
+
+        const estudiantesActivos = await prisma.estudiante.count({
+            where: { estado: 'ACTIVO' }
+        })
+
+        const estudiantesInactivos = await prisma.estudiante.count({
+            where: { estado: 'INACTIVO' }
+        })
+
+        const pagosPendientes = await prisma.cartera.count({
+            where: { estado: 'PENDIENTE' }
+        })
+
+        const hoy = new Date()
+        hoy.setHours(0, 0, 0, 0)
+
+        const asistenciasHoy = await prisma.reservas.count({
+            where: {
+                estado: 'ENTREGADA',
+                fecha: hoy
+            }
+        })
 
         res.json({
-            total_estudiantes: parseInt(totalEstudiantes.rows[0].count),
-            estudiantes_activos: parseInt(estudiantesActivos.rows[0].count),
-            estudiantes_inactivos: parseInt(estudiantesInactivos.rows[0].count),
-            pagos_pendientes: parseInt(pagosPendientes.rows[0].count),
-            asistencias_hoy: parseInt(asistenciasHoy.rows[0].count)
+            total_estudiantes: totalEstudiantes,
+            estudiantes_activos: estudiantesActivos,
+            estudiantes_inactivos: estudiantesInactivos,
+            pagos_pendientes: pagosPendientes,
+            asistencias_hoy: asistenciasHoy
         })
     } catch (error) {
         next(error)
@@ -27,32 +41,34 @@ const getSummary = async (req, res, next) => {
 
 const getAsistenciaSemanal = async (req, res, next) => {
     try {
-        const result = await pool.query(
-            `SELECT
-                SUM(CASE WHEN lunes = true AND estado = 'ENTREGADA' THEN 1 ELSE 0 END) AS lunes_presentes,
-                SUM(CASE WHEN lunes = true AND estado != 'ENTREGADA' THEN 1 ELSE 0 END) AS lunes_ausentes,
-                SUM(CASE WHEN martes = true AND estado = 'ENTREGADA' THEN 1 ELSE 0 END) AS martes_presentes,
-                SUM(CASE WHEN martes = true AND estado != 'ENTREGADA' THEN 1 ELSE 0 END) AS martes_ausentes,
-                SUM(CASE WHEN miercoles = true AND estado = 'ENTREGADA' THEN 1 ELSE 0 END) AS miercoles_presentes,
-                SUM(CASE WHEN miercoles = true AND estado != 'ENTREGADA' THEN 1 ELSE 0 END) AS miercoles_ausentes,
-                SUM(CASE WHEN jueves = true AND estado = 'ENTREGADA' THEN 1 ELSE 0 END) AS jueves_presentes,
-                SUM(CASE WHEN jueves = true AND estado != 'ENTREGADA' THEN 1 ELSE 0 END) AS jueves_ausentes,
-                SUM(CASE WHEN viernes = true AND estado = 'ENTREGADA' THEN 1 ELSE 0 END) AS viernes_presentes,
-                SUM(CASE WHEN viernes = true AND estado != 'ENTREGADA' THEN 1 ELSE 0 END) AS viernes_ausentes
-            FROM reservas
-            WHERE fecha >= date_trunc('week', CURRENT_DATE)
-            AND fecha < date_trunc('week', CURRENT_DATE) + INTERVAL '7 days'`
-        )
+        const hoy = new Date()
+        const lunes = new Date(hoy)
+        lunes.setDate(hoy.getDate() - hoy.getDay() + 1)
+        lunes.setHours(0, 0, 0, 0)
 
-        const data = result.rows[0]
+        const viernes = new Date(lunes)
+        viernes.setDate(lunes.getDate() + 4)
+        viernes.setHours(23, 59, 59, 999)
 
-        res.json([
-            { dia: 'Lunes', presentes: parseInt(data.lunes_presentes) || 0, ausentes: parseInt(data.lunes_ausentes) || 0 },
-            { dia: 'Martes', presentes: parseInt(data.martes_presentes) || 0, ausentes: parseInt(data.martes_ausentes) || 0 },
-            { dia: 'Miércoles', presentes: parseInt(data.miercoles_presentes) || 0, ausentes: parseInt(data.miercoles_ausentes) || 0 },
-            { dia: 'Jueves', presentes: parseInt(data.jueves_presentes) || 0, ausentes: parseInt(data.jueves_ausentes) || 0 },
-            { dia: 'Viernes', presentes: parseInt(data.viernes_presentes) || 0, ausentes: parseInt(data.viernes_ausentes) || 0 }
-        ])  
+        const reservasSemana = await prisma.reservas.findMany({
+            where: {
+                fecha: {
+                    gte: lunes,
+                    lte: viernes
+                }
+            }
+        })
+
+        const dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']
+        const campos = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes']
+
+        const data = dias.map((dia, i) => ({
+            dia,
+            presentes: reservasSemana.filter(r => r[campos[i]] && r.estado === 'ENTREGADA').length,
+            ausentes: reservasSemana.filter(r => r[campos[i]] && r.estado !== 'ENTREGADA').length
+        }))
+
+        res.json(data)
     } catch (error) {
         next(error)
     }
@@ -60,20 +76,23 @@ const getAsistenciaSemanal = async (req, res, next) => {
 
 const getActividadesRecientes = async (req, res, next) => {
     try {
-        const result = await pool.query(
-            `SELECT 
-                a.id_actividad,
-                a.tipo,
-                a.descripcion,
-                a.fecha,
-                u.username
-            FROM actividades a
-            LEFT JOIN usuarios u ON a.id_usuario = u.id_usuario
-            ORDER BY a.fecha DESC
-            LIMIT 10`
-        )
+        const actividades = await prisma.actividades.findMany({
+            orderBy: { fecha: 'desc' },
+            take: 10,
+            include: {
+                usuarios: {
+                    select: { username: true }
+                }
+            }
+        })
 
-        res.json(result.rows)
+        res.json(actividades.map(a => ({
+            id_actividad: a.id_actividad,
+            tipo: a.tipo,
+            descripcion: a.descripcion,
+            fecha: a.fecha,
+            username: a.usuarios?.username ?? null
+        })))
     } catch (error) {
         next(error)
     }

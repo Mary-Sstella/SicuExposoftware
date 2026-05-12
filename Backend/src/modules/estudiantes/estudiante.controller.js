@@ -2,6 +2,7 @@ const estudianteService = require('./estudiante.service')
 const { AppError } = require('../../shared/middleware/error.middleware')
 const { MESSAGES } = require('../../shared/constants/messages')
 const pool = require('../../config/db')
+const prisma = require('../../config/prisma')
 
 const getEstudiantes = async (req, res, next) => {
     try {
@@ -140,14 +141,17 @@ const createEstudiante = async (req, res, next) => {
     try {
         const data = await estudianteService.createEstudiante(req.body)
 
-        await pool.query(
-            `INSERT INTO actividades (tipo, descripcion, id_usuario) VALUES ($1, $2, $3)`,
-            ['ESTUDIANTE_CREADO', `Nuevo estudiante inscrito: ${data.nombres} ${data.apellidos}`, req.usuario.id]
-        )
+        await prisma.actividades.create({
+            data: {
+                tipo: 'ESTUDIANTE_CREADO',
+                descripcion: `Nuevo estudiante inscrito: ${data.nombres} ${data.apellidos}`,
+                id_usuario: req.usuario.id
+            }
+        })
 
         res.status(201).json(data)
     } catch (error) {
-        if (error?.code === '23505') {
+        if (error?.code === 'P2002') {
             return next(new AppError(409, MESSAGES.ESTUDIANTE_DUPLICADO))
         }
         next(error)
@@ -159,20 +163,20 @@ const updateEstudiante = async (req, res, next) => {
         const { id } = req.params
         const result = await estudianteService.updateEstudiante(id, req.body)
 
-        if (result.rows.length === 0) {
+        if (!result) {
             throw new AppError(404, MESSAGES.ESTUDIANTE_NO_ENCONTRADO)
         }
 
-        await pool.query(
-            `INSERT INTO actividades (tipo, descripcion, id_usuario) VALUES ($1, $2, $3)`,
-            ['ESTUDIANTE_ACTUALIZADO', `Estudiante actualizado: ${result.rows[0].nombres} ${result.rows[0].apellidos}`, req.usuario.id]
-        )
+        await prisma.actividades.create({
+            data: {
+                tipo: 'ESTUDIANTE_ACTUALIZADO',
+                descripcion: `Estudiante actualizado: ${result.nombres} ${result.apellidos}`,
+                id_usuario: req.usuario.id
+            }
+        })
 
-        res.json({ msg: MESSAGES.ESTUDIANTE_ACTUALIZADO, estudiante: result.rows[0] })
+        res.json({ msg: MESSAGES.ESTUDIANTE_ACTUALIZADO, estudiante: result })
     } catch (error) {
-        if (error.message === 'SIN_RESERVA') {
-            return next(new AppError(404, 'El estudiante no tiene reserva para hoy'))
-        }
         next(error)
     }
 }
@@ -182,11 +186,11 @@ const updateEstudianteDias = async (req, res, next) => {
         const { id } = req.params
         const result = await estudianteService.updateEstudianteDias(id, req.body)
 
-        if (result.rows.length === 0) {
+        if (!result) {
             throw new AppError(404, MESSAGES.ESTUDIANTE_NO_ENCONTRADO)
         }
 
-        res.json({ msg: MESSAGES.ESTUDIANTE_ACTUALIZADO, estudiante: result.rows[0] })
+        res.json({ msg: MESSAGES.ESTUDIANTE_ACTUALIZADO, estudiante: result })
     } catch (error) {
         if (error.message === 'SIN_RESERVA') {
             return next(new AppError(404, 'El estudiante no tiene reserva para esa fecha'))
@@ -198,18 +202,21 @@ const updateEstudianteDias = async (req, res, next) => {
 const deleteEstudiante = async (req, res, next) => {
     try {
         const { id } = req.params
-        const { rows, rowCount } = await estudianteService.deleteEstudiante(id)
+        const result = await estudianteService.deleteEstudiante(id)
 
-        if (rowCount === 0) {
+        if (!result) {
             throw new AppError(404, MESSAGES.ESTUDIANTE_NO_ENCONTRADO)
         }
 
-        await pool.query(
-            `INSERT INTO actividades (tipo, descripcion, id_usuario) VALUES ($1, $2, $3)`,
-            ['ESTUDIANTE_ELIMINADO', `Estudiante eliminado: ${rows[0].nombres} ${rows[0].apellidos}`, req.usuario.id]
-        )
+        await prisma.actividades.create({
+            data: {
+                tipo: 'ESTUDIANTE_ELIMINADO',
+                descripcion: `Estudiante eliminado: ${result.nombres} ${result.apellidos}`,
+                id_usuario: req.usuario.id
+            }
+        })
 
-        res.json({ msg: MESSAGES.ESTUDIANTE_ELIMINADO, estudiante: rows[0] })
+        res.json({ msg: MESSAGES.ESTUDIANTE_ELIMINADO, estudiante: result })
     } catch (error) {
         next(error)
     }

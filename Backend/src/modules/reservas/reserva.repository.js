@@ -1,4 +1,4 @@
-const pool = require('../../config/db')
+const prisma = require('../../config/prisma')
 
 const createReserva = async (data) => {
     // Verificar que la reserva sea para mañana o después
@@ -13,75 +13,86 @@ const createReserva = async (data) => {
     }
 
     // Verificar cupo en el rango horario seleccionado
-    const config = await pool.query(
-        'SELECT * FROM configuracion_turnos WHERE id_configuracion = $1 AND activo = true',
-        [data.id_configuracion]
-    )
+    const config = await prisma.configuracion_turnos.findFirst({
+        where: {
+            id_configuracion: parseInt(data.id_configuracion),
+            activo: true
+        }
+    })
 
-    if (config.rows.length === 0) {
+    if (!config) {
         throw new Error('RANGO_NO_ENCONTRADO')
     }
 
-    const rango = config.rows[0]
+    // Contar reservas existentes para esa fecha y rango
+    const ocupados = await prisma.reservas.count({
+        where: {
+            fecha: new Date(data.fecha),
+            hora_inicio: config.hora_inicio
+        }
+    })
 
-    const reservasExistentes = await pool.query(
-        `SELECT COUNT(*) FROM reservas 
-        WHERE fecha = $1 
-        AND hora_inicio = $2`,
-        [data.fecha, rango.hora_inicio]
-    )
-
-    const ocupados = parseInt(reservasExistentes.rows[0].count)
-
-    if (ocupados >= rango.capacidad_maxima) {
+    if (ocupados >= config.capacidad_maxima) {
         throw new Error('SIN_CUPO')
     }
 
     const numeroTurno = ocupados + 1
 
-    const result = await pool.query(
-        `INSERT INTO reservas 
-        (id_estudiante, fecha, lunes, martes, miercoles, jueves, viernes, estado, numero_identificacion, nombre_estudiante, numero_turno, hora_inicio, hora_fin)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, 'PENDIENTE', $8, $9, $10, $11, $12)
-        RETURNING *`,
-        [
-            data.id_estudiante,
-            data.fecha,
-            data.lunes,
-            data.martes,
-            data.miercoles,
-            data.jueves,
-            data.viernes,
-            data.numero_identificacion,
-            data.nombre_estudiante,
-            numeroTurno,
-            rango.hora_inicio,
-            rango.hora_fin
-        ]
-    )
-    return result.rows[0]
+    return await prisma.reservas.create({
+        data: {
+            id_estudiante: parseInt(data.id_estudiante),
+            fecha: new Date(data.fecha),
+            lunes: data.lunes,
+            martes: data.martes,
+            miercoles: data.miercoles,
+            jueves: data.jueves,
+            viernes: data.viernes,
+            estado: 'PENDIENTE',
+            numero_identificacion: BigInt(data.numero_identificacion),
+            nombre_estudiante: data.nombre_estudiante,
+            numero_turno: numeroTurno,
+            hora_inicio: config.hora_inicio,
+            hora_fin: config.hora_fin
+        }
+    })
 }
 
 const getAsistenciaHoy = async () => {
     const diaSemana = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'][new Date().getDay()]
+    const hoy = new Date()
+    hoy.setHours(0, 0, 0, 0)
 
-    const result = await pool.query(
-        `SELECT
-            r.hora_inicio AS hora_reserva,
-            e.nombres,
-            e.apellidos,
-            e.numero_identificacion,
-            e.programa AS carrera,
-            r.numero_turno AS turno,
-            r.metodo,
-            r.estado
-        FROM reservas r
-        JOIN estudiante e ON r.id_estudiante = e.id_estudiante
-        WHERE r.fecha = CURRENT_DATE
-        AND r.${diaSemana} = true
-        ORDER BY r.hora_inicio ASC, r.numero_turno ASC, e.apellidos ASC`
-    )
-    return result.rows
+    const reservas = await prisma.reservas.findMany({
+        where: {
+            fecha: hoy,
+            [diaSemana]: true
+        },
+        include: {
+            estudiante: {
+                select: {
+                    nombres: true,
+                    apellidos: true,
+                    numero_identificacion: true,
+                    programa: true
+                }
+            }
+        },
+        orderBy: [
+            { hora_inicio: 'asc' },
+            { numero_turno: 'asc' }
+        ]
+    })
+
+    return reservas.map(r => ({
+        hora_reserva: r.hora_inicio,
+        nombres: r.estudiante.nombres,
+        apellidos: r.estudiante.apellidos,
+        numero_identificacion: r.estudiante.numero_identificacion?.toString(),
+        carrera: r.estudiante.programa,
+        turno: r.numero_turno,
+        metodo: r.metodo,
+        estado: r.estado
+    }))
 }
 
 module.exports = { createReserva, getAsistenciaHoy }

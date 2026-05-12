@@ -1,30 +1,30 @@
-const pool = require('../../config/db')
+const prisma = require('../../config/prisma')
 
 // Obtener configuración de rangos horarios
 const getConfiguracionTurnos = async () => {
-    const result = await pool.query(
-        'SELECT * FROM configuracion_turnos WHERE activo = true ORDER BY hora_inicio ASC'
-    )
-    return result.rows
+    return await prisma.configuracion_turnos.findMany({
+        where: { activo: true },
+        orderBy: { hora_inicio: 'asc' }
+    })
 }
 
 // Obtener disponibilidad por fecha
 const getDisponibilidad = async (fecha) => {
-    const configuracion = await pool.query(
-        'SELECT * FROM configuracion_turnos WHERE activo = true ORDER BY hora_inicio ASC'
-    )
+    const configuracion = await prisma.configuracion_turnos.findMany({
+        where: { activo: true },
+        orderBy: { hora_inicio: 'asc' }
+    })
 
     const disponibilidad = []
 
-    for (const rango of configuracion.rows) {
-        const reservas = await pool.query(
-            `SELECT COUNT(*) FROM reservas 
-            WHERE fecha = $1 
-            AND hora_inicio = $2`,
-            [fecha, rango.hora_inicio]
-        )
+    for (const rango of configuracion) {
+        const ocupados = await prisma.reservas.count({
+            where: {
+                fecha: new Date(fecha),
+                hora_inicio: rango.hora_inicio
+            }
+        })
 
-        const ocupados = parseInt(reservas.rows[0].count)
         const disponibles = rango.capacidad_maxima - ocupados
 
         disponibilidad.push({
@@ -41,112 +41,82 @@ const getDisponibilidad = async (fecha) => {
     return disponibilidad
 }
 
-// Asignar turno automáticamente al crear reserva
-const asignarTurnoAutomatico = async (id_estudiante, fecha, id_configuracion) => {
-    const config = await pool.query(
-        'SELECT * FROM configuracion_turnos WHERE id_configuracion = $1',
-        [id_configuracion]
-    )
-
-    if (config.rows.length === 0) {
-        throw new Error('RANGO_NO_ENCONTRADO')
-    }
-
-    const rango = config.rows[0]
-
-    // Verificar cupo disponible
-    const reservasExistentes = await pool.query(
-        `SELECT COUNT(*) FROM reservas 
-        WHERE fecha = $1 
-        AND hora_inicio = $2`,
-        [fecha, rango.hora_inicio]
-    )
-
-    const ocupados = parseInt(reservasExistentes.rows[0].count)
-
-    if (ocupados >= rango.capacidad_maxima) {
-        throw new Error('SIN_CUPO')
-    }
-
-    // Asignar siguiente número de turno
-    const numeroTurno = ocupados + 1
-
-    return {
-        numero_turno: numeroTurno,
-        hora_inicio: rango.hora_inicio,
-        hora_fin: rango.hora_fin
-    }
-}
-
+// Obtener turnos por fecha con búsqueda opcional
 const getTurnosPorFecha = async (fecha, buscar) => {
-    let query = `
-        SELECT
-            r.numero_turno,
-            r.hora_inicio,
-            r.hora_fin,
-            e.nombres,
-            e.apellidos,
-            e.numero_identificacion,
-            e.programa,
-            r.estado
-        FROM reservas r
-        JOIN estudiante e ON r.id_estudiante = e.id_estudiante
-        WHERE r.fecha = $1`
-
-    const params = [fecha]
-
-    if (buscar) {
-        query += ` AND (
-            LOWER(e.nombres) LIKE $2 OR 
-            LOWER(e.apellidos) LIKE $2 OR 
-            e.numero_identificacion::text LIKE $2
-        )`
-        params.push(`%${buscar.toLowerCase()}%`)
+    const where = {
+        fecha: new Date(fecha)
     }
 
-    query += ` ORDER BY r.hora_inicio ASC, r.numero_turno ASC`
-
-    const result = await pool.query(query, params)
-    return result.rows
+    return await prisma.reservas.findMany({
+        where,
+        include: {
+            estudiante: {
+                select: {
+                    nombres: true,
+                    apellidos: true,
+                    numero_identificacion: true,
+                    programa: true
+                }
+            }
+        },
+        orderBy: [
+            { hora_inicio: 'asc' },
+            { numero_turno: 'asc' }
+        ]
+    }).then(reservas => {
+        if (buscar) {
+            const buscarLower = buscar.toLowerCase()
+            return reservas.filter(r =>
+                r.estudiante.nombres?.toLowerCase().includes(buscarLower) ||
+                r.estudiante.apellidos?.toLowerCase().includes(buscarLower) ||
+                r.estudiante.numero_identificacion?.toString().includes(buscar)
+            )
+        }
+        return reservas
+    })
 }
 
+// Obtener turno del estudiante para hoy
 const getTurnoEstudiante = async (id_estudiante) => {
-    const result = await pool.query(
-        `SELECT
-            r.numero_turno,
-            r.hora_inicio,
-            r.hora_fin,
-            r.fecha,
-            r.estado
-        FROM reservas r
-        WHERE r.id_estudiante = $1
-        AND r.fecha = CURRENT_DATE`,
-        [id_estudiante]
-    )
-    return result.rows[0]
+    const hoy = new Date()
+    hoy.setHours(0, 0, 0, 0)
+
+    return await prisma.reservas.findFirst({
+        where: {
+            id_estudiante: parseInt(id_estudiante),
+            fecha: hoy
+        },
+        select: {
+            numero_turno: true,
+            hora_inicio: true,
+            hora_fin: true,
+            fecha: true,
+            estado: true
+        }
+    })
 }
 
+// Actualizar configuración de turno
 const updateConfiguracion = async (id, data) => {
-    const result = await pool.query(
-        `UPDATE configuracion_turnos SET
-        capacidad_maxima = COALESCE($1, capacidad_maxima),
-        activo = COALESCE($2, activo)
-        WHERE id_configuracion = $3
-        RETURNING *`,
-        [data.capacidad_maxima, data.activo, id]
-    )
+    const config = await prisma.configuracion_turnos.update({
+        where: { id_configuracion: parseInt(id) },
+        data: {
+            capacidad_maxima: data.capacidad_maxima,
+            activo: data.activo
+        }
+    })
 
-    if (result.rows.length === 0) {
+    if (!config) {
         throw new Error('RANGO_NO_ENCONTRADO')
     }
 
-    return result.rows[0]
+    return config
 }
 
 module.exports = {
     getConfiguracionTurnos,
     getDisponibilidad,
-    asignarTurnoAutomatico,
+    asignarTurnoAutomatico: async () => {},
     getTurnosPorFecha,
     getTurnoEstudiante,
     updateConfiguracion
