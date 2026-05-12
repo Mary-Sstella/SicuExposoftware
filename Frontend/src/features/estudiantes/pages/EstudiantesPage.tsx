@@ -1,4 +1,4 @@
-import { useEstudiantes } from '../hooks/useEstudiantes'
+﻿import { useEstudiantes } from '../hooks/useEstudiantes'
 import EstudiantesTable from '../components/EstudiantesTable'
 import { useState } from 'react'
 import InscribirEstudianteModal from '../components/InscribirEstudianteModal'
@@ -11,7 +11,7 @@ function EstudiantesPage() {
   const estudiantesFiltrados = estudiantes
   .filter((est) =>
     `${est.nombres} ${est.apellidos}`.toLowerCase().includes(busqueda.toLowerCase()) ||
-    est.numero_identificacion.includes(busqueda)
+    String(est.numero_identificacion).includes(busqueda)
   )
   .filter((est) => filtroEstado === 'TODOS' || est.estado === filtroEstado)
   //el tolowercase se usa para que no se pueda distinguir entre mayusculas y minusculas
@@ -30,17 +30,17 @@ function EstudiantesPage() {
             placeholder="Buscar por nombre o cédula..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            className="w-96 px-4 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-violet-300"
+            className="w-96 px-4 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-pink-300"
           />
             <select
             value={filtroEstado}
             onChange={(e) => setFiltroEstado(e.target.value as 'TODOS' | 'ACTIVO' | 'INACTIVO')}
-            className="px-4 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-violet-300 text-gray-500 bg-white">
+            className="px-4 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-pink-300 text-gray-500 bg-white">
                 <option value="TODOS">Todos</option>
                 <option value="ACTIVO">Activo</option>
                 <option value="INACTIVO">Inactivo</option>
             </select>
-            <button onClick={() => setModalAbierto(true)} className='ml-auto px-5 py-2 bg-gradient-to-br from-purple-600 via-purple-500 to-pink-400 hover:opacity-90 text-white text-sm font-semibold rounded-2xl transition-opacity shadow-md'>
+            <button onClick={() => setModalAbierto(true)} className='ml-auto px-5 py-2 bg-gradient-to-br from-violet-500 via-violet-400 to-purple-300 hover:opacity-90 text-white text-sm font-semibold rounded-2xl transition-opacity shadow-md'>
               + Inscribir Estudiante
             </button>
         </div>

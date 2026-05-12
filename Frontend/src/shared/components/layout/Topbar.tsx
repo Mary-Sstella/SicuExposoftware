@@ -1,4 +1,4 @@
-import { UserCircle2 } from "lucide-react"
+﻿import { UserCircle2 } from "lucide-react"
 import { useLocation } from "react-router-dom"
 
 
@@ -6,7 +6,7 @@ const routeTitles: Record<string, string>={
     '/dashboard': 'Dashboard', 
     '/estudiantes': 'Estudiantes',
     '/asistencia': 'Asistencia',
-    '/turnos':'Asistencia',
+    '/turnos':'Turnos',
     '/cartera': 'Cartera',
     '/comentarios': 'Comentarios',
     '/estadisticas': 'Estadisticas',

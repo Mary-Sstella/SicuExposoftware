@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import DiasModal from './DiasModal'
 import { Pencil } from 'lucide-react'
 import EditarEstModal from './EditarEstModal'
@@ -36,7 +36,7 @@ function EstudiantesTable({ estudiantes, onEdit }: Props) {
     <div className="overflow-x-auto rounded-xl border border-gray-100">
       <table className="w-full text-sm">
         <thead>
-          <tr className="bg-violet-500 text-white text-left">
+          <tr className="bg-violet-400 text-white text-left">
             <th className="px-4 py-3 font-medium rounded-tl-xl">#</th>
             <th className="px-4 py-3 font-medium">Nombre y Apellido</th>
             <th className="px-4 py-3 font-medium">Cédula</th>
@@ -57,7 +57,7 @@ function EstudiantesTable({ estudiantes, onEdit }: Props) {
               <td className="px-4 py-3 text-gray-800 font-semibold">
                 <div className="flex items-center gap-2">
                   {est.nombres} {est.apellidos}
-                  <button className="text-gray-300 hover:text-violet-500 transition-colors">
+                  <button className="text-gray-300 hover:text-pink-500 transition-colors">
                     <Pencil size={14} 
                     onClick={() => setEstudianteAEditar(est)}/>
                   </button>
@@ -69,7 +69,7 @@ function EstudiantesTable({ estudiantes, onEdit }: Props) {
               <td className="px-4 py-3">
                 <button
                 onClick={() => setEstudianteSeleccionado({ id: est.id_estudiante, nombres: est.nombres, apellidos: est.apellidos, dias: est.dias })}
-                className="text-xs px-3 py-1 bg-violet-100 text-violet-600 font-semibold rounded-xl hover:bg-violet-200 transition-colors">Ver días
+                className="text-xs px-3 py-1 bg-pink-100 text-pink-600 font-semibold rounded-xl hover:bg-pink-200 transition-colors">Ver días
                 </button>
               </td>
               <td className="px-4 py-3">

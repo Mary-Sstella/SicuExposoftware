@@ -5,7 +5,9 @@ const { ROLES } = require('../../shared/constants/roles')
 
 const router = Router()
 
-router.post('/asignar', verifyToken, verifyRole(ROLES.ADMIN), controller.asignarTurnos)
+router.get('/configuracion', verifyToken, verifyRole(ROLES.ADMIN), controller.getConfiguracionTurnos)
+router.put('/configuracion/:id', verifyToken, verifyRole(ROLES.ADMIN), controller.updateConfiguracion)
+router.get('/disponibilidad', verifyToken, controller.getDisponibilidad)
 router.get('/', verifyToken, verifyRole(ROLES.ADMIN), controller.getTurnosPorFecha)
 router.get('/estudiante/:id', verifyToken, controller.getTurnoEstudiante)
 

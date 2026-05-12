@@ -1,4 +1,5 @@
 const userRepository = require('./user.repository')
+const bcrypt = require('bcryptjs')
 
 // Obtener todos
 const getUsuarios = async () => {
@@ -10,17 +11,18 @@ const getUsuarioById = async (id) => {
     return await userRepository.getUsuarioById(id)
 }
 
-// Crear
+// Crear usuario con password hasheado
 const createUsuario = async (data) => {
-    return await userRepository.createUsuario(data)
+    const hash = await bcrypt.hash(data.password_hash, 10)
+    return await userRepository.createUsuario({ ...data, password_hash: hash })
 }
 
-// Actualizar
+// Actualizar usuario
 const updateUsuario = async (id, data) => {
     return await userRepository.updateUsuario(id, data)
 }
 
-// Eliminar
+// Eliminar usuario
 const deleteUsuario = async (id) => {
     return await userRepository.deleteUsuario(id)
 }

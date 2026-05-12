@@ -1,153 +1,103 @@
+const prisma = require('../../config/prisma')
 const pool = require('../../config/db')
 
-//Obtener todos los estudiantes
+// Obtener todos los estudiantes
 const getEstudiantes = async () => {
-    const result = await pool.query('SELECT * FROM estudiante')
-    return result.rows
+    return await prisma.estudiante.findMany()
 }
 
-//obtener por ID
+// Obtener por ID
 const getEstudianteById = async (id) => {
-    const result = await pool.query(
-        'SELECT * FROM estudiante WHERE id_estudiante = $1',
-        [id]
-    )
-    return result.rows[0]
+    return await prisma.estudiante.findUnique({
+        where: { id_estudiante: parseInt(id) }
+    })
 }
 
-//Crear un nuevo registro de estudiante
+// Crear estudiante
 const createEstudiante = async (data) => {
-    const result = await pool.query(
-        `INSERT INTO estudiante 
-        (numero_identificacion, tipo_identificacion, nombres, apellidos, correo_personal, correo_institucional, programa, estado, contador_inasistencias, limite_inasistencias)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
-        RETURNING *`,
-        [
-            data.numero_identificacion,
-            data.tipo_identificacion,
-            data.nombres,
-            data.apellidos,
-            data.correo_personal,
-            data.correo_institucional,
-            data.programa,
-            data.estado,
-            data.contador_inasistencias,
-            data.limite_inasistencias
-        ]
-    )
-    return result.rows[0]
+    return await prisma.estudiante.create({
+        data: {
+            numero_identificacion: BigInt(data.numero_identificacion),
+            tipo_identificacion: data.tipo_identificacion,
+            nombres: data.nombres,
+            apellidos: data.apellidos,
+            correo_personal: data.correo_personal,
+            correo_institucional: data.correo_institucional,
+            programa: data.programa,
+            estado: data.estado,
+            contador_inasistencias: data.contador_inasistencias || 0,
+            limite_inasistencias: data.limite_inasistencias || 3
+        }
+    })
 }
 
-//Actualizar un estudiante
+// Actualizar estudiante
 const updateEstudiante = async (id, data) => {
-    const result = await pool.query(
-        `UPDATE estudiante SET
-        nombres = $1,
-        apellidos = $2,
-        correo_personal = $3,
-        programa = $4,
-        estado = $5
-        WHERE id_estudiante = $6
-        RETURNING *`,
-        [
-            data.nombres,
-            data.apellidos,
-            data.correo_personal,
-            data.programa,
-            data.estado,
-            id
-        ]
-    )
-    return result
+    return await prisma.estudiante.update({
+        where: { id_estudiante: parseInt(id) },
+        data: {
+            nombres: data.nombres,
+            apellidos: data.apellidos,
+            correo_personal: data.correo_personal,
+            programa: data.programa,
+            estado: data.estado
+        }
+    })
 }
 
+// Actualizar estudiante y días de reserva
 const updateEstudianteDias = async (id, data) => {
-    if (data.nombres || data.apellidos || data.correo_personal || data.correo_institucional || data.programa || data.estado) {
-        await pool.query(
-            `UPDATE estudiante SET
-            nombres = COALESCE($1, nombres),
-            apellidos = COALESCE($2, apellidos),
-            correo_personal = COALESCE($3, correo_personal),
-            correo_institucional = COALESCE($4, correo_institucional),
-            programa = COALESCE($5, programa),
-            estado = COALESCE($6, estado)
-            WHERE id_estudiante = $7`,
-            [
-                data.nombres,
-                data.apellidos,
-                data.correo_personal,
-                data.correo_institucional,
-                data.programa,
-                data.estado,
-                id
-            ]
-        )
-    }
-
     if (data.dias) {
-        const reservaExiste = await pool.query(
-            'SELECT id_reserva FROM reservas WHERE id_estudiante = $1',
-            [id]
-        )
+        const reservaExiste = await prisma.reservas.findFirst({
+            where: { id_estudiante: parseInt(id) }
+        })
 
-        if (reservaExiste.rows.length > 0) {
-            await pool.query(
-                `UPDATE reservas SET
-                lunes = $1,
-                martes = $2,
-                miercoles = $3,
-                jueves = $4,
-                viernes = $5
-                WHERE id_estudiante = $6`,
-                [
-                    data.dias.lunes,
-                    data.dias.martes,
-                    data.dias.miercoles,
-                    data.dias.jueves,
-                    data.dias.viernes,
-                    id
-                ]
-            )
+        if (reservaExiste) {
+            await prisma.reservas.updateMany({
+                where: { id_estudiante: parseInt(id) },
+                data: {
+                    lunes: data.dias.lunes,
+                    martes: data.dias.martes,
+                    miercoles: data.dias.miercoles,
+                    jueves: data.dias.jueves,
+                    viernes: data.dias.viernes
+                }
+            })
         } else {
-            const estudianteData = await pool.query(
-                'SELECT numero_identificacion, nombres, apellidos FROM estudiante WHERE id_estudiante = $1',
-                [id]
-            )
-            const est = estudianteData.rows[0]
-            await pool.query(
-                `INSERT INTO reservas
-                (id_estudiante, fecha, lunes, martes, miercoles, jueves, viernes, estado, numero_identificacion, nombre_estudiante, numero_turno)
-                VALUES ($1, CURRENT_DATE, $2, $3, $4, $5, $6, 'PENDIENTE', $7, $8, $9)`,
-                [
-                    id,
-                    data.dias.lunes,
-                    data.dias.martes,
-                    data.dias.miercoles,
-                    data.dias.jueves,
-                    data.dias.viernes,
-                    est.numero_identificacion,
-                    `${est.nombres} ${est.apellidos}`,
-                    null
-                ]
-            )
+            const estudiante = await prisma.estudiante.findUnique({
+                where: { id_estudiante: parseInt(id) },
+                select: { numero_identificacion: true, nombres: true, apellidos: true }
+            })
+
+            await prisma.reservas.create({
+                data: {
+                    id_estudiante: parseInt(id),
+                    fecha: new Date(),
+                    lunes: data.dias.lunes,
+                    martes: data.dias.martes,
+                    miercoles: data.dias.miercoles,
+                    jueves: data.dias.jueves,
+                    viernes: data.dias.viernes,
+                    estado: 'PENDIENTE',
+                    numero_identificacion: estudiante.numero_identificacion,
+                    nombre_estudiante: `${estudiante.nombres} ${estudiante.apellidos}`,
+                    numero_turno: null
+                }
+            })
         }
     }
 
-    const result = await pool.query(
-        'SELECT * FROM estudiante WHERE id_estudiante = $1',
-        [id]
-    )
-
-    return result
+    return await prisma.estudiante.findUnique({
+        where: { id_estudiante: parseInt(id) }
+    })
 }
 
-//Borrar un estudiante
+
+// Eliminar estudiante
 const deleteEstudiante = async (id) => {
-    const result = await pool.query(
-        'DELETE FROM estudiante WHERE id_estudiante = $1 RETURNING *',
-        [id]
-    )
-    return result
+    return await prisma.estudiante.delete({
+        where: { id_estudiante: parseInt(id) }
+    })
 }
 
 module.exports = {

@@ -14,6 +14,15 @@ const createReserva = async (req, res, next) => {
 
         res.status(201).json({ msg: MESSAGES.RESERVA_CREADA, reserva: data })
     } catch (error) {
+        if (error.message === 'FECHA_INVALIDA') {
+            return next(new AppError(400, MESSAGES.FECHA_INVALIDA))
+        }
+        if (error.message === 'SIN_CUPO') {
+            return next(new AppError(409, 'No hay cupo disponible en ese rango horario'))
+        }
+        if (error.message === 'RANGO_NO_ENCONTRADO') {
+            return next(new AppError(404, 'El rango horario no existe'))
+        }
         next(error)
     }
 }

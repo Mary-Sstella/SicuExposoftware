@@ -1,4 +1,4 @@
-interface Asistencia{
+﻿interface Asistencia{
     hora_reserva: string
     nombres: string
     apellidos: string
@@ -6,7 +6,7 @@ interface Asistencia{
     carrera: string
     turno: number | null
     metodo: 'HUELLA' | 'MANUAL' | null
-    estado: 'PENDIENTE' | 'CONFIRMADO'
+    estado: 'PENDIENTE' | 'CONFIRMADO' | 'ENTREGADA'
 }
 
 interface Props{
@@ -18,7 +18,7 @@ function AsistenciaTable ({asistencias}: Props){
         <div className="overflow-x-auto rounded-xl border border-gray-100">
             <table className="w-full text-sm">
                 <thead>
-                    <tr className="bg-violet-500 text-white text-left">
+                    <tr className="bg-violet-400 text-white text-left">
                     <th className="px-4 py-3 font-medium rounded-tl-xl">Hora</th>
                     <th className="px-4 py-3 font-medium">Estudiante</th>
                     <th className="px-4 py-3 font-medium">Cédula</th>
@@ -49,7 +49,7 @@ function AsistenciaTable ({asistencias}: Props){
         <td className="px-4 py-3 text-gray-500">{item.metodo ?? '--'}</td>
         <td className="px-4 py-3">
           <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-            item.estado === 'CONFIRMADO'
+            item.estado === 'CONFIRMADO' || item.estado === 'ENTREGADA'
               ? 'bg-green-100 text-green-700'
               : 'bg-yellow-100 text-yellow-700'
           }`}>

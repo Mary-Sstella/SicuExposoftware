@@ -9,6 +9,7 @@ export interface LoginResponse {
   token: string
   rol: string
   username: string
+  id_estudiante: number | null
 }
 
 export const loginUsuario = async (payload: LoginPayload): Promise<LoginResponse> => {

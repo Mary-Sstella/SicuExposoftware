@@ -1,15 +1,19 @@
-const pool = require('../../config/db')
+const prisma = require('../../config/prisma')
 const env = require('../../config/env')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
+const { ROLES } = require('../../shared/constants/roles')
 
 const login = async ({ credencial, password }) => {
-    const result = await pool.query(
-        'SELECT * FROM usuarios WHERE username = $1 OR email = $1',
-        [credencial]
-    )
-
-    const usuario = result.rows[0]
+    // Buscar usuario por username o email
+    const usuario = await prisma.usuarios.findFirst({
+        where: {
+            OR: [
+                { username: credencial },
+                { email: credencial }
+            ]
+        }
+    })
 
     if (!usuario) {
         throw new Error('Credenciales incorrectas')
@@ -31,10 +35,21 @@ const login = async ({ credencial, password }) => {
         { expiresIn: env.jwt.expiresIn }
     )
 
+    // Si es estudiante buscar su id_estudiante
+    let id_estudiante = null
+    if (usuario.rol === ROLES.ESTUDIANTE) {
+        const est = await prisma.estudiante.findFirst({
+            where: { correo_institucional: usuario.email },
+            select: { id_estudiante: true }
+        })
+        id_estudiante = est?.id_estudiante ?? null
+    }
+
     return {
         token,
         rol: usuario.rol,
-        username: usuario.username || usuario.email
+        username: usuario.username || usuario.email,
+        id_estudiante
     }
 }
 

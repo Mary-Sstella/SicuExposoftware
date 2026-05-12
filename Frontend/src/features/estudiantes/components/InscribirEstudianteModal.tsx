@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import api from '../../../shared/api/axios'
 
 interface Props {
@@ -59,17 +59,17 @@ function InscribirEstudianteModal({ onClose, onSuccess }: Props) {
 
     const estudianteCreado = await api.post('/estudiantes', body)
 
-    await api.post('/reservas', {
-      id_estudiante: estudianteCreado.data.id_estudiante,
-      numero_identificacion: form.numero_identificacion,
-      nombre_estudiante: `${form.nombres} ${form.apellidos}`,
-      numero_turno: null,
-      lunes: dias.lunes,
-      martes: dias.martes,
-      miercoles: dias.miercoles,
-      jueves: dias.jueves,
-      viernes: dias.viernes,
+    await api.put(`/estudiantes/${estudianteCreado.data.id_estudiante}/dias`, {
+      dias: {
+        lunes: dias.lunes,
+        martes: dias.martes,
+        miercoles: dias.miercoles,
+        jueves: dias.jueves,
+        viernes: dias.viernes,
+      }
     })
+
+
 
     onSuccess()
     onClose()
@@ -100,13 +100,13 @@ function InscribirEstudianteModal({ onClose, onSuccess }: Props) {
             <div>
               <label className="text-xs font-semibold text-gray-600 mb-1 block">Nombres</label>
               <input name="nombres" value={form.nombres} onChange={handleChange} required
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300"
+                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
                 placeholder="Nombres" />
             </div>
             <div>
               <label className="text-xs font-semibold text-gray-600 mb-1 block">Apellidos</label>
               <input name="apellidos" value={form.apellidos} onChange={handleChange} required
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300"
+                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
                 placeholder="Apellidos" />
             </div>
           </div>
@@ -115,7 +115,7 @@ function InscribirEstudianteModal({ onClose, onSuccess }: Props) {
             <div>
               <label className="text-xs font-semibold text-gray-600 mb-1 block">Tipo de identificación</label>
               <select name="tipo_identificacion" value={form.tipo_identificacion} onChange={handleChange} required
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 bg-white text-gray-600">
+                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 bg-white text-gray-600">
                 <option value="">Seleccionar...</option>
                 {tiposIdentificacion.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
               </select>
@@ -123,7 +123,7 @@ function InscribirEstudianteModal({ onClose, onSuccess }: Props) {
             <div>
               <label className="text-xs font-semibold text-gray-600 mb-1 block">Número de identificación</label>
               <input name="numero_identificacion" value={form.numero_identificacion} onChange={handleChange} required
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300"
+                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
                 placeholder="Número" />
             </div>
           </div>
@@ -131,14 +131,14 @@ function InscribirEstudianteModal({ onClose, onSuccess }: Props) {
           <div>
             <label className="text-xs font-semibold text-gray-600 mb-1 block">Carrera / Programa</label>
             <input name="programa" value={form.programa} onChange={handleChange} required
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300"
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
               placeholder="Nombre del programa" />
           </div>
 
           <div>
             <label className="text-xs font-semibold text-gray-600 mb-1 block">Correo institucional</label>
             <input name="correo_institucional" type="email" value={form.correo_institucional} onChange={handleChange} required
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300"
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
               placeholder="ejemplo@unicesar.edu.co" />
           </div>
 
@@ -147,7 +147,7 @@ function InscribirEstudianteModal({ onClose, onSuccess }: Props) {
               Correo personal <span className="text-gray-400 font-normal">(opcional)</span>
             </label>
             <input name="correo_personal" type="email" value={form.correo_personal} onChange={handleChange}
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300"
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
               placeholder="correo@gmail.com" />
           </div>
 
@@ -158,8 +158,8 @@ function InscribirEstudianteModal({ onClose, onSuccess }: Props) {
                 <button type="button" key={key} onClick={() => handleDia(key)}
                   className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-colors ${
                     dias[key as keyof typeof dias]
-                      ? 'bg-violet-500 text-white'
-                      : 'bg-gray-100 text-gray-500 hover:bg-violet-100 hover:text-violet-600'
+                      ? 'bg-pink-500 text-white'
+                      : 'bg-gray-100 text-gray-500 hover:bg-pink-100 hover:text-pink-600'
                   }`}>
                   {label.slice(0, 3)}
                 </button>
@@ -175,7 +175,7 @@ function InscribirEstudianteModal({ onClose, onSuccess }: Props) {
               Cancelar
             </button>
             <button type="submit" disabled={loading}
-              className="flex-1 py-2 rounded-xl bg-gradient-to-br from-purple-600 via-purple-500 to-pink-400 text-white text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-60">
+              className="flex-1 py-2 rounded-xl bg-gradient-to-br from-pink-500 via-pink-400 to-orange-400 text-white text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-60">
               {loading ? 'Inscribiendo...' : 'Inscribir'}
             </button>
           </div>

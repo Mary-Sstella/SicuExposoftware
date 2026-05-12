@@ -1,4 +1,7 @@
 const estudianteRepository = require('./estudiante.repository')
+const prisma = require('../../config/prisma')
+const bcrypt = require('bcryptjs')
+const { ROLES } = require('../../shared/constants/roles')
 
 // Obtener todos
 const getEstudiantes = async () => {
@@ -10,9 +13,25 @@ const getEstudianteById = async (id) => {
     return await estudianteRepository.getEstudianteById(id)
 }
 
-// Crear
+// Crear estudiante y usuario automáticamente
 const createEstudiante = async (data) => {
-    return await estudianteRepository.createEstudiante(data)
+    // Crear estudiante
+    const estudiante = await estudianteRepository.createEstudiante(data)
+
+    // Hashear número de identificación como contraseña
+    const passwordHash = await bcrypt.hash(data.numero_identificacion.toString(), 10)
+
+    // Crear usuario automáticamente
+    await prisma.usuarios.create({
+        data: {
+            email: estudiante.correo_institucional,
+            password_hash: passwordHash,
+            rol: ROLES.ESTUDIANTE,
+            id_estudiante: estudiante.id_estudiante
+        }
+    })
+
+    return estudiante
 }
 
 // Actualizar datos del estudiante

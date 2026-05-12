@@ -9,9 +9,24 @@ const { loggerMiddleware } = require('./shared/middleware/logger.middleware')
 
 const app = express()
 
-// Middlewares globales 
+const whitelist = ['http://localhost:5174', 'http://localhost:5173']
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1 || !origin) { // quitar !origin cuando no necesite pruebas de postman 
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}
+
+// Middlewares globales
 app.use(helmet())
-app.use(cors())
+app.use(cors(corsOptions))
 app.use(express.json())
 app.use(loggerMiddleware)
 
@@ -24,10 +39,10 @@ app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() })
 })
 
-// Error handler 
+// Error handler
 app.use(errorHandler)
 
-//Probando conexión a la base de datos
+//probando conexion a la base de datos
 pool.connect()
     .then(() => console.log('Conexion exitosa a la base de datos'))
     .catch(err => console.error('Error en la conexión:', err))

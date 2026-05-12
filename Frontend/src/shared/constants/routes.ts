@@ -2,6 +2,8 @@ export const ROUTES = {
   LOGIN: '/login',
   DASHBOARD: '/dashboard',
   ESTUDIANTES: '/estudiantes',
-  ASISTENCIA: '/asistencia'
+  ASISTENCIA: '/asistencia',
+  TURNOS: '/turnos',
+  STUDENT: '/student'
 
 }
