@@ -1,3 +1,5 @@
+
+//configuarcion la conexion con el backend y el token de autenticacion
 import axios from 'axios'
 
 const api = axios.create({

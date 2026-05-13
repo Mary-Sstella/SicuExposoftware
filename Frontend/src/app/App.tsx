@@ -1,3 +1,4 @@
+//comomponente principal que arranca la aplicacion
 import AppRouter from './router/AppRouter'
 
 function App() {

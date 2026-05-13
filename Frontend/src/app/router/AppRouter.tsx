@@ -1,3 +1,5 @@
+
+//define las rutas del sistema 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { ROUTES } from '../../shared/constants/routes'
 import LoginPage from '../../features/auth/pages/LoginPage'
@@ -8,12 +10,14 @@ import AsistenciaPage from '../../features/asistencia/pages/AsistenciaPage'
 import TurnosPage from '../../features/turnos/pages/TurnosPage'
 import StudentLayout from '../../shared/components/layout/StudentLayout'
 import EstudiantePage from '../../features/student/pages/EstudiantePage'
+import LandingPage from '../../features/landing/pages/LandingPage'
 
 
 function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<LandingPage />} />
         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
 
         <Route element={<MainLayout />}>
