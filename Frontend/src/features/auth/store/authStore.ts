@@ -1,3 +1,5 @@
+
+//store zustand para manejar el estado de autenticacion del usuario
 import { create } from 'zustand'
 
 interface AuthState {

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 //useCallback: memoriza una función para que no se recree innecesariamente.
 import { getTurnosPorFecha } from "../services/turnosService"
+//obtener los turnos de un dia en especifico
 
 
 interface Turno{
