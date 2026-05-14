@@ -1,6 +1,8 @@
 import BenefitsSection from '../components/BenefitsSection'
+import Footer from '../components/Footer'
 import Header from '../components/Header'
 import HeroSection from '../components/HeroSection'
+import PasosSection from '../components/PasosSection'
 
 function LandingPage() {
   return (
@@ -10,6 +12,8 @@ function LandingPage() {
       <HeroSection />
       </div>
       <BenefitsSection />
+      <PasosSection />
+      <Footer />
     </div>
   )
 }
