@@ -125,7 +125,9 @@ model estudiante {
   comprobantes           comprobantes[]
   detalle_reserva        detalle_reserva[]
   qr_generados           qr_generados[]
+  resenas                resenas[]
   reservas               reservas[]
+  soporte                soporte[]
   usuarios               usuarios[]
 }
 
@@ -187,6 +189,29 @@ model usuarios {
   ultimo_acceso  DateTime?     @db.Timestamp(6)
   actividades    actividades[]
   estudiante     estudiante?   @relation(fields: [id_estudiante], references: [id_estudiante], onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model soporte {
+  id_soporte      Int        @id @default(autoincrement())
+  id_estudiante   Int
+  asunto          String     @db.VarChar(100)
+  descripcion     String
+  estado          String     @default("PENDIENTE") @db.VarChar(20)
+  respuesta       String?
+  fecha_creacion  DateTime   @default(now()) @db.Timestamp(6)
+  fecha_respuesta DateTime?  @db.Timestamp(6)
+  estudiante      estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model resenas {
+  id_rese_a      Int        @id(map: "reseñas_pkey") @default(autoincrement()) @map("id_reseña")
+  id_estudiante  Int
+  calificacion   Int
+  texto          String
+  fecha_creacion DateTime   @default(now()) @db.Timestamp(6)
+  estudiante     estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction, map: "reseñas_id_estudiante_fkey")
 }
 
 enum dia_enum {
