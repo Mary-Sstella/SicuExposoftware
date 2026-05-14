@@ -1,5 +1,6 @@
 import StudentSidebar from './StudentSidebar'
 import { Outlet } from "react-router-dom";
+//es el contenedor general de la página del estudiante
 
 function StudentLayout(){
     return(

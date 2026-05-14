@@ -3,6 +3,7 @@ import { Clock, CreditCard, ChevronLeft, ChevronRight, LogOut } from 'lucide-rea
 import { useAuthStore } from '../../../features/auth/store/authStore'
 import { useNavigate } from 'react-router-dom'
 
+
 const navItems = [
   { icon: Clock, label: 'Mis Turnos', path: '/student' },
   { icon: CreditCard, label: 'Mi Pago', path: '/student/pago' },
