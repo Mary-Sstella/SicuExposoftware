@@ -11,6 +11,7 @@ import TurnosPage from '../../features/turnos/pages/TurnosPage'
 import StudentLayout from '../../shared/components/layout/StudentLayout'
 import EstudiantePage from '../../features/student/pages/EstudiantePage'
 import LandingPage from '../../features/landing/pages/LandingPage'
+import EstadisticasPage from '../../features/estadisticas/pages/EstadisticasPage'
 
 
 function AppRouter() {
@@ -25,6 +26,7 @@ function AppRouter() {
           <Route path={ROUTES.ESTUDIANTES} element={<EstudiantesPage />} />
           <Route path={ROUTES.ASISTENCIA} element={<AsistenciaPage />} />
           <Route path={ROUTES.TURNOS} element={<TurnosPage/>}/>
+          <Route path={ROUTES.ESTADISTICAS} element={<EstadisticasPage />} />
         </Route>
         <Route element={<StudentLayout />}>
         <Route path={ROUTES.STUDENT} element={<EstudiantePage />} />
