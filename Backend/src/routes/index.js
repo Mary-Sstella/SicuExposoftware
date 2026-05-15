@@ -6,6 +6,7 @@ const dashboardRoutes = require('../modules/dashboard/dashboard.routes')
 const reservaRoutes = require('../modules/reservas/reserva.routes')
 const asistenciaRoutes = require('../modules/asistencia/asistencia.routes')
 const turnoRoutes = require('../modules/turnos/turno.routes')
+const inscripcionRoutes = require('../modules/inscripciones/inscripcion.routes')
 
 const router = Router()
 
@@ -16,5 +17,6 @@ router.use('/dashboard', dashboardRoutes)
 router.use('/reservas', reservaRoutes)
 router.use('/asistencia', asistenciaRoutes)
 router.use('/turnos', turnoRoutes)
+router.use('/inscripciones', inscripcionRoutes)
 
 module.exports = router
