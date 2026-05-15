@@ -12,6 +12,7 @@ import StudentLayout from '../../shared/components/layout/StudentLayout'
 import EstudiantePage from '../../features/student/pages/EstudiantePage'
 import LandingPage from '../../features/landing/pages/LandingPage'
 import EstadisticasPage from '../../features/estadisticas/pages/EstadisticasPage'
+import InscripcionPage from '../../features/inscripcion/InscripcionPage'
 
 
 function AppRouter() {
@@ -20,6 +21,7 @@ function AppRouter() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+        <Route path={ROUTES.INSCRIPCION} element={<InscripcionPage />} />
 
         <Route element={<MainLayout />}>
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />

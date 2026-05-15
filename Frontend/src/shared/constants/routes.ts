@@ -5,5 +5,6 @@ export const ROUTES = {
   ASISTENCIA: '/asistencia',
   TURNOS: '/turnos',
   STUDENT: '/student',
-  ESTADISTICAS: '/estadisticas'
+  ESTADISTICAS: '/estadisticas',  
+  INSCRIPCION: '/inscripcion',
 }
