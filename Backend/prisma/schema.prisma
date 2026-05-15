@@ -214,6 +214,25 @@ model resenas {
   estudiante     estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction, map: "reseñas_id_estudiante_fkey")
 }
 
+model inscripciones {
+  id_inscripcion       Int      @id @default(autoincrement())
+  nombre               String   @db.VarChar(100)
+  apellidos            String   @db.VarChar(100)
+  correo_institucional String   @db.VarChar(150)
+  correo_personal      String?  @db.VarChar(150)
+  cedula               String   @unique @db.VarChar(20)
+  sisben_pdf           String   @db.VarChar(500)
+  cedula_pdf           String   @db.VarChar(500)
+  dias_semana          String   @db.VarChar(100)
+  medio_transporte     String   @db.VarChar(50)
+  lugar_origen         String   @db.VarChar(100)
+  lugar_residencia     String   @db.VarChar(100)
+  genero               String   @db.VarChar(20)
+  ocupacion_padres     String   @db.VarChar(100)
+  estado               String   @default("PENDIENTE") @db.VarChar(20)
+  fecha_solicitud      DateTime @default(now()) @db.Timestamp(6)
+}
+
 enum dia_enum {
   SI
   NO
