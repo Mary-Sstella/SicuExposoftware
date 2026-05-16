@@ -55,53 +55,115 @@ const getInscripcionById = async (id) => {
   return { ...inscripcion, sisben_url, cedula_url };
 };
 
+const MAPA_DIAS = {
+  'Lunes':      'lunes',
+  'Martes':     'martes',
+  'Miércoles':  'miercoles',
+  'Jueves':     'jueves',
+  'Viernes':    'viernes',
+};
+
 const aprobarInscripcion = async (id) => {
   const inscripcion = await inscripcionRepository.getInscripcionById(id);
 
+  // 1. Verificar cupos disponibles por día
+  const diasSolicitados = inscripcion.dias_semana.split(',').map(d => d.trim());
+  const config = await prisma.configuracion_formulario.findFirst();
+
+  const diasAprobados = [];
+  for (const dia of diasSolicitados) {
+    const campo = MAPA_DIAS[dia];
+    if (!campo) continue;
+
+    const ocupados = await prisma.reservas.count({
+      where: { [campo]: true },
+    });
+
+    const cupo = config[`cupo_${campo}`];
+    if (ocupados < cupo) {
+      diasAprobados.push(dia);
+    }
+  }
+
+  if (diasAprobados.length === 0) throw new Error('SIN_CUPO');
+
+  // 2. Verificar si el estudiante ya existe
+  let estudiante;
+  let esNuevo;
+
+  const estudianteExistente = await prisma.estudiante.findFirst({
+    where: { correo_institucional: inscripcion.correo_institucional },
+  });
+
+  if (estudianteExistente) {
+    if (estudianteExistente.estado === 'ACTIVO') throw new Error('YA_ACTIVO');
+
+    estudiante = await prisma.estudiante.update({
+      where: { id_estudiante: estudianteExistente.id_estudiante },
+      data: { estado: 'ACTIVO' },
+    });
+    esNuevo = false;
+  } else {
+    estudiante = await prisma.estudiante.create({
+      data: {
+        numero_identificacion: BigInt(inscripcion.cedula),
+        tipo_identificacion: 'CC',
+        nombres: inscripcion.nombre,
+        apellidos: inscripcion.apellidos,
+        correo_personal: inscripcion.correo_personal,
+        correo_institucional: inscripcion.correo_institucional,
+        programa: 'Sin asignar',
+        estado: 'ACTIVO',
+        contador_inasistencias: 0,
+        limite_inasistencias: 3,
+      },
+    });
+    esNuevo = true;
+  }
+
+  // 3. Verificar si ya tiene usuario
   const password_hash = await bcrypt.hash(inscripcion.cedula, 10);
 
-  const estudiante = await prisma.estudiante.create({
-    data: {
-      numero_identificacion: BigInt(inscripcion.cedula),
-      tipo_identificacion: 'CC',
-      nombres: inscripcion.nombre,
-      apellidos: inscripcion.apellidos,
-      correo_personal: inscripcion.correo_personal,
-      correo_institucional: inscripcion.correo_institucional,
-      programa: inscripcion.carrera,
-      estado: 'ACTIVO',
-      contador_inasistencias: 0,
-      limite_inasistencias: 3,
-    },
+  const usuarioExistente = await prisma.usuarios.findFirst({
+    where: { email: inscripcion.correo_institucional },
   });
 
-  await prisma.usuarios.create({
-    data: {
-      email: inscripcion.correo_institucional,
-      password_hash,
-      rol: 'ESTUDIANTE',
-      id_estudiante: estudiante.id_estudiante,
-    },
-  });
+  if (usuarioExistente) {
+    await prisma.usuarios.update({
+      where: { id_usuario: usuarioExistente.id_usuario },
+      data: { activo: true },
+    });
+  } else {
+    await prisma.usuarios.create({
+      data: {
+        email: inscripcion.correo_institucional,
+        password_hash,
+        rol: 'ESTUDIANTE',
+        id_estudiante: estudiante.id_estudiante,
+      },
+    });
+  }
 
-  const dias = inscripcion.dias_semana.split(',').map(d => d.trim())
+  // 4. Crear reserva con los días aprobados
   await prisma.reservas.create({
     data: {
       id_estudiante: estudiante.id_estudiante,
       fecha: new Date(),
-      lunes: dias.includes('Lunes'),
-      martes: dias.includes('Martes'),
-      miercoles: dias.includes('Miércoles'),
-      jueves: dias.includes('Jueves'),
-      viernes: dias.includes('Viernes'),
+      lunes:     diasAprobados.includes('Lunes'),
+      martes:    diasAprobados.includes('Martes'),
+      miercoles: diasAprobados.includes('Miércoles'),
+      jueves:    diasAprobados.includes('Jueves'),
+      viernes:   diasAprobados.includes('Viernes'),
       estado: 'PENDIENTE',
       numero_identificacion: BigInt(inscripcion.cedula),
       nombre_estudiante: `${inscripcion.nombre} ${inscripcion.apellidos}`,
-      numero_turno: null
-    }
-  })
+      numero_turno: null,
+    },
+  });
 
-  return inscripcionRepository.updateEstadoInscripcion(id, 'APROBADO');
+  const inscripcionActualizada = await inscripcionRepository.updateEstadoInscripcion(id, 'APROBADO');
+
+  return { inscripcion: inscripcionActualizada, diasAprobados, esNuevo };
 };
 
 const rechazarInscripcion = async (id) => {
@@ -111,7 +173,7 @@ const rechazarInscripcion = async (id) => {
     .from(BUCKET)
     .remove([inscripcion.sisben_pdf, inscripcion.cedula_pdf]);
 
-  return inscripcionRepository.eliminarInscripcion(id);
+  return inscripcionRepository.updateEstadoInscripcion(id, 'RECHAZADO');
 };
 
 module.exports = {

@@ -236,13 +236,20 @@ model inscripciones {
 }
 
 model configuracion_formulario {
-  id              Int       @id @default(autoincrement())
-  activo          Boolean   @default(false)
-  fecha_inicio    DateTime? @db.Timestamp(6)
-  fecha_fin       DateTime? @db.Timestamp(6)
-  actualizado_por Int?
-  actualizado_en  DateTime  @default(now()) @db.Timestamp(6)
-  usuarios        usuarios? @relation(fields: [actualizado_por], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
+  id                 Int       @id @default(autoincrement())
+  activo             Boolean   @default(false)
+  fecha_inicio       DateTime? @db.Timestamp(6)
+  fecha_fin          DateTime? @db.Timestamp(6)
+  actualizado_por    Int?
+  actualizado_en     DateTime  @default(now()) @db.Timestamp(6)
+  cupo_lunes         Int       @default(0)
+  cupo_martes        Int       @default(0)
+  cupo_miercoles     Int       @default(0)
+  cupo_jueves        Int       @default(0)
+  cupo_viernes       Int       @default(0)
+  fecha_fin_semestre DateTime? @db.Timestamp(6)
+  precio_comida      Decimal   @default(0) @db.Decimal(10, 2)
+  usuarios           usuarios? @relation(fields: [actualizado_por], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
 }
 
 enum dia_enum {

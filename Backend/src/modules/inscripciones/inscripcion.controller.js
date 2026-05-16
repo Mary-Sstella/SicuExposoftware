@@ -64,6 +64,12 @@ const updateEstadoInscripcion = async (req, res, next) => {
         if (error.message === 'La cédula ya tiene un usuario registrado') {
             return next(new AppError(409, error.message));
         }
+        if (error.message === 'SIN_CUPO') {
+            return next(new AppError(409, 'No hay cupos disponibles para ninguno de los días solicitados'));
+        }
+        if (error.message === 'YA_ACTIVO') {
+            return next(new AppError(409, 'Este estudiante ya tiene una cuenta activa'));
+        }
         next(error);
     }
 };
