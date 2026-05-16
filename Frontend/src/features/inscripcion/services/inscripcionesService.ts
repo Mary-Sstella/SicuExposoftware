@@ -12,8 +12,8 @@ export const getInscripcionById = async (id: number)=>{
     return res.data
 }
 
-export const aprobarInscripcion = async (id: number)=>{
-    const res = await api.patch(`/inscripciones/${id}/estado`, {estado: 'APROBADO'})
+export const aprobarInscripcion = async (id: number, dias: string[]) => {
+    const res = await api.patch(`/inscripciones/${id}/estado`, { estado: 'APROBADO', dias })
     return res.data
 }
 

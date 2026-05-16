@@ -55,7 +55,7 @@ const getInscripcionById = async (id) => {
   return { ...inscripcion, sisben_url, cedula_url };
 };
 
-const aprobarInscripcion = async (id) => {
+const aprobarInscripcion = async (id, dias) => {
   const inscripcion = await inscripcionRepository.getInscripcionById(id);
 
   const password_hash = await bcrypt.hash(inscripcion.cedula, 10);
@@ -84,16 +84,18 @@ const aprobarInscripcion = async (id) => {
     },
   });
 
-  const dias = inscripcion.dias_semana.split(',').map(d => d.trim())
+  const diasArray = (Array.isArray(dias) && dias.length > 0)
+    ? dias
+    : inscripcion.dias_semana.split(',').map(d => d.trim())
   await prisma.reservas.create({
     data: {
       id_estudiante: estudiante.id_estudiante,
       fecha: new Date(),
-      lunes: dias.includes('Lunes'),
-      martes: dias.includes('Martes'),
-      miercoles: dias.includes('Miércoles'),
-      jueves: dias.includes('Jueves'),
-      viernes: dias.includes('Viernes'),
+      lunes: diasArray.includes('Lunes'),
+      martes: diasArray.includes('Martes'),
+      miercoles: diasArray.includes('Miércoles'),
+      jueves: diasArray.includes('Jueves'),
+      viernes: diasArray.includes('Viernes'),
       estado: 'PENDIENTE',
       numero_identificacion: BigInt(inscripcion.cedula),
       nombre_estudiante: `${inscripcion.nombre} ${inscripcion.apellidos}`,

@@ -10,6 +10,7 @@ const routeTitles: Record<string, string>={
     '/cartera': 'Cartera',
     '/comentarios': 'Comentarios',
     '/estadisticas': 'Estadisticas',
+    '/solicitudes': 'Solicitudes',
 }
 
 function Topbar(){

@@ -38,6 +38,7 @@ function SolicitudesPage(){
     const [loadingList, setLoadingList] = useState(true)
     const [loadingDetail, setLoadingDetail] = useState(false)
     const [drawerOpen, setDrawerOpen] = useState(false) //estado para controlar el menu lateral
+    const [diasSeleccionados, setDiasSeleccionados] = useState<string[]>([])
 
     useEffect(()=>{fetchSolicitudes()}, [])
 
@@ -67,6 +68,7 @@ function SolicitudesPage(){
         try{
             const data = await getInscripcionById(id)
             setSelected(data)
+            setDiasSeleccionados(data.dias_semana ? data.dias_semana.split(',').map((d: string) => d.trim()) : [])
         }finally{
             setLoadingDetail(false)
         }
@@ -75,7 +77,7 @@ function SolicitudesPage(){
     const handleAprobar = async () =>{
         if(!selected) return
         if(!confirm('¿Aprobar esta solicitud? El estudiante será registrado en el sistema.')) return
-        await aprobarInscripcion(selected.id_inscripcion)
+        await aprobarInscripcion(selected.id_inscripcion, diasSeleccionados)
         setDrawerOpen(false)
         setSelected(null)
         fetchSolicitudes()
@@ -159,7 +161,42 @@ function SolicitudesPage(){
                   <InfoRow icon={<MapPin size={14} />} label="Residencia actual" value={selected.lugar_residencia} />
                   <InfoRow icon={<Truck size={14} />} label="Medio de transporte" value={selected.medio_transporte} />
                   <InfoRow icon={<Users size={14} />} label="Ocupación de padres" value={selected.ocupacion_padres} />
-                  <InfoRow icon={<Calendar size={14} />} label="Días de asistencia" value={selected.dias_semana} />
+                  <div className="flex items-start gap-3">
+                    <span className="text-violet-400 mt-0.5 flex-shrink-0"><Calendar size={14} /></span>
+                    <div className="w-full">
+                      <p className="text-xs text-gray-400 mb-2">Días de asistencia</p>
+                      <div className="flex flex-col gap-1.5">
+                        {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].map(dia => {
+                          const diasOriginales = selected.dias_semana
+                            ? selected.dias_semana.split(',').map(d => d.trim())
+                            : []
+                          const esOriginal = diasOriginales.includes(dia)
+                          const esPendiente = selected.estado === 'PENDIENTE'
+                          return (
+                            <label key={dia} className={`flex items-center gap-2 ${esOriginal && esPendiente ? 'cursor-pointer' : 'cursor-default'}`}>
+                              <input
+                                type="checkbox"
+                                checked={diasSeleccionados.includes(dia)}
+                                onChange={(e) => {
+                                  if (!esOriginal || !esPendiente) return
+                                  if (e.target.checked) {
+                                    setDiasSeleccionados(prev => [...prev, dia])
+                                  } else {
+                                    setDiasSeleccionados(prev => prev.filter(d => d !== dia))
+                                  }
+                                }}
+                                disabled={!esOriginal || !esPendiente}
+                                className="accent-violet-500"
+                              />
+                              <span className={`text-sm font-medium ${esOriginal ? 'text-gray-700' : 'text-gray-300'}`}>
+                                {dia}
+                              </span>
+                            </label>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="mb-6">

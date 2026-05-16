@@ -44,12 +44,12 @@ const getInscripcionById = async (req, res, next) => {
 const updateEstadoInscripcion = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { estado } = req.body;
+        const { estado, dias } = req.body;
 
         let inscripcion;
 
         if (estado === 'APROBADO') {
-            inscripcion = await inscripcionService.aprobarInscripcion(Number(id));
+            inscripcion = await inscripcionService.aprobarInscripcion(Number(id), dias);
         } else if (estado === 'RECHAZADO') {
             inscripcion = await inscripcionService.rechazarInscripcion(Number(id));
         } else {
