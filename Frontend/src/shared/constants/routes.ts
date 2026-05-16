@@ -4,6 +4,8 @@ export const ROUTES = {
   ESTUDIANTES: '/estudiantes',
   ASISTENCIA: '/asistencia',
   TURNOS: '/turnos',
-  STUDENT: '/student'
-
+  STUDENT: '/student',
+  ESTADISTICAS: '/estadisticas',  
+  INSCRIPCION: '/inscripcion',
+  SOLICITUDES: '/solicitudes',
 }

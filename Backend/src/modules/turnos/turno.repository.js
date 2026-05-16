@@ -3,7 +3,6 @@ const prisma = require('../../config/prisma')
 // Obtener configuración de rangos horarios
 const getConfiguracionTurnos = async () => {
     return await prisma.configuracion_turnos.findMany({
-        where: { activo: true },
         orderBy: { hora_inicio: 'asc' }
     })
 }

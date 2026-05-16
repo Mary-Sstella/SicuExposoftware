@@ -23,10 +23,10 @@ interface Estudiante {
 }
 
 export function useEstudiantes(){
-    const [estudiantes,setEstudiantes ] = useState<Estudiante[]>([])
+    const [estudiantes,setEstudiantes ] = useState<Estudiante[]>([]) //estado para almacenar la lista de estudiantes
     const [loading, setLoading] = useState(true)
 
-    const fetchData = async () => {
+    const fetchData = async () => { //funcion para obtener los estudiantes desde el backend
         try {
             const data = await getEstudiantes()
             setEstudiantes(data)

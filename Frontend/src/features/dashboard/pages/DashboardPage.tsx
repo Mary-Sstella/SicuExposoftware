@@ -23,7 +23,7 @@ function DashboardPage() {
   return (
     <div className="flex-1 p-8 overflow-y-auto bg-gray-50">
 
-      {/* Tarjetas — fila horizontal */}
+      {/* Tarjetas */}
       <div className="grid grid-cols-4 gap-4 mb-6">
         <StatCard
           title="Total Estudiantes"
@@ -54,8 +54,6 @@ function DashboardPage() {
           description="Registradas hoy"
         />
       </div>
-
-      {/* Fila principal: gráfica y actividad */}
       <div className="grid grid-cols-3 gap-6 mb-6">
 
         {/* Gráfica */}
@@ -86,7 +84,7 @@ function DashboardPage() {
 
       </div>
 
-      {/* Actividad reciente — fila inferior */}
+      {/* Actividad reciente*/}
       <div className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200 mt-6">
         <div className="mb-4">
           <h2 className="text-base font-semibold text-gray-700">Actividad Reciente</h2>

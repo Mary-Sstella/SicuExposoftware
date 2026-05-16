@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react"
 import { useAuthStore } from "../../auth/store/authStore"
 import { getMiTurnoHoy } from "../services/estudianteService"
+// hook para obtener el turno del dia del estudiante
+// el componente EstudiantePage para mostrar la informacion del turno del dia
 
 
 interface MiTurno {

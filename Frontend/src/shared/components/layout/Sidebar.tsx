@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react'
-import { LayoutDashboard, Users, ClipboardCheck, Clock, CreditCard, MessageSquare, BarChart2, ChevronLeft, ChevronRight, LogOut } from 'lucide-react'
+import { LayoutDashboard, Users, ClipboardCheck, Clock, CreditCard, MessageSquare, BarChart2, ChevronLeft, ChevronRight, LogOut, ClipboardList } from 'lucide-react'
 import { useAuthStore } from '../../../features/auth/store/authStore'
 import { useNavigate } from 'react-router-dom'
 
@@ -11,6 +11,8 @@ const navItems = [
   { icon: CreditCard, label: 'Cartera', path: '/cartera' },
   { icon: MessageSquare, label: 'Comentarios', path: '/comentarios' },
   { icon: BarChart2, label: 'Estadísticas', path: '/estadisticas' },
+  { icon: ClipboardList, label: 'Solicitudes', path: '/solicitudes' },
+
 ]
 
 

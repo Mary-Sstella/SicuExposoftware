@@ -15,7 +15,7 @@ function TurnosPage(){
     const{rangos, refetch:refetchRangos}= useConfiguracion()
 
     const totalReservas = turnos.length
-    const rangosActivos = rangos.length
+    const rangosActivos = rangos.filter(r => r.activo).length
     
     const casiLlenos = rangos.filter(r => {
     const ocu = turnos.filter(t => t.hora_inicio === r.hora_inicio).length
@@ -138,7 +138,7 @@ function TurnosPage(){
           <div className="bg-white rounded-2xl p-5 shadow-sm">
             <h3 className="text-sm font-bold text-gray-700 mb-3">Rangos horarios</h3>
             <div className="flex flex-col gap-2">
-              {rangos.map(r => {
+              {rangos.filter(r => r.activo).map(r => {
                 const ocu = turnos.filter(t => t.hora_inicio === r.hora_inicio).length
                 const pct = Math.round((ocu / r.capacidad_maxima) * 100)
                 const lleno = ocu >= r.capacidad_maxima

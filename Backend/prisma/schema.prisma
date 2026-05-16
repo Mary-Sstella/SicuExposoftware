@@ -112,11 +112,11 @@ model estudiante {
   id_estudiante          Int               @id @default(autoincrement())
   numero_identificacion  BigInt?           @unique
   tipo_identificacion    tipo_id_enum?
-  nombres                String?           @db.VarChar(15)
-  apellidos              String?           @db.VarChar(15)
+  nombres                String?           @db.VarChar(30)
+  apellidos              String?           @db.VarChar(30)
   correo_personal        String?           @db.VarChar(30)
   correo_institucional   String?           @db.VarChar(30)
-  programa               String?           @db.VarChar(20)
+  programa               String?           @db.VarChar(50)
   estado                 String            @default("ACTIVO") @db.VarChar(10)
   contador_inasistencias Int               @default(0)
   limite_inasistencias   Int               @default(3)
@@ -125,7 +125,9 @@ model estudiante {
   comprobantes           comprobantes[]
   detalle_reserva        detalle_reserva[]
   qr_generados           qr_generados[]
+  resenas                resenas[]
   reservas               reservas[]
+  soporte                soporte[]
   usuarios               usuarios[]
 }
 
@@ -187,6 +189,49 @@ model usuarios {
   ultimo_acceso  DateTime?     @db.Timestamp(6)
   actividades    actividades[]
   estudiante     estudiante?   @relation(fields: [id_estudiante], references: [id_estudiante], onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model soporte {
+  id_soporte      Int        @id @default(autoincrement())
+  id_estudiante   Int
+  asunto          String     @db.VarChar(100)
+  descripcion     String
+  estado          String     @default("PENDIENTE") @db.VarChar(20)
+  respuesta       String?
+  fecha_creacion  DateTime   @default(now()) @db.Timestamp(6)
+  fecha_respuesta DateTime?  @db.Timestamp(6)
+  estudiante      estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model resenas {
+  id_rese_a      Int        @id(map: "reseñas_pkey") @default(autoincrement()) @map("id_reseña")
+  id_estudiante  Int
+  calificacion   Int
+  texto          String
+  fecha_creacion DateTime   @default(now()) @db.Timestamp(6)
+  estudiante     estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction, map: "reseñas_id_estudiante_fkey")
+}
+
+model inscripciones {
+  id_inscripcion       Int      @id @default(autoincrement())
+  nombre               String   @db.VarChar(100)
+  apellidos            String   @db.VarChar(100)
+  correo_institucional String   @db.VarChar(150)
+  correo_personal      String?  @db.VarChar(150)
+  cedula               String   @unique @db.VarChar(20)
+  sisben_pdf           String   @db.VarChar(500)
+  cedula_pdf           String   @db.VarChar(500)
+  carrera String @default("Sin asignar") @db.VarChar(150)
+  dias_semana          String   @db.VarChar(100)
+  medio_transporte     String   @db.VarChar(50)
+  lugar_origen         String   @db.VarChar(100)
+  lugar_residencia     String   @db.VarChar(100)
+  genero               String   @db.VarChar(20)
+  ocupacion_padres     String   @db.VarChar(100)
+  estado               String   @default("PENDIENTE") @db.VarChar(20)
+  fecha_solicitud      DateTime @default(now()) @db.Timestamp(6)
 }
 
 enum dia_enum {

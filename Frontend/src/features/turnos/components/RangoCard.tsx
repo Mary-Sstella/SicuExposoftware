@@ -38,7 +38,7 @@ function RangoCard({ rango, turnos, onToggle }: Props) {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+    <div className={`bg-white rounded-2xl shadow-sm overflow-hidden ${!rango.activo ? 'opacity-50 grayscale' : ''}`}>
       <div className="px-5 py-4 flex items-center justify-between border-b border-gray-50">
         <div className="flex items-center gap-3">
           <button onClick={() => setExpandido(!expandido)} className="text-gray-400 hover:text-violet-500">
@@ -56,10 +56,14 @@ function RangoCard({ rango, turnos, onToggle }: Props) {
             {lleno ? 'Lleno' : casiLleno ? 'Casi lleno' : 'Disponible'}
           </span>
           <button
-            onClick={handleToggle}
-            className="text-xs px-3 py-1 rounded-full font-semibold bg-gray-100 text-gray-500 hover:bg-violet-100 hover:text-violet-600 transition-colors"
-          >
-            Desactivar
+          onClick={handleToggle}
+          className={`text-xs px-3 py-1 rounded-full font-semibold transition-colors ${
+            rango.activo
+            ? 'bg-gray-100 text-gray-500 hover:bg-red-100 hover:text-red-500'
+            : 'bg-green-100 text-green-600 hover:bg-green-200'
+            }`}
+            >
+              {rango.activo ? 'Desactivar' : 'Activar'}
           </button>
         </div>
       </div>
