@@ -4,15 +4,18 @@ const { MESSAGES } = require('../../shared/constants/messages');
 
 const createInscripcion = async (req, res, next) => {
     try {
-        const inscripcion = await inscripcionService.createInscripcion(req.body, req.files);
-        res.status(201).json(inscripcion);
+        const inscripcion = await inscripcionService.createInscripcion(req.body, req.files)
+        res.status(201).json(inscripcion)
     } catch (error) {
         if (error?.code === 'P2002') {
-            return next(new AppError(409, 'La cédula ya tiene una solicitud registrada'));
+            return next(new AppError(409, 'La cédula ya tiene una solicitud registrada'))
         }
-        next(error);
+        if (error?.code === 'LIMIT_FILE_SIZE') {
+            return next(new AppError(400, 'El archivo no debe superar 5MB'))
+        }
+        next(error)
     }
-};
+}
 
 const getInscripciones = async (req, res, next) => {
     try {

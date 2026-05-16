@@ -6,14 +6,19 @@ const bcrypt = require('bcryptjs');
 const BUCKET = 'inscripciones-docs';
 
 const subirArchivo = async (file, carpeta) => {
-  const ruta = `${carpeta}/${Date.now()}-${file.originalname}`;
-  const { error } = await supabase.storage
-    .from(BUCKET)
-    .upload(ruta, file.buffer, { contentType: file.mimetype });
+    const nombreLimpio = file.originalname
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9._-]/g, '_')
+    
+    const ruta = `${carpeta}/${Date.now()}-${nombreLimpio}`
+    const { error } = await supabase.storage
+        .from(BUCKET)
+        .upload(ruta, file.buffer, { contentType: file.mimetype })
 
-  if (error) throw new Error(error.message);
-  return ruta;
-};
+    if (error) throw new Error(error.message)
+    return ruta
+}
 
 const getUrlFirmada = async (ruta) => {
   const { data, error } = await supabase.storage

@@ -58,14 +58,23 @@ const createReserva = async (data) => {
 }
 
 const getAsistenciaHoy = async () => {
-    const diaSemana = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'][new Date().getDay()]
+    const diaSemana = new Date().getDay()
+    
+    // Si es sábado (6) o domingo (0), no hay asistencia
+    if (diaSemana === 0 || diaSemana === 6) {
+        return []
+    }
+
+    const campos = ['', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes']
+    const campo = campos[diaSemana]
+    
     const hoy = new Date()
     hoy.setHours(0, 0, 0, 0)
 
     const reservas = await prisma.reservas.findMany({
         where: {
             fecha: hoy,
-            [diaSemana]: true
+            [campo]: true
         },
         include: {
             estudiante: {

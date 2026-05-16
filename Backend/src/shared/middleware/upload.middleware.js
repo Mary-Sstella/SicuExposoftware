@@ -4,22 +4,35 @@ const ALLOWED_TYPES = ['application/pdf', 'image/png'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
 const fileFilter = (_req, file, cb) => {
-  if (ALLOWED_TYPES.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error(`Tipo de archivo no permitido: ${file.mimetype}. Solo se aceptan PDF y PNG.`));
-  }
+    if (ALLOWED_TYPES.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error(`Tipo de archivo no permitido: ${file.mimetype}. Solo se aceptan PDF y PNG.`));
+    }
 };
 
 const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: MAX_SIZE },
-  fileFilter,
+    storage: multer.memoryStorage(),
+    limits: { fileSize: MAX_SIZE },
+    fileFilter,
 });
 
-const uploadInscripcion = upload.fields([
-  { name: 'sisben_pdf', maxCount: 1 },
-  { name: 'cedula_pdf', maxCount: 1 },
+const _upload = upload.fields([
+    { name: 'sisben_pdf', maxCount: 1 },
+    { name: 'cedula_pdf', maxCount: 1 },
 ]);
+
+const uploadInscripcion = (req, res, next) => {
+    _upload(req, res, (err) => {
+        if (err) {
+            console.log('Error upload:', err.code, err.message)
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).json({ msg: 'El archivo no debe superar 5MB' })
+            }
+            return res.status(400).json({ msg: err.message })
+        }
+        next()
+    })
+}
 
 module.exports = { uploadInscripcion };
