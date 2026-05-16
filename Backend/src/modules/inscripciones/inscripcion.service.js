@@ -63,7 +63,7 @@ const aprobarInscripcion = async (id) => {
       apellidos: inscripcion.apellidos,
       correo_personal: inscripcion.correo_personal,
       correo_institucional: inscripcion.correo_institucional,
-      programa: 'Sin asignar',
+      programa: inscripcion.carrera,
       estado: 'ACTIVO',
       contador_inasistencias: 0,
       limite_inasistencias: 3,
@@ -79,11 +79,34 @@ const aprobarInscripcion = async (id) => {
     },
   });
 
+  const dias = inscripcion.dias_semana.split(',').map(d => d.trim())
+  await prisma.reservas.create({
+    data: {
+      id_estudiante: estudiante.id_estudiante,
+      fecha: new Date(),
+      lunes: dias.includes('Lunes'),
+      martes: dias.includes('Martes'),
+      miercoles: dias.includes('Miércoles'),
+      jueves: dias.includes('Jueves'),
+      viernes: dias.includes('Viernes'),
+      estado: 'PENDIENTE',
+      numero_identificacion: BigInt(inscripcion.cedula),
+      nombre_estudiante: `${inscripcion.nombre} ${inscripcion.apellidos}`,
+      numero_turno: null
+    }
+  })
+
   return inscripcionRepository.updateEstadoInscripcion(id, 'APROBADO');
 };
 
-const rechazarInscripcion = (id) => {
-  return inscripcionRepository.updateEstadoInscripcion(id, 'RECHAZADO');
+const rechazarInscripcion = async (id) => {
+  const inscripcion = await inscripcionRepository.getInscripcionById(id);
+
+  await supabase.storage
+    .from(BUCKET)
+    .remove([inscripcion.sisben_pdf, inscripcion.cedula_pdf]);
+
+  return inscripcionRepository.eliminarInscripcion(id);
 };
 
 module.exports = {

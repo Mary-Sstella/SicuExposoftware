@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ROUTES } from '../../shared/constants/routes'
+import { ROUTES } from '../../../shared/constants/routes'
 import { FileCheck, UploadCloud } from 'lucide-react'
+import { createInscripcion } from '../services/inscripcionesService'
+
 
 const STEPS = [
   { number: 1, label: 'Datos Personales' },
@@ -16,6 +18,7 @@ type FormData = {
   apellidos: string
   cedula: string
   genero: string
+  carrera: string
   correo_institucional: string
   correo_personal: string
   lugar_origen: string
@@ -35,6 +38,7 @@ function InscripcionPage() {
     apellidos: '',
     cedula: '',
     genero: '',
+    carrera: '',
     correo_institucional: '',
     correo_personal: '',
     lugar_origen: '',
@@ -72,10 +76,14 @@ function InscripcionPage() {
       else if (Array.isArray(value)) formData.append(key, value.join(','))
       else if (value !== null) formData.append(key, value)
     })
-    // TODO: await inscripcionService.createInscripcion(formData)
+    try {
+    await createInscripcion(formData)
     alert('Solicitud enviada exitosamente')
     navigate(ROUTES.LOGIN)
+  } catch (error) {
+    alert('Error al enviar la solicitud. Intenta de nuevo.')
   }
+}
 
   const inputClass = 'w-full bg-gray-50 rounded-xl px-4 py-2.5 text-sm border border-gray-200 focus:outline-none focus:border-violet-400 focus:bg-white transition'
 
@@ -144,6 +152,29 @@ function InscripcionPage() {
                   <option value="Femenino">Femenino</option>
                 </select>
               </div>
+              <div className="col-span-2">
+                <label className="text-xs text-gray-500 mb-1.5 block">Carrera</label>
+                <select name="carrera" value={form.carrera} onChange={handleChange} className={inputClass}>
+                  <option value="">- Selecciona tu carrera -</option>
+                  <option>Licenciatura en Educación Física, Recreación y Deportes</option>
+                  <option>Licenciatura en Ciencias Naturales y Educación Ambiental</option>
+                  <option>Licenciatura en Lengua Castellana e Inglés</option>
+                  <option>Licenciatura en Arte y Folklore</option>
+                  <option>Administración de Empresas</option>
+                  <option>Administración de Empresas Turísticas y Hoteleras</option>
+                  <option>Comercio Internacional</option>
+                  <option>Contaduría Pública</option>
+                  <option>Economía</option>
+                  <option>Ingeniería de Sistemas</option>
+                  <option>Ingeniería Agroindustrial</option>
+                  <option>Ingeniería Ambiental y Sanitaria</option>
+                  <option>Ingeniería Electrónica</option>
+                  <option>Enfermería</option>
+                  <option>Instrumentación Quirúrgica</option>
+                  <option>Derecho</option>
+                  <option>Psicología</option>
+                </select>
+              </div>
             </div>
           </div>
         )}
@@ -173,7 +204,7 @@ function InscripcionPage() {
               <div>
                 <label className="text-xs text-gray-500 mb-1.5 block">¿Dónde vives actualmente?</label>
                 <input name="lugar_residencia" value={form.lugar_residencia} onChange={handleChange}
-                  placeholder="Dirección o barrio actual" className={inputClass} />
+                  placeholder="Ciudad o municipio de residencia" className={inputClass} />
               </div>
               <div>
                 <label className="text-xs text-gray-500 mb-1.5 block">Medio de transporte</label>

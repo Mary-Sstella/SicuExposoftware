@@ -31,9 +31,17 @@ const updateEstadoInscripcion = (id, estado) => {
   });
 };
 
+const eliminarInscripcion = (id) => {
+  return prisma.inscripciones.delete({
+    where: { id_inscripcion: id },
+  });
+};
+
+
 module.exports = {
   createInscripcion,
   getInscripciones,
   getInscripcionById,
   updateEstadoInscripcion,
+  eliminarInscripcion,
 };

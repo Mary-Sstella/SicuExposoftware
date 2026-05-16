@@ -112,11 +112,11 @@ model estudiante {
   id_estudiante          Int               @id @default(autoincrement())
   numero_identificacion  BigInt?           @unique
   tipo_identificacion    tipo_id_enum?
-  nombres                String?           @db.VarChar(15)
-  apellidos              String?           @db.VarChar(15)
+  nombres                String?           @db.VarChar(30)
+  apellidos              String?           @db.VarChar(30)
   correo_personal        String?           @db.VarChar(30)
   correo_institucional   String?           @db.VarChar(30)
-  programa               String?           @db.VarChar(20)
+  programa               String?           @db.VarChar(50)
   estado                 String            @default("ACTIVO") @db.VarChar(10)
   contador_inasistencias Int               @default(0)
   limite_inasistencias   Int               @default(3)
@@ -223,6 +223,7 @@ model inscripciones {
   cedula               String   @unique @db.VarChar(20)
   sisben_pdf           String   @db.VarChar(500)
   cedula_pdf           String   @db.VarChar(500)
+  carrera String @default("Sin asignar") @db.VarChar(150)
   dias_semana          String   @db.VarChar(100)
   medio_transporte     String   @db.VarChar(50)
   lugar_origen         String   @db.VarChar(100)

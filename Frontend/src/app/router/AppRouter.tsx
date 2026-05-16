@@ -12,7 +12,10 @@ import StudentLayout from '../../shared/components/layout/StudentLayout'
 import EstudiantePage from '../../features/student/pages/EstudiantePage'
 import LandingPage from '../../features/landing/pages/LandingPage'
 import EstadisticasPage from '../../features/estadisticas/pages/EstadisticasPage'
-import InscripcionPage from '../../features/inscripcion/InscripcionPage'
+import InscripcionPage from '../../features/inscripcion/pages/InscripcionPage'
+import SolicitudesPage from '../../features/solicitudes/SolicitudesPage'
+
+
 
 
 function AppRouter() {
@@ -29,6 +32,7 @@ function AppRouter() {
           <Route path={ROUTES.ASISTENCIA} element={<AsistenciaPage />} />
           <Route path={ROUTES.TURNOS} element={<TurnosPage/>}/>
           <Route path={ROUTES.ESTADISTICAS} element={<EstadisticasPage />} />
+          <Route path={ROUTES.SOLICITUDES} element={<SolicitudesPage />} />
         </Route>
         <Route element={<StudentLayout />}>
         <Route path={ROUTES.STUDENT} element={<EstudiantePage />} />
