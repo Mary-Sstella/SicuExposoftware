@@ -178,17 +178,18 @@ model reservas {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model usuarios {
-  id_usuario     Int           @id @default(autoincrement())
-  username       String?       @unique @db.VarChar(60)
-  email          String?       @unique @db.VarChar(150)
-  password_hash  String        @db.VarChar(255)
-  rol            tipo_rol_enum
-  id_estudiante  Int?
-  activo         Boolean       @default(true)
-  fecha_creacion DateTime      @default(now()) @db.Timestamp(6)
-  ultimo_acceso  DateTime?     @db.Timestamp(6)
-  actividades    actividades[]
-  estudiante     estudiante?   @relation(fields: [id_estudiante], references: [id_estudiante], onUpdate: NoAction)
+  id_usuario               Int                        @id @default(autoincrement())
+  username                 String?                    @unique @db.VarChar(60)
+  email                    String?                    @unique @db.VarChar(150)
+  password_hash            String                     @db.VarChar(255)
+  rol                      tipo_rol_enum
+  id_estudiante            Int?
+  activo                   Boolean                    @default(true)
+  fecha_creacion           DateTime                   @default(now()) @db.Timestamp(6)
+  ultimo_acceso            DateTime?                  @db.Timestamp(6)
+  actividades              actividades[]
+  configuracion_formulario configuracion_formulario[]
+  estudiante               estudiante?                @relation(fields: [id_estudiante], references: [id_estudiante], onUpdate: NoAction)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -223,7 +224,6 @@ model inscripciones {
   cedula               String   @unique @db.VarChar(20)
   sisben_pdf           String   @db.VarChar(500)
   cedula_pdf           String   @db.VarChar(500)
-  carrera String @default("Sin asignar") @db.VarChar(150)
   dias_semana          String   @db.VarChar(100)
   medio_transporte     String   @db.VarChar(50)
   lugar_origen         String   @db.VarChar(100)
@@ -232,6 +232,24 @@ model inscripciones {
   ocupacion_padres     String   @db.VarChar(100)
   estado               String   @default("PENDIENTE") @db.VarChar(20)
   fecha_solicitud      DateTime @default(now()) @db.Timestamp(6)
+  carrera              String   @default("Sin asignar") @db.VarChar(150)
+}
+
+model configuracion_formulario {
+  id                 Int       @id @default(autoincrement())
+  activo             Boolean   @default(false)
+  fecha_inicio       DateTime? @db.Timestamp(6)
+  fecha_fin          DateTime? @db.Timestamp(6)
+  actualizado_por    Int?
+  actualizado_en     DateTime  @default(now()) @db.Timestamp(6)
+  cupo_lunes         Int       @default(0)
+  cupo_martes        Int       @default(0)
+  cupo_miercoles     Int       @default(0)
+  cupo_jueves        Int       @default(0)
+  cupo_viernes       Int       @default(0)
+  fecha_fin_semestre DateTime? @db.Timestamp(6)
+  precio_comida      Decimal   @default(0) @db.Decimal(10, 2)
+  usuarios           usuarios? @relation(fields: [actualizado_por], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
 }
 
 enum dia_enum {
