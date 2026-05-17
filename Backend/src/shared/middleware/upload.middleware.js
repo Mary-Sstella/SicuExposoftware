@@ -35,4 +35,21 @@ const uploadInscripcion = (req, res, next) => {
     })
 }
 
-module.exports = { uploadInscripcion };
+const _uploadPago = upload.fields([
+    { name: 'comprobante_pdf', maxCount: 1 },
+]);
+
+const uploadPago = (req, res, next) => {
+    _uploadPago(req, res, (err) => {
+        if (err) {
+            console.log('Error upload:', err.code, err.message)
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).json({ msg: 'El archivo no debe superar 5MB' })
+            }
+            return res.status(400).json({ msg: err.message })
+        }
+        next()
+    })
+}
+
+module.exports = { uploadInscripcion, uploadPago };
