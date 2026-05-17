@@ -124,6 +124,7 @@ model estudiante {
   cartera                cartera[]
   comprobantes           comprobantes[]
   detalle_reserva        detalle_reserva[]
+  pagos                  pagos[]
   qr_generados           qr_generados[]
   resenas                resenas[]
   reservas               reservas[]
@@ -250,6 +251,22 @@ model configuracion_formulario {
   fecha_fin_semestre DateTime? @db.Timestamp(6)
   precio_comida      Decimal   @default(0) @db.Decimal(10, 2)
   usuarios           usuarios? @relation(fields: [actualizado_por], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model pagos {
+  id_pago            Int        @id @default(autoincrement())
+  id_estudiante      Int
+  tipo_periodo       String     @db.VarChar(10)
+  dias_pagados       Json
+  cantidad_almuerzos Int
+  almuerzos_usados   Int        @default(0)
+  estado             String     @default("PENDIENTE") @db.VarChar(20)
+  pdf_url            String     @db.VarChar(500)
+  observacion        String?
+  fecha_subida       DateTime   @default(now()) @db.Timestamp(6)
+  fecha_revision     DateTime?  @db.Timestamp(6)
+  estudiante         estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
 }
 
 enum dia_enum {
