@@ -8,4 +8,5 @@ export const ROUTES = {
   ESTADISTICAS: '/estadisticas',  
   INSCRIPCION: '/inscripcion',
   SOLICITUDES: '/solicitudes',
+  STUDENT_PAGO: '/student/pago',
 }

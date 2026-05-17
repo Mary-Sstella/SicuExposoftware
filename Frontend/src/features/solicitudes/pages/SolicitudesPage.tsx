@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle, XCircle, FileText, ChevronRight, X, Calendar, MapPin, Truck, Users, Mail, CreditCard } from 'lucide-react'
-import { getInscripciones, getInscripcionById, aprobarInscripcion, rechazarInscripcion, getCupos } from '../inscripcion/services/inscripcionesService'
+import { getInscripciones, getInscripcionById, aprobarInscripcion, rechazarInscripcion, getCupos } from '../../inscripcion/services/inscripcionesService'
 
 
 type Solicitudes = {
