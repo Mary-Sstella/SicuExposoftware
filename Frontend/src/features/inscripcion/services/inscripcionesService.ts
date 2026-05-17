@@ -29,3 +29,7 @@ export const createInscripcion = async (formData: FormData) => {
   return res.data
 }
 
+export const getCupos = async () =>{
+    const res = await api.get('/inscripciones/cupos')
+    return res.data
+}

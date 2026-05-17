@@ -74,9 +74,20 @@ const updateEstadoInscripcion = async (req, res, next) => {
     }
 };
 
+const getCupos = async (req, res, next) => {
+  try {
+    const cupos = await inscripcionService.getCupos();
+    res.json(cupos);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 module.exports = {
     createInscripcion,
     getInscripciones,
     getInscripcionById,
     updateEstadoInscripcion,
+    getCupos,
 };

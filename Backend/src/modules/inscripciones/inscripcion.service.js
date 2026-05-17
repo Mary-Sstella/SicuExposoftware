@@ -178,6 +178,27 @@ const rechazarInscripcion = async (id) => {
   return inscripcionRepository.updateEstadoInscripcion(id, 'RECHAZADO');
 };
 
+const getCupos = async () => {
+  const config = await prisma.configuracion_formulario.findFirst();
+
+  const [oLunes, oMartes, oMiercoles, oJueves, oViernes] = await Promise.all([
+    prisma.reservas.count({ where: { lunes: true } }),
+    prisma.reservas.count({ where: { martes: true } }),
+    prisma.reservas.count({ where: { miercoles: true } }),
+    prisma.reservas.count({ where: { jueves: true } }),
+    prisma.reservas.count({ where: { viernes: true } }),
+  ]);
+
+  return {
+    lunes:     { ocupados: oLunes,     total: config.cupo_lunes },
+    martes:    { ocupados: oMartes,    total: config.cupo_martes },
+    miercoles: { ocupados: oMiercoles, total: config.cupo_miercoles },
+    jueves:    { ocupados: oJueves,    total: config.cupo_jueves },
+    viernes:   { ocupados: oViernes,   total: config.cupo_viernes },
+  };
+};
+
+
 module.exports = {
   subirArchivo,
   getUrlFirmada,
@@ -186,4 +207,5 @@ module.exports = {
   getInscripcionById,
   aprobarInscripcion,
   rechazarInscripcion,
+  getCupos,
 };

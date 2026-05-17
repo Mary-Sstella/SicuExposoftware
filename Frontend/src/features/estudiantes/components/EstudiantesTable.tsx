@@ -1,7 +1,9 @@
 ﻿import { useState } from 'react'
 import DiasModal from './DiasModal'
-import { Pencil } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
 import EditarEstModal from './EditarEstModal'
+import { deleteEstudiante } from '../services/estudiantesService'
+
 
 
 interface Estudiante {
@@ -27,11 +29,17 @@ interface Estudiante {
 interface Props {
   estudiantes: Estudiante[] //recibe la lista de estudiantes 
   onEdit: () => void 
+  onDelete: () => void
 }
 
-function EstudiantesTable({ estudiantes, onEdit }: Props) {
+function EstudiantesTable({ estudiantes, onEdit, onDelete }: Props) {
   const [estudianteSeleccionado, setEstudianteSeleccionado] = useState<{ id: number, nombres: string, apellidos: string, dias: {lunes: boolean, martes: boolean, miercoles: boolean, jueves: boolean, viernes: boolean} | null } | null>(null)
   const [estudianteAEditar, setEstudianteAEditar] = useState<Estudiante | null>(null)
+  const handleEliminar = async (id: number, nombre: string) => {
+    if (!confirm(`¿Eliminar a ${nombre} del sistema? Esta acción no se puede deshacer.`)) return
+    await deleteEstudiante(id)
+    onDelete()
+  }
   return (
     <div className="overflow-x-auto rounded-xl border border-gray-100">
       <table className="w-full text-sm">
@@ -53,14 +61,20 @@ function EstudiantesTable({ estudiantes, onEdit }: Props) {
               key={est.id_estudiante}
               className={`border-t border-gray-100 hover:bg-purple-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
             >
-              <td className="px-4 py-3 text-gray-400 font-medium">{String(index + 1).padStart(2, '0')}</td>
-              <td className="px-4 py-3 text-gray-800 font-semibold">
+              <td className="px-4 py-3 text-gray-400 font-medium">{String(index + 1).padStart(2, '0')}</td> {/*muestra el número de fila con ceros a la izquierda*/}
+              <td className="px-4 py-3 text-gray-800 font-semibold"> {/*muestra el nombre completo del estudiante y un botón para editar*/}
                 <div className="flex items-center gap-2">
                   {est.nombres} {est.apellidos}
                   <button className="text-gray-300 hover:text-pink-500 transition-colors">
                     <Pencil size={14} 
                     onClick={() => setEstudianteAEditar(est)}/>
                   </button>
+                  <button
+                    className="text-gray-300 hover:text-red-500 transition-colors"
+                    onClick={() => handleEliminar(est.id_estudiante, `${est.nombres} ${est.apellidos}`)}>
+                    <Trash2 size={14} />
+                  </button>
+
                 </div>
               </td>
               <td className="px-4 py-3 text-gray-500">{est.numero_identificacion}</td>

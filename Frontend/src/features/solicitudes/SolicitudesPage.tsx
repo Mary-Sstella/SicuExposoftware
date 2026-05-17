@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle, XCircle, FileText, ChevronRight, X, Calendar, MapPin, Truck, Users, Mail, CreditCard } from 'lucide-react'
-import { getInscripciones, getInscripcionById, aprobarInscripcion, rechazarInscripcion } from '../inscripcion/services/inscripcionesService'
+import { getInscripciones, getInscripcionById, aprobarInscripcion, rechazarInscripcion, getCupos } from '../inscripcion/services/inscripcionesService'
 
 
 type Solicitudes = {
@@ -39,8 +39,16 @@ function SolicitudesPage(){
     const [loadingDetail, setLoadingDetail] = useState(false)
     const [drawerOpen, setDrawerOpen] = useState(false) //estado para controlar el menu lateral
     const [diasSeleccionados, setDiasSeleccionados] = useState<string[]>([])
+    type Cupos = {ocupados: number; total: number}
+    type CuposDias = {lunes: Cupos; martes: Cupos; miercoles: Cupos; jueves: Cupos; viernes: Cupos}
 
-    useEffect(()=>{fetchSolicitudes()}, [])
+    const [cupos, setCupos] = useState<CuposDias | null>(null) //estado para almacenar los cupos disponibles por día
+
+    useEffect(() => {
+      fetchSolicitudes()
+      getCupos().then(setCupos) //obtener los cupos disponibles al cargar la pagina
+    }, [])
+
 
     const fetchSolicitudes = async ()=>{
         try{
@@ -90,6 +98,35 @@ function SolicitudesPage(){
         <h1 className="text-xl font-bold text-gray-800">Pre-inscritos</h1>
         <p className="text-sm text-gray-400 mt-0.5">Solicitudes de inscripción pendientes de revisión</p>
       </div>
+
+      {cupos && (
+        <div className="flex gap-3 mb-6">
+          {[
+            { label: 'Lunes',     data: cupos.lunes,     gradient: 'from-pink-500 to-rose-400' },
+            { label: 'Martes',    data: cupos.martes,     gradient: 'from-violet-500 to-purple-400' },
+            { label: 'Miércoles', data: cupos.miercoles,  gradient: 'from-blue-500 to-cyan-400' },
+            { label: 'Jueves',    data: cupos.jueves,     gradient: 'from-emerald-500 to-teal-400' },
+            { label: 'Viernes',   data: cupos.viernes,    gradient: 'from-orange-500 to-amber-400' },
+          ].map(({ label, data, gradient }) => {
+            const libres = data.total - data.ocupados
+            const pct = Math.round((data.ocupados / data.total) * 100)
+            const barColor = pct >= 90 ? 'bg-red-300' : pct >= 70 ? 'bg-amber-300' : 'bg-white/70'
+            return (
+              <div key={label} className={`flex-1 bg-gradient-to-r ${gradient} rounded-2xl shadow-sm px-4 py-3`}>
+                <p className="text-xs font-semibold text-white/70 uppercase tracking-wide mb-1">{label}</p>
+                <p className="text-lg font-bold text-white">
+                  {data.ocupados}<span className="text-white/50 font-normal">/{data.total}</span>
+                </p>
+                <p className="text-xs text-white/60">{libres} libres</p>
+                <div className="mt-2 h-1.5 bg-white/20 rounded-full overflow-hidden">
+                  <div className={`h-full rounded-full ${barColor}`} style={{ width: `${pct}%` }} />
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
 
       <div className="flex gap-6 flex-1 overflow-hidden">
 
