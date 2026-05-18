@@ -1,56 +1,12 @@
 import { useState } from 'react'
-import { Wallet, Plus, FileText, CheckCircle, Clock, XCircle } from 'lucide-react'
+import { Wallet, Plus, FileText, CheckCircle, Clock, XCircle, Loader2 } from 'lucide-react'
 import SubirPagoModal from '../components/SubirPagoModal'
+import { useMisPagos } from '../hooks/useMisPagos'
+import { getPdfUrl } from '../services/billeteraService'
 
-type Pago={
-    id_pago: number;
-    tipo_periodo: 'SEMANAL' | 'MENSUAL'
-    dias_pagados: string[]
-    cantidad_almuerzos: number
-    almuerzos_usados: number
-    estado: 'PENDIENTE' | 'APROBADO' | 'RECHAZADO'
-    pdf_url: string
-    observacion?: string
-    fecha_subida: string
+const DIA_LABEL: Record<string, string> = {
+  lunes: 'Lunes', martes: 'Martes', miercoles: 'Miércoles', jueves: 'Jueves', viernes: 'Viernes',
 }
-
-const MOCK_DIAS_REGISTRADOS = ['Lunes', 'Miércoles', 'Viernes']
-
-const MOCK_PAGOS: Pago[] = [
-    {
-         id_pago: 1,
-         tipo_periodo: 'SEMANAL',
-         dias_pagados: ['Lunes 19 may', 'Miércoles 21 may'],
-         cantidad_almuerzos: 2,
-         almuerzos_usados: 1,
-         estado: 'APROBADO',
-         pdf_url: '#',
-         fecha_subida: '2025-05-15',
-    },
-
-    {
-        id_pago: 2,
-        tipo_periodo: 'SEMANAL',
-        dias_pagados: ['Lunes 26 may', 'Miércoles 28 may', 'Viernes 30 may'],
-        cantidad_almuerzos: 3,
-        almuerzos_usados: 0,
-        estado: 'PENDIENTE',
-        pdf_url: '#',
-        fecha_subida: '2025-05-17',
-    },
-
-    {
-        id_pago: 3,
-        tipo_periodo: 'SEMANAL',
-        dias_pagados: ['Miércoles 7 may', 'Viernes 9 may'],
-        cantidad_almuerzos: 2,
-        almuerzos_usados: 0,
-        estado: 'RECHAZADO',
-        pdf_url: '#',
-        observacion: 'El comprobante no corresponde al periodo indicado.',
-        fecha_subida: '2025-05-06',
-    }
-]
 
 const ESTADO_CONFIG = {
   APROBADO:  { icon: CheckCircle, color: 'text-green-600',  bg: 'bg-green-50',  label: 'Aprobado' },
@@ -59,16 +15,37 @@ const ESTADO_CONFIG = {
 }
 
 function BilleteraPage() {
-    const [modalAbierto, setModalAbierto] = useState(false)
+  const [modalAbierto, setModalAbierto] = useState(false)
+  const [pdfCargando, setPdfCargando] = useState<number | null>(null)
+  const { pagos, saldo, diasRegistrados, loading, error, refetch } = useMisPagos()
 
-    const saldo = MOCK_PAGOS
-    .filter(pago=> pago.estado === 'APROBADO')
-    .reduce((sum,pago)=> sum + (pago.cantidad_almuerzos - pago.almuerzos_usados), 0)
+  const handleVerPdf = async (id_pago: number) => {
+    setPdfCargando(id_pago)
+    try {
+      const url = await getPdfUrl(id_pago)
+      window.open(url, '_blank')
+    } catch {
+      /* silencioso por ahora */
+    } finally {
+      setPdfCargando(null)
+    }
+  }
 
-    return(
-        <div className="flex-1 p-8 overflow-y-auto bg-gray-50">
+  if (loading) return (
+    <div className="flex-1 flex items-center justify-center bg-gray-50">
+      <Loader2 size={24} className="animate-spin text-violet-400" />
+    </div>
+  )
 
-      {/* Header */}
+  if (error) return (
+    <div className="flex-1 p-8 bg-gray-50">
+      <p className="text-sm text-red-500">{error}</p>
+    </div>
+  )
+
+  return (
+    <div className="flex-1 p-8 overflow-y-auto bg-gray-50">
+
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 bg-gradient-to-br from-violet-500 to-purple-400 rounded-2xl flex items-center justify-center shadow-md">
@@ -79,16 +56,13 @@ function BilleteraPage() {
             <p className="text-sm text-gray-400">Gestiona tus pagos de almuerzos</p>
           </div>
         </div>
-        <button
-          onClick={() => setModalAbierto(true)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-br from-violet-500 via-violet-400 to-purple-300 hover:opacity-90 text-white text-sm font-semibold rounded-2xl transition-opacity shadow-md"
-        >
+        <button onClick={() => setModalAbierto(true)}
+          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-br from-violet-500 via-violet-400 to-purple-300 hover:opacity-90 text-white text-sm font-semibold rounded-2xl transition-opacity shadow-md">
           <Plus size={16} />
           Subir comprobante
         </button>
       </div>
 
-      {/* Saldo */}
       <div className="bg-gradient-to-r from-violet-500 to-purple-400 rounded-2xl px-6 py-5 mb-6 shadow-md flex items-center justify-between">
         <div>
           <p className="text-white/70 text-sm mb-1">Almuerzos disponibles</p>
@@ -100,10 +74,16 @@ function BilleteraPage() {
         </div>
       </div>
 
-      {/* Lista de pagos */}
       <div className="flex flex-col gap-3">
         <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Historial de pagos</h2>
-        {MOCK_PAGOS.map(pago => {
+
+        {pagos.length === 0 && (
+          <div className="bg-white rounded-2xl p-8 text-center shadow-sm">
+            <p className="text-sm text-gray-400">Aún no tienes pagos registrados</p>
+          </div>
+        )}
+
+        {pagos.map(pago => {
           const { icon: Icon, color, bg, label } = ESTADO_CONFIG[pago.estado]
           return (
             <div key={pago.id_pago} className="bg-white rounded-2xl p-5 shadow-sm">
@@ -112,18 +92,19 @@ function BilleteraPage() {
                   <span className="text-xs font-bold px-2.5 py-1 bg-violet-100 text-violet-600 rounded-lg">
                     {pago.tipo_periodo}
                   </span>
-                  <span className="text-xs text-gray-400">{pago.fecha_subida}</span>
+                  <span className="text-xs text-gray-400">
+                    {new Date(pago.fecha_subida).toLocaleDateString('es-CO')}
+                  </span>
                 </div>
                 <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${bg} ${color}`}>
-                  <Icon size={12} />
-                  {label}
+                  <Icon size={12} /> {label}
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-1.5 mb-3">
                 {pago.dias_pagados.map(dia => (
                   <span key={dia} className="text-xs px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg">
-                    {dia}
+                    {DIA_LABEL[dia] ?? dia}
                   </span>
                 ))}
               </div>
@@ -139,11 +120,13 @@ function BilleteraPage() {
                     </span>
                   )}
                 </div>
-                <a href={pago.pdf_url} target="_blank" rel="noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-violet-500 hover:text-violet-700 font-medium transition-colors">
-                  <FileText size={13} />
+                <button onClick={() => handleVerPdf(pago.id_pago)} disabled={pdfCargando === pago.id_pago}
+                  className="flex items-center gap-1.5 text-xs text-violet-500 hover:text-violet-700 font-medium transition-colors disabled:opacity-50">
+                  {pdfCargando === pago.id_pago
+                    ? <Loader2 size={13} className="animate-spin" />
+                    : <FileText size={13} />}
                   Ver PDF
-                </a>
+                </button>
               </div>
 
               {pago.estado === 'RECHAZADO' && pago.observacion && (
@@ -158,8 +141,9 @@ function BilleteraPage() {
 
       {modalAbierto && (
         <SubirPagoModal
-          diasRegistrados={MOCK_DIAS_REGISTRADOS}
+          diasRegistrados={diasRegistrados}
           onClose={() => setModalAbierto(false)}
+          onSuccess={refetch}
         />
       )}
     </div>

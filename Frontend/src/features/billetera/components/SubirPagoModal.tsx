@@ -1,21 +1,27 @@
 import { useState, useMemo } from 'react'
-import { X, Upload, Calendar, AlertCircle } from 'lucide-react'
+import { X, Upload, Calendar, AlertCircle, Loader2 } from 'lucide-react'
+import { crearPago } from '../services/billeteraService'
 
 interface Props {
   diasRegistrados: string[]
   onClose: () => void
+  onSuccess: () => void
 }
 
 const DIA_A_NUM: Record<string, number> = {
-  Lunes: 1, Martes: 2, 'Miércoles': 3, Jueves: 4, Viernes: 5,
+  lunes: 1, martes: 2, miercoles: 3, jueves: 4, viernes: 5,
+}
+
+const DIA_A_LABEL: Record<string, string> = {
+  lunes: 'Lunes', martes: 'Martes', miercoles: 'Miércoles', jueves: 'Jueves', viernes: 'Viernes',
 }
 
 const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']
 
-function getProximasFechas(dias: string[]): { label: string; iso: string }[] {
+function getProximasFechas(dias: string[]): { label: string; iso: string; dia: string }[] {
   const hoy = new Date()
   hoy.setHours(0, 0, 0, 0)
-  const resultado: { label: string; iso: string }[] = []
+  const resultado: { label: string; iso: string; dia: string }[] = []
 
   for (let w = 0; w <= 3; w++) {
     for (const dia of dias) {
@@ -26,20 +32,22 @@ function getProximasFechas(dias: string[]): { label: string; iso: string }[] {
       let diff = numDia - hoyNum
       if (diff <= 0) diff += 7
       fecha.setDate(hoy.getDate() + diff + w * 7)
-      const label = `${dia} ${fecha.getDate()} ${MESES[fecha.getMonth()]}`
+      const label = `${DIA_A_LABEL[dia]} ${fecha.getDate()} ${MESES[fecha.getMonth()]}`
       const iso = fecha.toISOString().split('T')[0]
-      resultado.push({ label, iso })
+      resultado.push({ label, iso, dia })
     }
   }
 
   return resultado.sort((a, b) => a.iso.localeCompare(b.iso))
 }
 
-function SubirPagoModal({ diasRegistrados, onClose }: Props) {
+function SubirPagoModal({ diasRegistrados, onClose, onSuccess }: Props) {
   const [tipo, setTipo] = useState<'SEMANAL' | 'MENSUAL'>('SEMANAL')
   const [seleccionados, setSeleccionados] = useState<string[]>([])
   const [archivo, setArchivo] = useState<File | null>(null)
   const [arrastrado, setArrastrado] = useState(false)
+  const [enviando, setEnviando] = useState(false)
+  const [errorEnvio, setErrorEnvio] = useState<string | null>(null)
 
   const fechas = useMemo(() => getProximasFechas(diasRegistrados), [diasRegistrados])
   const minimo = tipo === 'SEMANAL' ? 2 : 8
@@ -56,17 +64,29 @@ function SubirPagoModal({ diasRegistrados, onClose }: Props) {
     if (file.type === 'application/pdf') setArchivo(file)
   }
 
-  const handleSubmit = () => {
-    if (!cumpleMinimo || !archivo) return
-    // aquí irá la llamada al backend
-    onClose()
+  const handleSubmit = async () => {
+    if (!cumpleMinimo || !archivo || enviando) return
+    setEnviando(true)
+    setErrorEnvio(null)
+    try {
+      const diasNombres = seleccionados
+        .map(iso => fechas.find(f => f.iso === iso)?.dia ?? '')
+        .filter(Boolean)
+
+      await crearPago({ tipo_periodo: tipo, dias_pagados: diasNombres, archivo })
+      onSuccess()
+      onClose()
+    } catch (e: any) {
+      setErrorEnvio(e?.response?.data?.message ?? 'Error al enviar el pago')
+    } finally {
+      setEnviando(false)
+    }
   }
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-3xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
 
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <h2 className="text-base font-bold text-gray-800">Subir comprobante</h2>
           <button onClick={onClose} className="text-gray-300 hover:text-gray-500 transition">
@@ -76,20 +96,14 @@ function SubirPagoModal({ diasRegistrados, onClose }: Props) {
 
         <div className="p-6 flex flex-col gap-5">
 
-          {/* Tipo de periodo */}
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Tipo de periodo</p>
             <div className="flex gap-2">
               {(['SEMANAL', 'MENSUAL'] as const).map(t => (
-                <button
-                  key={t}
-                  onClick={() => { setTipo(t); setSeleccionados([]) }}
+                <button key={t} onClick={() => { setTipo(t); setSeleccionados([]) }}
                   className={`flex-1 py-2 rounded-xl text-sm font-semibold transition-all ${
-                    tipo === t
-                      ? 'bg-violet-500 text-white shadow-sm'
-                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                  }`}
-                >
+                    tipo === t ? 'bg-violet-500 text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                  }`}>
                   {t === 'SEMANAL' ? 'Semanal' : 'Mensual'}
                 </button>
               ))}
@@ -99,7 +113,6 @@ function SubirPagoModal({ diasRegistrados, onClose }: Props) {
             </p>
           </div>
 
-          {/* Selección de días */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide flex items-center gap-1.5">
@@ -111,19 +124,19 @@ function SubirPagoModal({ diasRegistrados, onClose }: Props) {
                 {cantidad} seleccionado{cantidad !== 1 ? 's' : ''}
               </span>
             </div>
-            <div className="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1">
-              {fechas.map(({ label, iso }) => (
-                <label key={iso} className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-50 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={seleccionados.includes(iso)}
-                    onChange={() => toggleDia(iso)}
-                    className="accent-violet-500 w-4 h-4"
-                  />
-                  <span className="text-sm text-gray-700">{label}</span>
-                </label>
-              ))}
-            </div>
+            {diasRegistrados.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-4">No tienes días asignados</p>
+            ) : (
+              <div className="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1">
+                {fechas.map(({ label, iso }) => (
+                  <label key={iso} className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-50 cursor-pointer">
+                    <input type="checkbox" checked={seleccionados.includes(iso)}
+                      onChange={() => toggleDia(iso)} className="accent-violet-500 w-4 h-4" />
+                    <span className="text-sm text-gray-700">{label}</span>
+                  </label>
+                ))}
+              </div>
+            )}
             {!cumpleMinimo && cantidad > 0 && (
               <div className="flex items-center gap-1.5 mt-2 text-xs text-amber-500">
                 <AlertCircle size={12} />
@@ -132,7 +145,6 @@ function SubirPagoModal({ diasRegistrados, onClose }: Props) {
             )}
           </div>
 
-          {/* Subir PDF */}
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Comprobante PDF</p>
             <div
@@ -159,17 +171,20 @@ function SubirPagoModal({ diasRegistrados, onClose }: Props) {
               onChange={(e) => { const f = e.target.files?.[0]; if (f) handleArchivo(f) }} />
           </div>
 
-          {/* Botones */}
+          {errorEnvio && (
+            <div className="flex items-center gap-2 px-3 py-2 bg-red-50 rounded-xl text-xs text-red-500">
+              <AlertCircle size={13} /> {errorEnvio}
+            </div>
+          )}
+
           <div className="flex gap-3 pt-1">
-            <button onClick={onClose}
-              className="flex-1 py-2.5 border border-gray-200 text-gray-500 rounded-xl text-sm font-semibold hover:bg-gray-50 transition">
+            <button onClick={onClose} disabled={enviando}
+              className="flex-1 py-2.5 border border-gray-200 text-gray-500 rounded-xl text-sm font-semibold hover:bg-gray-50 transition disabled:opacity-50">
               Cancelar
             </button>
-            <button
-              onClick={handleSubmit}
-              disabled={!cumpleMinimo || !archivo}
-              className="flex-1 py-2.5 bg-gradient-to-br from-violet-500 to-purple-400 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed">
-              Enviar pago
+            <button onClick={handleSubmit} disabled={!cumpleMinimo || !archivo || enviando}
+              className="flex-1 py-2.5 bg-gradient-to-br from-violet-500 to-purple-400 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+              {enviando ? <><Loader2 size={15} className="animate-spin" /> Enviando...</> : 'Enviar pago'}
             </button>
           </div>
 

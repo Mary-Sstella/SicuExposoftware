@@ -10,5 +10,7 @@ router.post('/', verifyToken, verifyRole(ROLES.ESTUDIANTE), uploadPago, controll
 router.get('/', verifyToken, verifyRole(ROLES.ADMIN), controller.getPagos);
 router.get('/mis-pagos', verifyToken, verifyRole(ROLES.ESTUDIANTE), controller.getMisPagos);
 router.patch('/:id/estado', verifyToken, verifyRole(ROLES.ADMIN), controller.updateEstadoPago);
+router.get('/:id/pdf', verifyToken, controller.getPdfUrl);
+
 
 module.exports = router;

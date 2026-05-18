@@ -76,14 +76,32 @@ const getPagos = () => {
 };
 
 const getMisPagos = async (id_estudiante) => {
+    if (!id_estudiante) return {pagos: [], saldo_disponible:0, dias_registrados: []}
     const pagos = await pagoRepository.getMisPagos(id_estudiante);
+
+    const reserva = await prisma.reservas.findFirst({
+        where: { id_estudiante, estado: 'PENDIENTE' },
+        orderBy: { fecha: 'desc' },
+    });
+
+    const CAMPOS_DIAS = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
+    const dias_registrados = reserva
+        ? CAMPOS_DIAS.filter((d) => reserva[d] === true)
+        : [];
 
     const saldo_disponible = pagos
         .filter((p) => p.estado === 'APROBADO')
         .reduce((acc, p) => acc + p.cantidad_almuerzos - p.almuerzos_usados, 0);
 
-    return { pagos, saldo_disponible };
+    return { pagos, saldo_disponible, dias_registrados };
 };
+
+const getPdfUrlById = async (id) => {
+    const pago = await pagoRepository.getPagoById(id);
+    if (!pago) throw new Error('NOT_FOUND');
+    return getUrlFirmada(pago.pdf_url);
+};
+
 
 const aprobarPago = (id, observacion) => {
     return pagoRepository.updateEstadoPago(id, 'APROBADO', observacion);
@@ -101,4 +119,5 @@ module.exports = {
     getMisPagos,
     aprobarPago,
     rechazarPago,
+    getPdfUrlById,
 };

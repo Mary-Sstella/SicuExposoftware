@@ -75,9 +75,24 @@ const updateEstadoPago = async (req, res, next) => {
     }
 };
 
+const getPdfUrl = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const url = await pagoService.getPdfUrlById(Number(id));
+        res.json({ url });
+    } catch (error) {
+        if (error.message === 'NOT_FOUND') {
+            return next(new AppError(404, 'Pago no encontrado'));
+        }
+        next(error);
+    }
+};
+
+
 module.exports = {
     createPago,
     getPagos,
     getMisPagos,
     updateEstadoPago,
+    getPdfUrl,
 };
