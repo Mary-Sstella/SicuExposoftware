@@ -15,6 +15,7 @@ import EstadisticasPage from '../../features/estadisticas/pages/EstadisticasPage
 import InscripcionPage from '../../features/inscripcion/pages/InscripcionPage'
 import SolicitudesPage from '../../features/solicitudes/pages/SolicitudesPage'
 import BilleteraPage from '../../features/billetera/pages/BilleteraPage'
+import ConfiguracionPage from '../../features/configuracion/pages/ConfiguracionPage'
 
 
 
@@ -34,6 +35,7 @@ function AppRouter() {
           <Route path={ROUTES.TURNOS} element={<TurnosPage/>}/>
           <Route path={ROUTES.ESTADISTICAS} element={<EstadisticasPage />} />
           <Route path={ROUTES.SOLICITUDES} element={<SolicitudesPage />} />
+          <Route path={ROUTES.CONFIGURACION} element={<ConfiguracionPage />} />
         </Route>
         <Route element={<StudentLayout />}>
         <Route path={ROUTES.STUDENT} element={<EstudiantePage />} />

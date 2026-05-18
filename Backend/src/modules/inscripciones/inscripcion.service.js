@@ -66,7 +66,6 @@ const getInscripcionById = async (id) => {
 const aprobarInscripcion = async (id, dias) => {
   const inscripcion = await inscripcionRepository.getInscripcionById(id);
 
-  // 1. Usar días del admin, o los del estudiante como respaldo
   const diasSolicitados = (Array.isArray(dias) && dias.length > 0)
     ? dias
     : inscripcion.dias_semana.split(',').map(d => d.trim());
@@ -77,95 +76,91 @@ const aprobarInscripcion = async (id, dias) => {
   for (const dia of diasSolicitados) {
     const campo = MAPA_DIAS[dia];
     if (!campo) continue;
-
-    const ocupados = await prisma.reservas.count({
-      where: { [campo]: true },
-    });
-
+    const ocupados = await prisma.reservas.count({ where: { [campo]: true } });
     const cupo = config[`cupo_${campo}`];
-    if (ocupados < cupo) {
-      diasAprobados.push(dia);
-    }
+    if (ocupados < cupo) diasAprobados.push(dia);
   }
 
   if (diasAprobados.length === 0) throw new Error('SIN_CUPO');
 
-  // 2. Verificar si el estudiante ya existe
-  let estudiante;
-  let esNuevo;
-
-  const estudianteExistente = await prisma.estudiante.findFirst({
-    where: { correo_institucional: inscripcion.correo_institucional },
-  });
-
-  if (estudianteExistente) {
-    if (estudianteExistente.estado === 'ACTIVO') throw new Error('YA_ACTIVO');
-    estudiante = await prisma.estudiante.update({
-      where: { id_estudiante: estudianteExistente.id_estudiante },
-      data: { estado: 'ACTIVO' },
-    });
-    esNuevo = false;
-  } else {
-    estudiante = await prisma.estudiante.create({
-      data: {
-        numero_identificacion: BigInt(inscripcion.cedula),
-        tipo_identificacion: 'CC',
-        nombres: inscripcion.nombre,
-        apellidos: inscripcion.apellidos,
-        correo_personal: inscripcion.correo_personal,
-        correo_institucional: inscripcion.correo_institucional,
-        programa: inscripcion.carrera,
-        estado: 'ACTIVO',
-        contador_inasistencias: 0,
-        limite_inasistencias: 3,
-      },
-    });
-    esNuevo = true;
-  }
-
-  // 3. Verificar si ya tiene usuario
   const password_hash = await bcrypt.hash(inscripcion.cedula, 10);
 
-  const usuarioExistente = await prisma.usuarios.findFirst({
-    where: { email: inscripcion.correo_institucional },
-  });
+  return prisma.$transaction(async (tx) => {
+    let estudiante;
+    let esNuevo;
 
-  if (usuarioExistente) {
-    await prisma.usuarios.update({
-      where: { id_usuario: usuarioExistente.id_usuario },
-      data: { activo: true },
+    const estudianteExistente = await tx.estudiante.findFirst({
+      where: { correo_institucional: inscripcion.correo_institucional },
     });
-  } else {
-    await prisma.usuarios.create({
+
+    if (estudianteExistente) {
+      if (estudianteExistente.estado === 'ACTIVO') throw new Error('YA_ACTIVO');
+      estudiante = await tx.estudiante.update({
+        where: { id_estudiante: estudianteExistente.id_estudiante },
+        data: { estado: 'ACTIVO' },
+      });
+      esNuevo = false;
+    } else {
+      estudiante = await tx.estudiante.create({
+        data: {
+          numero_identificacion: BigInt(inscripcion.cedula),
+          tipo_identificacion: 'CC',
+          nombres: inscripcion.nombre,
+          apellidos: inscripcion.apellidos,
+          correo_personal: inscripcion.correo_personal,
+          correo_institucional: inscripcion.correo_institucional,
+          programa: inscripcion.carrera,
+          estado: 'ACTIVO',
+          contador_inasistencias: 0,
+          limite_inasistencias: 3,
+        },
+      });
+      esNuevo = true;
+    }
+
+    const usuarioExistente = await tx.usuarios.findFirst({
+      where: { email: inscripcion.correo_institucional },
+    });
+
+    if (usuarioExistente) {
+      await tx.usuarios.update({
+        where: { id_usuario: usuarioExistente.id_usuario },
+        data: { activo: true },
+      });
+    } else {
+      await tx.usuarios.create({
+        data: {
+          email: inscripcion.correo_institucional,
+          password_hash,
+          rol: 'ESTUDIANTE',
+          id_estudiante: estudiante.id_estudiante,
+        },
+      });
+    }
+
+    await tx.reservas.create({
       data: {
-        email: inscripcion.correo_institucional,
-        password_hash,
-        rol: 'ESTUDIANTE',
         id_estudiante: estudiante.id_estudiante,
+        fecha: new Date(),
+        lunes:     diasAprobados.includes('Lunes'),
+        martes:    diasAprobados.includes('Martes'),
+        miercoles: diasAprobados.includes('Miércoles'),
+        jueves:    diasAprobados.includes('Jueves'),
+        viernes:   diasAprobados.includes('Viernes'),
+        estado: 'PENDIENTE',
+        numero_identificacion: BigInt(inscripcion.cedula),
+        nombre_estudiante: `${inscripcion.nombre} ${inscripcion.apellidos}`,
+        numero_turno: null,
       },
     });
-  }
 
-  // 4. Crear reserva con los días aprobados
-  await prisma.reservas.create({
-    data: {
-      id_estudiante: estudiante.id_estudiante,
-      fecha: new Date(),
-      lunes:     diasAprobados.includes('Lunes'),
-      martes:    diasAprobados.includes('Martes'),
-      miercoles: diasAprobados.includes('Miércoles'),
-      jueves:    diasAprobados.includes('Jueves'),
-      viernes:   diasAprobados.includes('Viernes'),
-      estado: 'PENDIENTE',
-      numero_identificacion: BigInt(inscripcion.cedula),
-      nombre_estudiante: `${inscripcion.nombre} ${inscripcion.apellidos}`,
-      numero_turno: null,
-    },
+    const inscripcionActualizada = await tx.inscripciones.update({
+      where: { id_inscripcion: id },
+      data: { estado: 'APROBADO' },
+    });
+
+    return { inscripcion: inscripcionActualizada, diasAprobados, esNuevo };
   });
-
-  const inscripcionActualizada = await inscripcionRepository.updateEstadoInscripcion(id, 'APROBADO');
-
-  return { inscripcion: inscripcionActualizada, diasAprobados, esNuevo };
 };
 
 const rechazarInscripcion = async (id) => {

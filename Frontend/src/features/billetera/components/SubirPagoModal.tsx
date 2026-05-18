@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { X, Upload, Calendar, AlertCircle, Loader2 } from 'lucide-react'
 import { crearPago } from '../services/billeteraService'
+import api from '../../../shared/api/axios'
 
 interface Props {
   diasRegistrados: string[]
@@ -18,27 +19,36 @@ const DIA_A_LABEL: Record<string, string> = {
 
 const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']
 
-function getProximasFechas(dias: string[]): { label: string; iso: string; dia: string }[] {
+function getProximasFechas(
+  dias: string[],
+  fechaInicio: string | null,
+  fechaFin: string | null
+): { label: string; iso: string; dia: string }[] {
   const hoy = new Date()
-  hoy.setHours(0, 0, 0, 0)
+  hoy.setHours(12, 0, 0, 0)
+
+  const inicio = fechaInicio ? new Date(fechaInicio + 'T12:00:00') : hoy
+  const fin = fechaFin
+    ? new Date(fechaFin + 'T12:00:00')
+    : new Date(hoy.getTime() + 28 * 24 * 60 * 60 * 1000)
+
+  const desde = inicio > hoy ? inicio : hoy
+  const current = new Date(desde)
   const resultado: { label: string; iso: string; dia: string }[] = []
 
-  for (let w = 0; w <= 3; w++) {
-    for (const dia of dias) {
-      const numDia = DIA_A_NUM[dia]
-      if (!numDia) continue
-      const fecha = new Date(hoy)
-      const hoyNum = hoy.getDay()
-      let diff = numDia - hoyNum
-      if (diff <= 0) diff += 7
-      fecha.setDate(hoy.getDate() + diff + w * 7)
-      const label = `${DIA_A_LABEL[dia]} ${fecha.getDate()} ${MESES[fecha.getMonth()]}`
-      const iso = fecha.toISOString().split('T')[0]
-      resultado.push({ label, iso, dia })
+  for (let i = 0; i < 365; i++) {
+    if (current > fin) break
+    const diaSemana = current.getDay()
+    const diaName = Object.keys(DIA_A_NUM).find(k => DIA_A_NUM[k] === diaSemana)
+    if (diaName && dias.includes(diaName)) {
+      const label = `${DIA_A_LABEL[diaName]} ${current.getDate()} ${MESES[current.getMonth()]}`
+      const iso = current.toISOString().split('T')[0]
+      resultado.push({ label, iso, dia: diaName })
     }
+    current.setDate(current.getDate() + 1)
   }
 
-  return resultado.sort((a, b) => a.iso.localeCompare(b.iso))
+  return resultado
 }
 
 function SubirPagoModal({ diasRegistrados, onClose, onSuccess }: Props) {
@@ -48,8 +58,18 @@ function SubirPagoModal({ diasRegistrados, onClose, onSuccess }: Props) {
   const [arrastrado, setArrastrado] = useState(false)
   const [enviando, setEnviando] = useState(false)
   const [errorEnvio, setErrorEnvio] = useState<string | null>(null)
+  const [fechaInicio, setFechaInicio] = useState<string | null>(null)
+  const [fechaFin, setFechaFin] = useState<string | null>(null)
 
-  const fechas = useMemo(() => getProximasFechas(diasRegistrados), [diasRegistrados])
+  useEffect(() => {
+    api.get('/configuracion-formulario').then(res => {
+      const cfg = res.data
+      if (cfg.fecha_inicio) setFechaInicio(cfg.fecha_inicio.split('T')[0])
+      if (cfg.fecha_fin_semestre) setFechaFin(cfg.fecha_fin_semestre.split('T')[0])
+    }).catch(() => {})
+  }, [])
+
+  const fechas = useMemo(() => getProximasFechas(diasRegistrados, fechaInicio, fechaFin), [diasRegistrados, fechaInicio, fechaFin])
   const minimo = tipo === 'SEMANAL' ? 2 : 8
   const cantidad = seleccionados.length
   const cumpleMinimo = cantidad >= minimo
@@ -77,7 +97,7 @@ function SubirPagoModal({ diasRegistrados, onClose, onSuccess }: Props) {
       onSuccess()
       onClose()
     } catch (e: any) {
-      setErrorEnvio(e?.response?.data?.message ?? 'Error al enviar el pago')
+      setErrorEnvio(e?.response?.data?.msg ?? 'Error al enviar el pago')
     } finally {
       setEnviando(false)
     }

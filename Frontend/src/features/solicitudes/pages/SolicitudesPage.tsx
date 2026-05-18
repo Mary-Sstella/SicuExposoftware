@@ -85,10 +85,15 @@ function SolicitudesPage(){
     const handleAprobar = async () =>{
         if(!selected) return
         if(!confirm('¿Aprobar esta solicitud? El estudiante será registrado en el sistema.')) return
-        await aprobarInscripcion(selected.id_inscripcion, diasSeleccionados)
-        setDrawerOpen(false)
-        setSelected(null)
-        fetchSolicitudes()
+        try {
+            await aprobarInscripcion(selected.id_inscripcion, diasSeleccionados)
+            setDrawerOpen(false)
+            setSelected(null)
+            fetchSolicitudes()
+        } catch (e: any) {
+            const msg = e?.response?.data?.msg ?? 'Error al aprobar la solicitud'
+            alert(msg)
+        }
     }
 
       return (

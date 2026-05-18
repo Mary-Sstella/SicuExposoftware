@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../shared/constants/routes'
-import { FileCheck, UploadCloud } from 'lucide-react'
+import { FileCheck, UploadCloud, AlertCircle, Loader2 } from 'lucide-react'
 import { createInscripcion } from '../services/inscripcionesService'
 
 const STEPS = [
@@ -33,6 +33,8 @@ function InscripcionPage() {
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
   const [errores, setErrores] = useState<Record<string, string>>({})
+  const [errorEnvio, setErrorEnvio] = useState<string | null>(null)
+  const [enviando, setEnviando] = useState(false)
   const [form, setForm] = useState<FormData>({
     nombre: '',
     apellidos: '',
@@ -125,11 +127,23 @@ function InscripcionPage() {
       else if (value !== null) formData.append(key, value)
     })
     try {
+      setEnviando(true)
+      setErrorEnvio(null)
       await createInscripcion(formData)
-      alert('Solicitud enviada exitosamente')
       navigate(ROUTES.LOGIN)
-    } catch {
-      alert('Error al enviar la solicitud. Intenta de nuevo.')
+    } catch (e: any) {
+      const msg: string = e?.response?.data?.msg ?? 'Error al enviar la solicitud. Intenta de nuevo.'
+      if (msg.toLowerCase().includes('cédula') || msg.toLowerCase().includes('cedula')) {
+        setErrores(prev => ({ ...prev, cedula: msg }))
+        setStep(1)
+      } else if (msg.toLowerCase().includes('correo')) {
+        setErrores(prev => ({ ...prev, correo_institucional: msg }))
+        setStep(2)
+      } else {
+        setErrorEnvio(msg)
+      }
+    } finally {
+      setEnviando(false)
     }
   }
 
@@ -334,7 +348,14 @@ function InscripcionPage() {
           </div>
         )}
 
-        <div className="flex justify-between mt-10">
+        {errorEnvio && (
+          <div className="flex items-center gap-2 mt-6 px-4 py-3 bg-red-50 border border-red-200 rounded-2xl text-sm text-red-600">
+            <AlertCircle size={16} className="shrink-0" />
+            {errorEnvio}
+          </div>
+        )}
+
+        <div className="flex justify-between mt-6">
           {step > 1 ? (
             <button onClick={() => setStep(s => s - 1)}
               className="px-6 py-2.5 border border-gray-200 rounded-xl text-gray-500 text-sm font-medium hover:bg-gray-50 transition">
@@ -348,9 +369,10 @@ function InscripcionPage() {
               Siguiente
             </button>
           ) : (
-            <button onClick={handleSubmit}
-              className="px-8 py-2.5 bg-gradient-to-r from-purple-600 to-fuchsia-500 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition shadow-sm">
-              Enviar solicitud
+            <button onClick={handleSubmit} disabled={enviando}
+              className="flex items-center gap-2 px-8 py-2.5 bg-gradient-to-r from-purple-600 to-fuchsia-500 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition shadow-sm disabled:opacity-60">
+              {enviando && <Loader2 size={15} className="animate-spin" />}
+              {enviando ? 'Enviando...' : 'Enviar solicitud'}
             </button>
           )}
         </div>

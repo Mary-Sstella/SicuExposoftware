@@ -1,8 +1,12 @@
 const prisma = require('../../config/prisma');
 
 const getConfiguracion = () => {
-    return prisma.configuracion_formulario.findFirst();
-};
+    return prisma.configuracion_formulario.upsert({
+        where: { id: 1 },
+        update: {},
+        create: { activo: false },
+    })
+}
 
 const updateConfiguracion = (data) => {
     return prisma.configuracion_formulario.update({
