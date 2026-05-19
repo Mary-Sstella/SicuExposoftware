@@ -61,6 +61,7 @@ const deleteEstudiante = async (id) => {
     if (archivos.length > 0) {
       await supabase.storage.from('inscripciones-docs').remove(archivos)
     }
+    await prisma.inscripciones.delete({ where: { id_inscripcion: inscripcion.id_inscripcion } })
   }
 
   // Borrar usuario asociado (no tiene cascade)

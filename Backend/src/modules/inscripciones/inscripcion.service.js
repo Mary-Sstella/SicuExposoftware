@@ -56,12 +56,13 @@ const getInscripcionById = async (id) => {
   const inscripcion = await inscripcionRepository.getInscripcionById(id);
 
   const [sisben_url, cedula_url] = await Promise.all([
-    getUrlFirmada(inscripcion.sisben_pdf),
-    getUrlFirmada(inscripcion.cedula_pdf),
+    inscripcion.sisben_pdf ? getUrlFirmada(inscripcion.sisben_pdf).catch(() => null) : Promise.resolve(null),
+    inscripcion.cedula_pdf ? getUrlFirmada(inscripcion.cedula_pdf).catch(() => null) : Promise.resolve(null),
   ]);
 
   return { ...inscripcion, sisben_url, cedula_url };
 };
+
 
 const aprobarInscripcion = async (id, dias) => {
   const inscripcion = await inscripcionRepository.getInscripcionById(id);
