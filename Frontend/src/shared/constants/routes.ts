@@ -10,4 +10,5 @@ export const ROUTES = {
   SOLICITUDES: '/solicitudes',
   STUDENT_PAGO: '/student/pago',
   CONFIGURACION: '/configuracion',
+  CARTERA: '/cartera',
 }
