@@ -46,8 +46,33 @@ const updateEstudianteDias = async (id, data) => {
 
 // Eliminar
 const deleteEstudiante = async (id) => {
-    return await estudianteRepository.deleteEstudiante(id)
+  const supabase = require('../../config/supabase')
+  const estudianteId = parseInt(id)
+
+  const estudiante = await estudianteRepository.getEstudianteById(id)
+  if (!estudiante) return null
+
+  // Borrar PDFs de Supabase si tiene inscripción
+  const inscripcion = await prisma.inscripciones.findFirst({
+    where: { correo_institucional: estudiante.correo_institucional }
+  })
+  if (inscripcion) {
+    const archivos = [inscripcion.sisben_pdf, inscripcion.cedula_pdf].filter(Boolean)
+    if (archivos.length > 0) {
+      await supabase.storage.from('inscripciones-docs').remove(archivos)
+    }
+    await prisma.inscripciones.delete({ where: { id_inscripcion: inscripcion.id_inscripcion } })
+  }
+
+  // Borrar usuario asociado (no tiene cascade)
+  await prisma.usuarios.deleteMany({ where: { id_estudiante: estudianteId } })
+  // Desvincular registros sin cascade
+  await prisma.qr_generados.deleteMany({ where: { id_estudiante: estudianteId } })
+  await prisma.comprobantes.updateMany({ where: { id_estudiante: estudianteId }, data: { id_estudiante: null } })
+
+  return await estudianteRepository.deleteEstudiante(id)
 }
+
 
 module.exports = {
     getEstudiantes,

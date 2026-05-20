@@ -6,3 +6,8 @@ export const getEstudiantes = async () =>{
     const res = await api.get('/estudiantes/dias')
     return res.data 
 }
+
+export const deleteEstudiante = async (id: number) =>{
+    const res = await api.delete(`/estudiantes/${id}`)
+    return res.data
+}

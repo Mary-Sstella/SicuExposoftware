@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../shared/constants/routes'
-import { FileCheck, UploadCloud } from 'lucide-react'
+import { FileCheck, UploadCloud, AlertCircle, Loader2 } from 'lucide-react'
 import { createInscripcion } from '../services/inscripcionesService'
-
 
 const STEPS = [
   { number: 1, label: 'Datos Personales' },
@@ -33,6 +32,9 @@ type FormData = {
 function InscripcionPage() {
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
+  const [errores, setErrores] = useState<Record<string, string>>({})
+  const [errorEnvio, setErrorEnvio] = useState<string | null>(null)
+  const [enviando, setEnviando] = useState(false)
   const [form, setForm] = useState<FormData>({
     nombre: '',
     apellidos: '',
@@ -50,48 +52,105 @@ function InscripcionPage() {
     cedula_pdf: null,
   })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => { //este método se encarga de actualizar el estado del formulario cada vez que el usuario cambia el valor de un campo de texto o selección
+  const fieldClass = (campo: string) =>
+    `w-full bg-gray-50 rounded-xl px-4 py-2.5 text-sm border ${
+      errores[campo]
+        ? 'border-red-400 bg-red-50'
+        : 'border-gray-200 focus:border-violet-400 focus:bg-white'
+    } focus:outline-none transition`
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setForm(prev => ({ ...prev, [name]: value }))
+    if (errores[name]) setErrores(prev => ({ ...prev, [name]: '' }))
   }
 
-  const handleDia = (dia: string) => { //este metodo se encarga de agregar o quitar un día del arreglo dias_semana dependiendo de si ya está incluido o no
+  const handleDia = (dia: string) => {
     setForm(prev => ({
       ...prev,
       dias_semana: prev.dias_semana.includes(dia)
         ? prev.dias_semana.filter(d => d !== dia)
         : [...prev.dias_semana, dia],
     }))
+    if (errores.dias_semana) setErrores(prev => ({ ...prev, dias_semana: '' }))
   }
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>, field: 'sisben_pdf' | 'cedula_pdf') => { //guarda el archivo en el estado del formulario
-    const file = e.target.files?.[0] ?? null //obtenemos el primer archivo seleccionado o null si no hay ninguno
-    setForm(prev => ({ ...prev, [field]: file })) //actualizamos el estado del formulario con el nuevo archivo
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>, field: 'sisben_pdf' | 'cedula_pdf') => {
+    const file = e.target.files?.[0] ?? null
+    if (file && file.size > 5 * 1024 * 1024) {
+      setErrores(prev => ({ ...prev, [field]: 'El archivo no puede superar los 5MB' }))
+      e.target.value = ''
+      return
+    }
+    setErrores(prev => ({ ...prev, [field]: '' }))
+    setForm(prev => ({ ...prev, [field]: file }))
   }
 
-  const handleSubmit = async () => { //este método se encarga de enviar los datos del formulario al backend
-    const formData = new FormData() //empaca los datos que viajan al servidor en un formato multipart/form-data, que es adecuado para enviar archivos junto con otros datos
-    Object.entries(form).forEach(([key, value]) => { 
+  const validarPaso = () => {
+    const e: Record<string, string> = {}
+
+    if (step === 1) {
+      if (!form.nombre.trim()) e.nombre = 'El nombre es obligatorio'
+      if (!form.apellidos.trim()) e.apellidos = 'Los apellidos son obligatorios'
+      if (!form.cedula.trim()) e.cedula = 'La cédula es obligatoria'
+      else if (!/^\d+$/.test(form.cedula)) e.cedula = 'Solo debe contener números'
+      if (!form.genero) e.genero = 'Selecciona un género'
+      if (!form.carrera) e.carrera = 'Selecciona una carrera'
+    }
+
+    if (step === 2) {
+      if (!form.correo_institucional.trim()) e.correo_institucional = 'El correo institucional es obligatorio'
+      else if (!form.correo_institucional.endsWith('@unicesar.edu.co'))
+        e.correo_institucional = 'Debe ser un correo @unicesar.edu.co'
+      if (!form.lugar_origen.trim()) e.lugar_origen = 'Este campo es obligatorio'
+      if (!form.lugar_residencia.trim()) e.lugar_residencia = 'Este campo es obligatorio'
+      if (!form.medio_transporte) e.medio_transporte = 'Selecciona un medio de transporte'
+      if (!form.ocupacion_padres.trim()) e.ocupacion_padres = 'Este campo es obligatorio'
+    }
+
+    if (step === 3) {
+      if (form.dias_semana.length === 0) e.dias_semana = 'Selecciona al menos un día'
+      if (!form.sisben_pdf) e.sisben_pdf = 'El PDF del SISBEN es obligatorio'
+      if (!form.cedula_pdf) e.cedula_pdf = 'El PDF de la cédula es obligatorio'
+    }
+
+    setErrores(e)
+    return Object.keys(e).length === 0
+  }
+
+  const handleSubmit = async () => {
+    if (!validarPaso()) return
+    const formData = new FormData()
+    Object.entries(form).forEach(([key, value]) => {
       if (value instanceof File) formData.append(key, value)
       else if (Array.isArray(value)) formData.append(key, value.join(','))
       else if (value !== null) formData.append(key, value)
     })
     try {
-    await createInscripcion(formData)
-    alert('Solicitud enviada exitosamente')
-    navigate(ROUTES.LOGIN)
-  } catch (error) {
-    alert('Error al enviar la solicitud. Intenta de nuevo.')
+      setEnviando(true)
+      setErrorEnvio(null)
+      await createInscripcion(formData)
+      navigate(ROUTES.LOGIN)
+    } catch (e: any) {
+      const msg: string = e?.response?.data?.msg ?? 'Error al enviar la solicitud. Intenta de nuevo.'
+      if (msg.toLowerCase().includes('cédula') || msg.toLowerCase().includes('cedula')) {
+        setErrores(prev => ({ ...prev, cedula: msg }))
+        setStep(1)
+      } else if (msg.toLowerCase().includes('correo')) {
+        setErrores(prev => ({ ...prev, correo_institucional: msg }))
+        setStep(2)
+      } else {
+        setErrorEnvio(msg)
+      }
+    } finally {
+      setEnviando(false)
+    }
   }
-}
-
-  const inputClass = 'w-full bg-gray-50 rounded-xl px-4 py-2.5 text-sm border border-gray-200 focus:outline-none focus:border-violet-400 focus:bg-white transition'
 
   return (
     <div className="min-h-screen bg-purple-50 flex items-center justify-center p-6">
       <div className="bg-white rounded-3xl shadow-xl w-full max-w-2xl p-10">
 
-        {/* Link superior */}
         <div className="text-right text-sm mb-6">
           <span className="text-gray-400">¿Ya tienes cuenta? </span>
           <button onClick={() => navigate(ROUTES.LOGIN)} className="text-violet-600 font-semibold hover:underline">
@@ -99,10 +158,8 @@ function InscripcionPage() {
           </button>
         </div>
 
-        {/* Título */}
         <h1 className="text-2xl font-bold text-center text-gray-800 mb-8">Solicitud de Inscripción</h1>
 
-        {/* Indicador de pasos */}
         <div className="flex items-center justify-center mb-10">
           {STEPS.map((s, i) => (
             <div key={s.number} className="flex items-center">
@@ -132,29 +189,33 @@ function InscripcionPage() {
               <div>
                 <label className="text-xs text-gray-500 mb-1.5 block">Nombre</label>
                 <input name="nombre" value={form.nombre} onChange={handleChange}
-                  placeholder="Ingresa tu nombre" className={inputClass} />
+                  placeholder="Ingresa tu nombre" className={fieldClass('nombre')} />
+                {errores.nombre && <p className="text-xs text-red-500 mt-1">{errores.nombre}</p>}
               </div>
               <div>
                 <label className="text-xs text-gray-500 mb-1.5 block">Apellidos</label>
                 <input name="apellidos" value={form.apellidos} onChange={handleChange}
-                  placeholder="Ingresa tus apellidos" className={inputClass} />
+                  placeholder="Ingresa tus apellidos" className={fieldClass('apellidos')} />
+                {errores.apellidos && <p className="text-xs text-red-500 mt-1">{errores.apellidos}</p>}
               </div>
               <div>
                 <label className="text-xs text-gray-500 mb-1.5 block">Número de cédula</label>
                 <input name="cedula" value={form.cedula} onChange={handleChange}
-                  placeholder="Número de identificación" className={inputClass} />
+                  placeholder="Número de identificación" className={fieldClass('cedula')} />
+                {errores.cedula && <p className="text-xs text-red-500 mt-1">{errores.cedula}</p>}
               </div>
               <div>
                 <label className="text-xs text-gray-500 mb-1.5 block">Género</label>
-                <select name="genero" value={form.genero} onChange={handleChange} className={inputClass}>
+                <select name="genero" value={form.genero} onChange={handleChange} className={fieldClass('genero')}>
                   <option value="">- Selecciona -</option>
                   <option value="Masculino">Masculino</option>
                   <option value="Femenino">Femenino</option>
                 </select>
+                {errores.genero && <p className="text-xs text-red-500 mt-1">{errores.genero}</p>}
               </div>
               <div className="col-span-2">
                 <label className="text-xs text-gray-500 mb-1.5 block">Carrera</label>
-                <select name="carrera" value={form.carrera} onChange={handleChange} className={inputClass}>
+                <select name="carrera" value={form.carrera} onChange={handleChange} className={fieldClass('carrera')}>
                   <option value="">- Selecciona tu carrera -</option>
                   <option>Licenciatura en Educación Física, Recreación y Deportes</option>
                   <option>Licenciatura en Ciencias Naturales y Educación Ambiental</option>
@@ -174,6 +235,7 @@ function InscripcionPage() {
                   <option>Derecho</option>
                   <option>Psicología</option>
                 </select>
+                {errores.carrera && <p className="text-xs text-red-500 mt-1">{errores.carrera}</p>}
               </div>
             </div>
           </div>
@@ -187,28 +249,31 @@ function InscripcionPage() {
               <div className="col-span-2">
                 <label className="text-xs text-gray-500 mb-1.5 block">Correo institucional</label>
                 <input name="correo_institucional" value={form.correo_institucional} onChange={handleChange}
-                  placeholder="correo@unicesar.edu.co" className={inputClass} />
+                  placeholder="correo@unicesar.edu.co" className={fieldClass('correo_institucional')} />
+                {errores.correo_institucional && <p className="text-xs text-red-500 mt-1">{errores.correo_institucional}</p>}
               </div>
               <div className="col-span-2">
                 <label className="text-xs text-gray-500 mb-1.5 block">
                   Correo personal <span className="text-gray-300">(opcional)</span>
                 </label>
                 <input name="correo_personal" value={form.correo_personal} onChange={handleChange}
-                  placeholder="correo@gmail.com" className={inputClass} />
+                  placeholder="correo@gmail.com" className={fieldClass('correo_personal')} />
               </div>
               <div>
                 <label className="text-xs text-gray-500 mb-1.5 block">¿De dónde eres?</label>
                 <input name="lugar_origen" value={form.lugar_origen} onChange={handleChange}
-                  placeholder="Ciudad o municipio de origen" className={inputClass} />
+                  placeholder="Ciudad o municipio de origen" className={fieldClass('lugar_origen')} />
+                {errores.lugar_origen && <p className="text-xs text-red-500 mt-1">{errores.lugar_origen}</p>}
               </div>
               <div>
                 <label className="text-xs text-gray-500 mb-1.5 block">¿Dónde vives actualmente?</label>
                 <input name="lugar_residencia" value={form.lugar_residencia} onChange={handleChange}
-                  placeholder="Ciudad o municipio de residencia" className={inputClass} />
+                  placeholder="Ciudad o municipio de residencia" className={fieldClass('lugar_residencia')} />
+                {errores.lugar_residencia && <p className="text-xs text-red-500 mt-1">{errores.lugar_residencia}</p>}
               </div>
               <div>
                 <label className="text-xs text-gray-500 mb-1.5 block">Medio de transporte</label>
-                <select name="medio_transporte" value={form.medio_transporte} onChange={handleChange} className={inputClass}>
+                <select name="medio_transporte" value={form.medio_transporte} onChange={handleChange} className={fieldClass('medio_transporte')}>
                   <option value="">- Selecciona -</option>
                   <option value="A pie">A pie</option>
                   <option value="Bicicleta">Bicicleta</option>
@@ -216,11 +281,13 @@ function InscripcionPage() {
                   <option value="Bus">Bus</option>
                   <option value="Carro">Carro</option>
                 </select>
+                {errores.medio_transporte && <p className="text-xs text-red-500 mt-1">{errores.medio_transporte}</p>}
               </div>
               <div>
                 <label className="text-xs text-gray-500 mb-1.5 block">¿A qué se dedican tus padres?</label>
                 <input name="ocupacion_padres" value={form.ocupacion_padres} onChange={handleChange}
-                  placeholder="Ej: Abogado, Médico..." className={inputClass} />
+                  placeholder="Ej: Abogado, Médico..." className={fieldClass('ocupacion_padres')} />
+                {errores.ocupacion_padres && <p className="text-xs text-red-500 mt-1">{errores.ocupacion_padres}</p>}
               </div>
             </div>
           </div>
@@ -231,7 +298,6 @@ function InscripcionPage() {
           <div>
             <h2 className="text-base font-semibold text-gray-700 mb-5">Asistencia y Documentos</h2>
 
-            {/* Días */}
             <div className="mb-7">
               <label className="text-xs text-gray-500 mb-3 block">Días que asistirás al comedor</label>
               <div className="flex gap-2">
@@ -245,9 +311,9 @@ function InscripcionPage() {
                   </button>
                 ))}
               </div>
+              {errores.dias_semana && <p className="text-xs text-red-500 mt-2">{errores.dias_semana}</p>}
             </div>
 
-            {/* PDFs */}
             <div className="grid grid-cols-2 gap-5">
               {(['sisben_pdf', 'cedula_pdf'] as const).map(field => (
                 <div key={field}>
@@ -255,32 +321,41 @@ function InscripcionPage() {
                     {field === 'sisben_pdf' ? 'PDF del SISBEN' : 'PDF de la cédula'}
                   </label>
                   <label className={`flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-2xl cursor-pointer transition-all
-                    ${form[field] ? 'border-violet-400 bg-violet-50' : 'border-gray-200 bg-gray-50 hover:border-violet-300 hover:bg-purple-50'}`}>
+                    ${errores[field] ? 'border-red-400 bg-red-50' :
+                      form[field] ? 'border-violet-400 bg-violet-50' : 'border-gray-200 bg-gray-50 hover:border-violet-300 hover:bg-purple-50'}`}>
                     <input type="file" accept=".pdf,image/png" className="hidden"
                       onChange={e => handleFile(e, field)} />
                     {form[field] ? (
-                        <div className="text-center px-3">
-                            <FileCheck size={28} className="text-violet-500 mx-auto mb-1" />
-                            <p className="text-xs text-violet-600 font-medium truncate max-w-[140px]">
-                                {(form[field] as File).name}
-                            </p>
-                            <p className="text-xs text-gray-400 mt-1">Haz clic para cambiar</p>
-                        </div>
-                        ) : (
-                        <div className="text-center">
-                            <UploadCloud size={32} className="text-gray-300 mx-auto mb-2" />
-                            <p className="text-xs text-gray-500 font-medium">Haz clic para subir</p>
-                            <p className="text-xs text-gray-400 mt-0.5">PDF o PNG · máx 5MB</p>
-                            </div>)}
-                            </label>
-                        </div>
-                ))}
+                      <div className="text-center px-3">
+                        <FileCheck size={28} className="text-violet-500 mx-auto mb-1" />
+                        <p className="text-xs text-violet-600 font-medium truncate max-w-[140px]">
+                          {(form[field] as File).name}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">Haz clic para cambiar</p>
+                      </div>
+                    ) : (
+                      <div className="text-center">
+                        <UploadCloud size={32} className={`mx-auto mb-2 ${errores[field] ? 'text-red-400' : 'text-gray-300'}`} />
+                        <p className="text-xs text-gray-500 font-medium">Haz clic para subir</p>
+                        <p className="text-xs text-gray-400 mt-0.5">PDF o PNG · máx 5MB</p>
+                      </div>
+                    )}
+                  </label>
+                  {errores[field] && <p className="text-xs text-red-500 mt-1">{errores[field]}</p>}
+                </div>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Botones de navegación */}
-        <div className="flex justify-between mt-10">
+        {errorEnvio && (
+          <div className="flex items-center gap-2 mt-6 px-4 py-3 bg-red-50 border border-red-200 rounded-2xl text-sm text-red-600">
+            <AlertCircle size={16} className="shrink-0" />
+            {errorEnvio}
+          </div>
+        )}
+
+        <div className="flex justify-between mt-6">
           {step > 1 ? (
             <button onClick={() => setStep(s => s - 1)}
               className="px-6 py-2.5 border border-gray-200 rounded-xl text-gray-500 text-sm font-medium hover:bg-gray-50 transition">
@@ -289,14 +364,15 @@ function InscripcionPage() {
           ) : <div />}
 
           {step < 3 ? (
-            <button onClick={() => setStep(s => s + 1)}
+            <button onClick={() => { if (validarPaso()) setStep(s => s + 1) }}
               className="px-8 py-2.5 bg-gradient-to-r from-purple-600 to-fuchsia-500 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition shadow-sm">
               Siguiente
             </button>
           ) : (
-            <button onClick={handleSubmit}
-              className="px-8 py-2.5 bg-gradient-to-r from-purple-600 to-fuchsia-500 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition shadow-sm">
-              Enviar solicitud
+            <button onClick={handleSubmit} disabled={enviando}
+              className="flex items-center gap-2 px-8 py-2.5 bg-gradient-to-r from-purple-600 to-fuchsia-500 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition shadow-sm disabled:opacity-60">
+              {enviando && <Loader2 size={15} className="animate-spin" />}
+              {enviando ? 'Enviando...' : 'Enviar solicitud'}
             </button>
           )}
         </div>

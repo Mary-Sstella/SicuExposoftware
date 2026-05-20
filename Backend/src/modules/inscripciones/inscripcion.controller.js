@@ -44,12 +44,12 @@ const getInscripcionById = async (req, res, next) => {
 const updateEstadoInscripcion = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { estado } = req.body;
+        const { estado, dias } = req.body;
 
         let inscripcion;
 
         if (estado === 'APROBADO') {
-            inscripcion = await inscripcionService.aprobarInscripcion(Number(id));
+            inscripcion = await inscripcionService.aprobarInscripcion(Number(id), dias);
         } else if (estado === 'RECHAZADO') {
             inscripcion = await inscripcionService.rechazarInscripcion(Number(id));
         } else {
@@ -64,13 +64,30 @@ const updateEstadoInscripcion = async (req, res, next) => {
         if (error.message === 'La cédula ya tiene un usuario registrado') {
             return next(new AppError(409, error.message));
         }
+        if (error.message === 'SIN_CUPO') {
+            return next(new AppError(409, 'No hay cupos disponibles para ninguno de los días solicitados'));
+        }
+        if (error.message === 'YA_ACTIVO') {
+            return next(new AppError(409, 'Este estudiante ya tiene una cuenta activa'));
+        }
         next(error);
     }
 };
+
+const getCupos = async (req, res, next) => {
+  try {
+    const cupos = await inscripcionService.getCupos();
+    res.json(cupos);
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 module.exports = {
     createInscripcion,
     getInscripciones,
     getInscripcionById,
     updateEstadoInscripcion,
+    getCupos,
 };

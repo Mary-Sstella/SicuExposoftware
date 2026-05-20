@@ -13,7 +13,10 @@ import EstudiantePage from '../../features/student/pages/EstudiantePage'
 import LandingPage from '../../features/landing/pages/LandingPage'
 import EstadisticasPage from '../../features/estadisticas/pages/EstadisticasPage'
 import InscripcionPage from '../../features/inscripcion/pages/InscripcionPage'
-import SolicitudesPage from '../../features/solicitudes/SolicitudesPage'
+import SolicitudesPage from '../../features/solicitudes/pages/SolicitudesPage'
+import BilleteraPage from '../../features/billetera/pages/BilleteraPage'
+import ConfiguracionPage from '../../features/configuracion/pages/ConfiguracionPage'
+import CarteraPage from '../../features/cartera/pages/CarteraPage'
 
 
 
@@ -33,9 +36,12 @@ function AppRouter() {
           <Route path={ROUTES.TURNOS} element={<TurnosPage/>}/>
           <Route path={ROUTES.ESTADISTICAS} element={<EstadisticasPage />} />
           <Route path={ROUTES.SOLICITUDES} element={<SolicitudesPage />} />
+          <Route path={ROUTES.CARTERA} element={<CarteraPage />} />
+          <Route path={ROUTES.CONFIGURACION} element={<ConfiguracionPage />} />
         </Route>
         <Route element={<StudentLayout />}>
         <Route path={ROUTES.STUDENT} element={<EstudiantePage />} />
+        <Route path={ROUTES.STUDENT_PAGO} element={<BilleteraPage />} />
         </Route>
         <Route path="*" element={<Navigate to={ROUTES.LOGIN} />} />
         
