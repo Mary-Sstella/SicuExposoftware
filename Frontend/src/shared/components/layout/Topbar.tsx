@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { UserCircle2, Settings, LogOut } from 'lucide-react'
+import { UserCircle2, Settings, LogOut} from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../../features/auth/store/authStore'
 import { ROUTES } from '../../constants/routes'
@@ -37,7 +37,6 @@ function Topbar() {
     return (
         <div className="flex items-center justify-between px-8 py-4 bg-white border-b border-gray-200">
             <h1 className="text-lg font-bold text-gray-800">{title}</h1>
-
             <div ref={ref} className="relative">
                 <button
                     onClick={() => setAbierto(a => !a)}

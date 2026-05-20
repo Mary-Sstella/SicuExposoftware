@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronUp, Calendar } from 'lucide-react'
 import { updateConfiguracion } from '../services/turnosService'
 
 interface Rango {
@@ -38,8 +38,8 @@ function RangoCard({ rango, turnos, onToggle }: Props) {
   }
 
   return (
-    <div className={`bg-white rounded-2xl shadow-sm overflow-hidden ${!rango.activo ? 'opacity-50 grayscale' : ''}`}>
-      <div className="px-5 py-4 flex items-center justify-between border-b border-gray-50">
+    <div className={`bg-white rounded-2xl shadow-md border border-gray-300 overflow-hidden ${!rango.activo ? 'opacity-50 grayscale' : ''}`}>
+      <div className="px-5 py-4 flex items-center justify-between border-b border-gray-200">
         <div className="flex items-center gap-3">
           <button onClick={() => setExpandido(!expandido)} className="text-gray-400 hover:text-violet-500">
             {expandido ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -49,54 +49,42 @@ function RangoCard({ rango, turnos, onToggle }: Props) {
             <p className="text-xs text-gray-400">{ocupados} / {rango.capacidad_maxima} cupos ocupados</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <span className={`text-xs px-3 py-1 rounded-full font-semibold ${
-            lleno ? 'bg-red-100 text-red-500' : casiLleno ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'
+        <div className="flex items-center gap-2">
+          <span className={`text-xs px-3 py-1 rounded-full font-semibold border ${
+            lleno ? 'border-red-200 text-red-500' : casiLleno ? 'border-amber-200 text-amber-600' : 'border-green-200 text-green-600'
           }`}>
             {lleno ? 'Lleno' : casiLleno ? 'Casi lleno' : 'Disponible'}
           </span>
           <button
-          onClick={handleToggle}
-          className={`text-xs px-3 py-1 rounded-full font-semibold transition-colors ${
-            rango.activo
-            ? 'bg-gray-100 text-gray-500 hover:bg-red-100 hover:text-red-500'
-            : 'bg-green-100 text-green-600 hover:bg-green-200'
-            }`}
-            >
-              {rango.activo ? 'Desactivar' : 'Activar'}
+            onClick={handleToggle}
+            className="text-xs px-3 py-1 rounded-full font-semibold border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors"
+          >
+            {rango.activo ? 'Desactivar' : 'Activar'}
           </button>
         </div>
       </div>
 
-      <div className="px-5 pt-3 pb-1">
-        <div className="w-full bg-gray-100 rounded-full h-1.5">
-          <div
-            className={`h-1.5 rounded-full transition-all ${
-              lleno ? 'bg-red-400' : casiLleno ? 'bg-amber-400' : 'bg-gradient-to-r from-violet-500 to-purple-300'
-            }`}
-            style={{ width: `${Math.min(porcentaje, 100)}%` }}
-          />
-        </div>
-      </div>
-
       {expandido && (
-        <div className="px-5 pb-4">
+        <div className="px-5 py-4">
           {turnos.length === 0 ? (
-            <p className="text-xs text-gray-400 py-3 text-center">Sin reservas en este horario</p>
+            <div className="flex items-center justify-center gap-2 py-5 border border-gray-200 rounded-xl text-gray-400">
+              <Calendar size={16} className="text-violet-300" />
+              <span className="text-sm">Sin reservas en este horario</span>
+            </div>
           ) : (
-            <table className="w-full text-xs mt-3">
+            <table className="w-full text-xs mt-1">
               <thead>
-                <tr className="text-gray-400">
-                  <th className="text-left pb-2 font-medium">#</th>
-                  <th className="text-left pb-2 font-medium">Estudiante</th>
-                  <th className="text-left pb-2 font-medium">Cédula</th>
-                  <th className="text-left pb-2 font-medium">Carrera</th>
-                  <th className="text-left pb-2 font-medium">Estado</th>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left pb-2 font-semibold text-violet-500 uppercase tracking-wide">#</th>
+                  <th className="text-left pb-2 font-semibold text-violet-500 uppercase tracking-wide">Estudiante</th>
+                  <th className="text-left pb-2 font-semibold text-violet-500 uppercase tracking-wide">Cédula</th>
+                  <th className="text-left pb-2 font-semibold text-violet-500 uppercase tracking-wide">Carrera</th>
+                  <th className="text-left pb-2 font-semibold text-violet-500 uppercase tracking-wide">Estado</th>
                 </tr>
               </thead>
               <tbody>
                 {turnos.map((t, i) => (
-                  <tr key={i} className="border-t border-gray-50">
+                  <tr key={i} className="border-t border-gray-100">
                     <td className="py-2 text-violet-600 font-bold">#{t.numero_turno}</td>
                     <td className="py-2 text-gray-700 font-semibold">{t.nombres} {t.apellidos}</td>
                     <td className="py-2 text-gray-400">{t.numero_identificacion}</td>

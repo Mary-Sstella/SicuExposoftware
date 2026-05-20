@@ -15,10 +15,10 @@ function MainLayout() {
         setTopbarVisible(currentY < lastScrollY.current || currentY < 10)
         lastScrollY.current = currentY
     }
-  return (
-    <div className="flex h-screen bg-gray-200">
+    return (
+    <div className="flex h-screen bg-slate-100">
       <Sidebar />
-      <main className="flex-1 flex flex-col overflow-hidden bg-gray-50 rounded-3xl my-3 mr-3">
+      <main className="flex-1 flex flex-col overflow-hidden">
         <div className={`transition-transform duration-300 ${topbarVisible ? 'translate-y-0' : '-translate-y-full'}`}>
           <Topbar />
         </div>

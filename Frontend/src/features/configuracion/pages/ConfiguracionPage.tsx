@@ -64,7 +64,12 @@ function ConfiguracionPage() {
     fetchAll()
   }, [])
 
-  const capacidadPorTurno = turnos.length > 0 ? Math.floor(totalTurnos / turnos.length) : 0
+  const capacidadPorTurno = turnos.length > 0 
+      ? turnos.map ((_, i)=>{ 
+        const base = Math.floor(totalTurnos / turnos.length)
+        const resto = totalTurnos % turnos.length
+        return i < resto ? base + 1 : base
+      }) : []
 
   const handleGuardar = async () => {
     setGuardando(true)
@@ -77,7 +82,7 @@ function ConfiguracionPage() {
         fecha_fin_semestre: form.fecha_fin_semestre ? form.fecha_fin_semestre + 'T00:00:00.000Z' : null,
       })
       await Promise.all(
-        turnos.map(t => updateConfiguracionTurno(t.id_configuracion, capacidadPorTurno))
+        turnos.map((t,i)=> updateConfiguracionTurno(t.id_configuracion, capacidadPorTurno[i]))
       )
       setGuardado(true)
       setTimeout(() => setGuardado(false), 3000)
@@ -199,7 +204,7 @@ function ConfiguracionPage() {
             {turnos.map((t, i) => (
               <div key={t.id_configuracion} className="flex items-center justify-between px-3 py-2.5 bg-gray-50 rounded-xl">
                 <span className="text-xs text-gray-500">Turno {i + 1} &nbsp;·&nbsp; {t.hora_inicio} – {t.hora_fin}</span>
-                <span className="text-xs font-bold text-violet-600">{capacidadPorTurno} estudiantes</span>
+                <span className="text-xs font-bold text-violet-600">{capacidadPorTurno[i]} estudiantes</span>
               </div>
             ))}
           </div>
