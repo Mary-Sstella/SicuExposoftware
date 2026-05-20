@@ -4,8 +4,9 @@ const createPago = (data) => {
     return prisma.pagos.create({ data });
 };
 
-const getPagos = () => {
+const getPagos = (estado) => {
     return prisma.pagos.findMany({
+        where: estado ? { estado } : undefined,
         orderBy: { fecha_subida: 'desc' },
         include: {
             estudiante: {

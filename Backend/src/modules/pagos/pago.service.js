@@ -71,8 +71,8 @@ const createPago = async (data, file, id_estudiante) => {
     });
 };
 
-const getPagos = () => {
-    return pagoRepository.getPagos();
+const getPagos = (estado) => {
+    return pagoRepository.getPagos(estado);
 };
 
 const getMisPagos = async (id_estudiante) => {

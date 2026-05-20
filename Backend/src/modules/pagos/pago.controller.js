@@ -38,7 +38,8 @@ const createPago = async (req, res, next) => {
 
 const getPagos = async (req, res, next) => {
     try {
-        const pagos = await pagoService.getPagos();
+        const { estado } = req.query;
+        const pagos = await pagoService.getPagos(estado);
         res.json(pagos);
     } catch (error) {
         next(error);
