@@ -37,20 +37,23 @@ const login = async ({ credencial, password }) => {
 
     // Si es estudiante buscar su id_estudiante
     let id_estudiante = null
+    let nombreEstudiante = null
     if (usuario.rol === ROLES.ESTUDIANTE) {
         const est = await prisma.estudiante.findFirst({
             where: { correo_institucional: usuario.email },
-            select: { id_estudiante: true }
+            select: { id_estudiante: true, nombres: true, apellidos: true }
         })
         id_estudiante = est?.id_estudiante ?? null
+        nombreEstudiante = est ? `${est.nombres} ${est.apellidos}` : null
     }
 
     return {
         token,
         rol: usuario.rol,
-        username: usuario.username || usuario.email,
+        username: nombreEstudiante || usuario.username || usuario.email,
         id_estudiante
     }
+
 }
 
 module.exports = { login }
