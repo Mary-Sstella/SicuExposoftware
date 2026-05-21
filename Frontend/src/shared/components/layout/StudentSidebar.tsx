@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 
 const navItems = [
   { icon: Clock, label: 'Mis Turnos', path: '/student' },
-  { icon: CreditCard, label: 'Mi Pago', path: '/student/pago' },
+  { icon: CreditCard, label: 'Billetera', path: '/student/pago' },
 ]
 
 function StudentSidebar() {
