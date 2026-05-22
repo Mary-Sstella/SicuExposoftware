@@ -24,11 +24,26 @@ const updateConfiguracion = async (id, data) => {
     return await turnoRepository.updateConfiguracion(id, data)
 }
 
+const getReservaActiva = async (id_estudiante) => {
+    return await turnoRepository.getReservaActiva(id_estudiante)
+}
+
+const crearReserva = async (id_estudiante, fecha, id_configuracion) => {
+    return await turnoRepository.asignarTurnoAutomatico(id_estudiante, fecha, id_configuracion)
+}
+
+const getDiasEstudiante = async (id_estudiante) => {
+    return await turnoRepository.getDiasEstudiante(id_estudiante)
+}
+
 module.exports = {
     getConfiguracionTurnos,
     getDisponibilidad,
     asignarTurnoAutomatico,
     getTurnosPorFecha,
     getTurnoEstudiante,
-    updateConfiguracion
+    updateConfiguracion,
+    getReservaActiva,
+    crearReserva,
+    getDiasEstudiante
 }

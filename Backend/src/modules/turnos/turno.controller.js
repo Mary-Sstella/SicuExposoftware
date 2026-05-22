@@ -69,10 +69,54 @@ const updateConfiguracion = async (req, res, next) => {
     }
 }
 
+const getReservaActiva = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const reserva = await turnoService.getReservaActiva(id)
+        res.json(reserva || null)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const crearReserva = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const { fecha, id_configuracion } = req.body
+        const reserva = await turnoService.crearReserva(id, fecha, id_configuracion)
+        res.status(201).json(reserva)
+    } catch (error) {
+        const errores = {
+            RANGO_NO_DISPONIBLE: [400, 'El rango horario no está disponible'],
+            FECHA_INVALIDA: [400, 'Debes reservar con al menos un día de anticipación'],
+            DIA_NO_HABILITADO: [400, 'No tienes este día habilitado para almorzar'],
+            YA_TIENE_RESERVA: [409, 'Ya tienes una reserva activa pendiente'],
+            SIN_CAPACIDAD:       [400, 'No hay cupos disponibles en ese rango horario'],
+            SIN_PAGO_PARA_DIA:   [403, 'No tienes un pago aprobado para ese día de la semana'],
+        }
+        const [status, msg] = errores[error.message] ?? [500, 'Error al crear la reserva']
+        next(new AppError(status, msg))
+    }
+}
+
+const getDiasEstudiante = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const dias = await turnoService.getDiasEstudiante(id)
+        res.json(dias ?? { lunes: false, martes: false, miercoles: false, jueves: false, viernes: false })
+    } catch (error) {
+        next(error)
+    }
+}
+
+
 module.exports = {
     getConfiguracionTurnos,
     getDisponibilidad,
     getTurnosPorFecha,
     getTurnoEstudiante,
-    updateConfiguracion
+    updateConfiguracion,
+    getReservaActiva,
+    crearReserva,
+    getDiasEstudiante
 }
