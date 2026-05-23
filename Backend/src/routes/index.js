@@ -10,6 +10,8 @@ const estadisticasRoutes = require('../modules/estadisticas/estadisticas.routes'
 const inscripcionRoutes = require('../modules/inscripciones/inscripcion.routes')
 const configuracionRoutes = require('../modules/configuracion/configuracion.routes')
 const pagoRoutes = require('../modules/pagos/pago.routes')
+const soporteRoutes = require('../modules/soporte/soporte.routes')
+const resenaRoutes = require('../modules/resenas/resena.routes')
 
 const router = Router()
 
@@ -24,5 +26,7 @@ router.use('/estadisticas', estadisticasRoutes)
 router.use('/inscripciones', inscripcionRoutes)
 router.use('/configuracion-formulario', configuracionRoutes)
 router.use('/pagos', pagoRoutes)
+router.use('/soporte', soporteRoutes)
+router.use('/resenas', resenaRoutes)
 
 module.exports = router

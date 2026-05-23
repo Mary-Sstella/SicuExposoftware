@@ -124,6 +124,7 @@ model estudiante {
   cartera                cartera[]
   comprobantes           comprobantes[]
   detalle_reserva        detalle_reserva[]
+  huellas                huellas[]
   pagos                  pagos[]
   qr_generados           qr_generados[]
   resenas                resenas[]
@@ -195,15 +196,18 @@ model usuarios {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model soporte {
-  id_soporte      Int        @id @default(autoincrement())
-  id_estudiante   Int
-  asunto          String     @db.VarChar(100)
+  id_soporte      Int         @id @default(autoincrement())
+  id_estudiante   Int?
+  asunto          String      @db.VarChar(100)
   descripcion     String
-  estado          String     @default("PENDIENTE") @db.VarChar(20)
+  estado          String      @default("PENDIENTE") @db.VarChar(20)
   respuesta       String?
-  fecha_creacion  DateTime   @default(now()) @db.Timestamp(6)
-  fecha_respuesta DateTime?  @db.Timestamp(6)
-  estudiante      estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
+  fecha_creacion  DateTime    @default(now()) @db.Timestamp(6)
+  fecha_respuesta DateTime?   @db.Timestamp(6)
+  nombre          String?     @db.VarChar(100)
+  correo          String?     @db.VarChar(150)
+  archivo_url     String?     @db.VarChar(500)
+  estudiante      estudiante? @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -267,6 +271,14 @@ model pagos {
   fecha_subida       DateTime   @default(now()) @db.Timestamp(6)
   fecha_revision     DateTime?  @db.Timestamp(6)
   estudiante         estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model huellas {
+  id_huella      Int        @id @default(autoincrement())
+  id_estudiante  Int
+  finger_id      Int        @unique
+  fecha_registro DateTime?  @default(now()) @db.Timestamp(6)
+  estudiante     estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction, map: "fk_huella_estudiante")
 }
 
 enum dia_enum {
