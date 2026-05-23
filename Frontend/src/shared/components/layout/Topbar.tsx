@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
-import { UserCircle2, Settings, LogOut} from 'lucide-react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { useAuthStore } from '../../../features/auth/store/authStore'
-import { ROUTES } from '../../constants/routes'
+import { UserCircle2 } from 'lucide-react'
+import { useLocation } from 'react-router-dom'
 
 const routeTitles: Record<string, string> = {
     '/dashboard': 'Dashboard',
@@ -21,8 +19,6 @@ function Topbar() {
     const title = routeTitles[pathname] ?? 'Dashboard'
     const [abierto, setAbierto] = useState(false)
     const ref = useRef<HTMLDivElement>(null)
-    const navigate = useNavigate()
-    const { logout } = useAuthStore()
 
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {
@@ -49,25 +45,6 @@ function Topbar() {
                     </div>
                 </button>
 
-                {abierto && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-lg border border-gray-100 py-1.5 z-50">
-                        <button
-                            onClick={() => { navigate(ROUTES.CONFIGURACION); setAbierto(false) }}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
-                        >
-                            <Settings size={16} className="text-violet-500" />
-                            Configuración
-                        </button>
-                        <div className="border-t border-gray-100 my-1" />
-                        <button
-                            onClick={() => { logout(); navigate(ROUTES.LOGIN) }}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-red-50 transition-colors"
-                        >
-                            <LogOut size={16} />
-                            Cerrar sesión
-                        </button>
-                    </div>
-                )}
             </div>
         </div>
     )

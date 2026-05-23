@@ -13,6 +13,9 @@ router.get('/estudiante/:id', verifyToken, controller.getTurnoEstudiante)
 router.get('/estudiante/:id/activa', verifyToken, controller.getReservaActiva)
 router.post('/estudiante/:id/reservar', verifyToken, verifyRole(ROLES.ESTUDIANTE), controller.crearReserva)
 router.get('/estudiante/:id/dias', verifyToken, controller.getDiasEstudiante)
+router.get('/estudiante/:id/historial', verifyToken, controller.getHistorialEstudiante)
+router.get('/estudiante/:id/fechas-pagadas', verifyToken, controller.getFechasPagadas)
+router.get('/estudiante/:id/stats', verifyToken, controller.getEstudianteStats)
 
 
 module.exports = router

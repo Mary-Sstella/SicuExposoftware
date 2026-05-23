@@ -42,10 +42,10 @@ function EstudiantesTable({ estudiantes, onEdit, onDelete, offset = 0 }: Props) 
     onDelete()
   }
   return (
-    <div className="overflow-x-auto rounded-xl border border-gray-300">
+    <div className="overflow-x-auto rounded-xl border border-gray-400">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-gray-300 text-left">
+         <tr className="border-b border-gray-700 text-left">
             <th className="px-4 py-3 text-xs font-semibold text-violet-500 uppercase tracking-wide">#</th>
             <th className="px-4 py-3 text-xs font-semibold text-violet-500 uppercase tracking-wide">Nombre y Apellido</th>
             <th className="px-4 py-3 text-xs font-semibold text-violet-500 uppercase tracking-wide">Cédula</th>
@@ -60,7 +60,7 @@ function EstudiantesTable({ estudiantes, onEdit, onDelete, offset = 0 }: Props) 
           {estudiantes.map((est, index) => (
             <tr
               key={est.id_estudiante}
-              className={`border-t border-gray-300 hover:bg-purple-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+              className={`border-t border-gray-700 hover:bg-purple-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
             >
               <td className="px-4 py-3 text-gray-400 font-medium">{String(offset + index + 1).padStart(2, '0')}</td> {/*muestra el número de fila con ceros a la izquierda*/}
               <td className="px-4 py-3 text-gray-800 font-semibold"> {/*muestra el nombre completo del estudiante y un botón para editar*/}

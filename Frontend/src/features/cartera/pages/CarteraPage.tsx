@@ -111,7 +111,7 @@ function PagoCard({ pago, activeId, onPdf, pdfLoading, onAprobar, onRechazar }: 
       ref={setNodeRef}
       style={style}
       {...(isPendiente ? { ...attributes, ...listeners } : {})}
-      className={`bg-white rounded-2xl border border-gray-200 p-4 select-none transition-opacity
+      className={`bg-white rounded-2xl border border-gray-700 p-4 select-none transition-opacity
         ${isPendiente ? 'cursor-grab active:cursor-grabbing' : ''}
         ${isBeingDragged ? 'opacity-30' : 'opacity-100'}`}
     >
@@ -307,11 +307,6 @@ function CarteraPage() {
 
   return (
     <div className="flex-1 p-8 overflow-hidden flex flex-col bg-slate-100">
-
-      <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-800">Cartera</h1>
-        <p className="text-sm text-gray-400 mt-0.5">Gestión de comprobantes de pago</p>
-      </div>
 
       {/* Stat cards */}
       <div className="grid grid-cols-3 gap-4 mb-6">

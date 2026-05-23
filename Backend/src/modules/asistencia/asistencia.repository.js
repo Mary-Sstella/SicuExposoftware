@@ -16,12 +16,13 @@ const registrarAsistencia = async (numero_identificacion) => {
         throw new Error('SIN_RESERVA')
     }
 
-    // Buscar reserva del estudiante para hoy
+    // Buscar reserva real del estudiante para hoy (con turno asignado)
     const reserva = await prisma.reservas.findFirst({
         where: {
             id_estudiante: estudiante.id_estudiante,
             fecha: hoy,
-            [diaSemana]: true
+            [diaSemana]: true,
+            numero_turno: { not: null }
         }
     })
 
@@ -44,7 +45,8 @@ const registrarAsistencia = async (numero_identificacion) => {
 const getAsistenciasPorFecha = async (fecha) => {
     return await prisma.reservas.findMany({
         where: {
-            fecha: new Date(fecha)
+            fecha: new Date(fecha),
+            numero_turno: { not: null }
         },
         include: {
             estudiante: {

@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react'
-import { LayoutDashboard, Users, ClipboardCheck, Clock, CreditCard, MessageSquare, BarChart2, ChevronLeft, ChevronRight, LogOut, ClipboardList } from 'lucide-react'
+import { LayoutDashboard, Users, ClipboardCheck, Clock, CreditCard, MessageSquare, BarChart2, ChevronLeft, ChevronRight, LogOut, ClipboardList, Settings } from 'lucide-react'
 import { useAuthStore } from '../../../features/auth/store/authStore'
 import { useNavigate, useLocation } from 'react-router-dom'
 
@@ -40,12 +40,12 @@ function Sidebar() {
               key={label}
               onClick={() => navigate(path)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 w-full text-left
-                ${isActive ? 'bg-violet-600 text-white font-semibold shadow-sm' : 'text-gray-500 hover:bg-violet-100 hover:text-violet-700'}
+                ${isActive ? 'bg-violet-600 text-white font-semibold shadow-sm' : 'text-gray-800 hover:bg-violet-100 hover:text-violet-700'}
                 ${collapsed ? 'justify-center' : ''}
               `}
             >
               <Icon size={20} className="flex-shrink-0" />
-              {!collapsed && <span className="text-sm">{label}</span>}
+              {!collapsed && <span className="text-sm font-medium">{label}</span>}
             </button>
           )
         })}
@@ -53,7 +53,24 @@ function Sidebar() {
 
       {/* Bottom */}
       <div className="px-3 py-4 flex flex-col gap-1">
-<button onClick={() => { logout(); navigate('/login') }} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all w-full ${collapsed ? 'justify-center' : ''}`}>
+        <button
+          onClick={() => navigate('/configuracion')}
+          className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 w-full text-left
+            ${pathname === '/configuracion' ? 'bg-violet-600 text-white font-semibold shadow-sm' : 'text-gray-800 hover:bg-violet-100 hover:text-violet-700'}
+            ${collapsed ? 'justify-center' : ''}
+          `}
+        >
+          <Settings
+            size={20}
+            className="flex-shrink-0 transition-transform duration-500 group-hover:rotate-180"
+          />
+          {!collapsed && <span className="text-sm font-medium">Configuración</span>}
+        </button>
+
+        <button
+          onClick={() => { logout(); navigate('/login') }}
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-800 font-medium hover:text-red-500 hover:bg-red-50 transition-all w-full ${collapsed ? 'justify-center' : ''}`}
+        >
           <LogOut size={20} />
           {!collapsed && <span className="text-sm">Cerrar sesión</span>}
         </button>
