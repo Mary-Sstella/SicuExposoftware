@@ -69,7 +69,7 @@ function BilleteraPage() {
 
       {/* Stat cards */}
       <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-300 flex items-center gap-4">
+        <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-700 flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-400 flex items-center justify-center flex-shrink-0">
             <Wallet size={22} className="text-white" />
           </div>
@@ -79,7 +79,7 @@ function BilleteraPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-300 flex items-center gap-4">
+        <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-700 flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-300 flex items-center justify-center flex-shrink-0">
             <Clock size={22} className="text-white" />
           </div>
@@ -89,7 +89,7 @@ function BilleteraPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-300 flex items-center gap-4">
+        <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-700 flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-400 flex items-center justify-center flex-shrink-0">
             <CheckCircle size={22} className="text-white" />
           </div>
@@ -99,7 +99,7 @@ function BilleteraPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-300 flex items-center gap-4">
+        <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-700 flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500 to-rose-400 flex items-center justify-center flex-shrink-0">
             <XCircle size={22} className="text-white" />
           </div>
@@ -111,7 +111,7 @@ function BilleteraPage() {
       </div>
 
       {/* Tabla con filtros */}
-      <div className="bg-white rounded-2xl shadow-md border border-gray-300 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-md border border-gray-700 overflow-hidden">
 
         {/* Tabs */}
         <div className="flex items-center gap-1 px-5 py-4 border-b border-gray-100">

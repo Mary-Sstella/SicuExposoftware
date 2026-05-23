@@ -36,15 +36,13 @@ const getUrlFirmada = async (ruta) => {
 const createPago = async (data, file, id_estudiante) => {
     if (!file) throw new Error('PDF_REQUERIDO');
 
-    const reserva = await prisma.reservas.findFirst({
-        where: { id_estudiante, estado: 'PENDIENTE' },
-        orderBy: { fecha: 'desc' },
-    });
-
-    if (!reserva) throw new Error('SIN_RESERVA');
-
     const CAMPOS_DIAS = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
-    const diasAprobados = CAMPOS_DIAS.filter((d) => reserva[d] === true);
+    const todasReservas = await prisma.reservas.findMany({
+        where: { id_estudiante },
+        select: { lunes: true, martes: true, miercoles: true, jueves: true, viernes: true }
+    });
+    const diasAprobados = CAMPOS_DIAS.filter(d => todasReservas.some(r => r[d] === true));
+    if (diasAprobados.length === 0) throw new Error('SIN_RESERVA');
 
     const dias_pagados = JSON.parse(data.dias_pagados);
 
@@ -79,15 +77,12 @@ const getMisPagos = async (id_estudiante) => {
     if (!id_estudiante) return {pagos: [], saldo_disponible:0, dias_registrados: []}
     const pagos = await pagoRepository.getMisPagos(id_estudiante);
 
-    const reserva = await prisma.reservas.findFirst({
-        where: { id_estudiante, estado: 'PENDIENTE' },
-        orderBy: { fecha: 'desc' },
-    });
-
     const CAMPOS_DIAS = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
-    const dias_registrados = reserva
-        ? CAMPOS_DIAS.filter((d) => reserva[d] === true)
-        : [];
+    const todasReservas = await prisma.reservas.findMany({
+        where: { id_estudiante },
+        select: { lunes: true, martes: true, miercoles: true, jueves: true, viernes: true }
+    });
+    const dias_registrados = CAMPOS_DIAS.filter(d => todasReservas.some(r => r[d] === true));
 
     const saldo_disponible = pagos
         .filter((p) => p.estado === 'APROBADO')

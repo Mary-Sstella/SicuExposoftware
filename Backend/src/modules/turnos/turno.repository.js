@@ -156,7 +156,28 @@ const asignarTurnoAutomatico = async (id_estudiante, fecha, id_configuracion) =>
 
     const pagoValido = pagosAprobados.find(p => {
         const dias = Array.isArray(p.dias_pagados) ? p.dias_pagados : JSON.parse(p.dias_pagados)
-        return dias.includes(diaSemana) && p.almuerzos_usados < p.cantidad_almuerzos
+        if (!dias.includes(diaSemana)) return false
+        if (p.almuerzos_usados >= p.cantidad_almuerzos) return false
+
+        const aprobado = new Date(p.fecha_revision)
+
+        if (p.tipo_periodo === 'semanal') {
+            const dow = aprobado.getDay()
+            const lunes = new Date(aprobado)
+            lunes.setDate(aprobado.getDate() - (dow === 0 ? 6 : dow - 1))
+            lunes.setHours(0, 0, 0, 0)
+            const domingo = new Date(lunes)
+            domingo.setDate(lunes.getDate() + 6)
+            domingo.setHours(23, 59, 59, 999)
+            return fechaReserva >= lunes && fechaReserva <= domingo
+        }
+
+        if (p.tipo_periodo === 'mensual') {
+            return aprobado.getMonth() === fechaReserva.getMonth() &&
+                   aprobado.getFullYear() === fechaReserva.getFullYear()
+        }
+
+        return false
     })
 
     if (!pagoValido) throw new Error('SIN_PAGO_PARA_DIA')
@@ -229,6 +250,95 @@ const getDiasEstudiante = async (id_estudiante) => {
 }
 
 
+// Historial de reservas pasadas del estudiante
+const getHistorialEstudiante = async (id_estudiante) => {
+    const hoy = new Date()
+    hoy.setHours(0, 0, 0, 0)
+
+    return await prisma.reservas.findMany({
+        where: {
+            id_estudiante: parseInt(id_estudiante),
+            fecha: { lte: hoy },
+            numero_turno: { not: null }
+        },
+        select: {
+            fecha: true,
+            hora_inicio: true,
+            hora_fin: true,
+            numero_turno: true,
+            estado: true
+        },
+        orderBy: { fecha: 'desc' },
+        take: 10
+    })
+}
+
+const getFechasPagadas = async (id_estudiante) => {
+    const pagos = await prisma.pagos.findMany({
+        where: { id_estudiante: parseInt(id_estudiante), estado: 'APROBADO' },
+        select: { tipo_periodo: true, fecha_revision: true, dias_pagados: true }
+    })
+
+    const DIAS_SEMANA = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado']
+    const fechas = []
+
+    for (const pago of pagos) {
+        if (!pago.fecha_revision) continue
+        const dias = Array.isArray(pago.dias_pagados) ? pago.dias_pagados : JSON.parse(pago.dias_pagados)
+        const aprobado = new Date(pago.fecha_revision)
+
+        let inicio, fin
+
+        if (pago.tipo_periodo === 'semanal') {
+            const dow = aprobado.getDay()
+            inicio = new Date(aprobado)
+            inicio.setDate(aprobado.getDate() - (dow === 0 ? 6 : dow - 1))
+            inicio.setHours(0, 0, 0, 0)
+            fin = new Date(inicio)
+            fin.setDate(inicio.getDate() + 6)
+            fin.setHours(23, 59, 59, 999)
+        } else if (pago.tipo_periodo === 'mensual') {
+            inicio = new Date(aprobado.getFullYear(), aprobado.getMonth(), 1)
+            fin = new Date(aprobado.getFullYear(), aprobado.getMonth() + 1, 0)
+            fin.setHours(23, 59, 59, 999)
+        } else {
+            continue
+        }
+
+        const current = new Date(inicio)
+        while (current <= fin) {
+            const nombreDia = DIAS_SEMANA[current.getDay()]
+            if (dias.includes(nombreDia)) {
+                const y = current.getFullYear()
+                const m = String(current.getMonth() + 1).padStart(2, '0')
+                const d = String(current.getDate()).padStart(2, '0')
+                fechas.push(`${y}-${m}-${d}`)
+            }
+            current.setDate(current.getDate() + 1)
+        }
+    }
+
+    return fechas
+}
+
+const getEstudianteStats = async (id_estudiante) => {
+    const [inasistencias, pagos] = await Promise.all([
+        prisma.reservas.count({
+            where: { id_estudiante: parseInt(id_estudiante), numero_turno: { not: null }, estado: 'CANCELADA' }
+        }),
+        prisma.pagos.findMany({
+            where: { id_estudiante: parseInt(id_estudiante) },
+            select: { estado: true, almuerzos_usados: true }
+        })
+    ])
+    const pagos_aprobados = pagos.filter(p => p.estado === 'APROBADO').length
+    const pagos_rechazados = pagos.filter(p => p.estado === 'RECHAZADO').length
+    const almuerzos_consumidos = pagos.filter(p => p.estado === 'APROBADO').reduce((acc, p) => acc + p.almuerzos_usados, 0)
+    return { inasistencias, almuerzos_consumidos, pagos_aprobados, pagos_rechazados }
+}
+
+
+
 module.exports = {
     getConfiguracionTurnos,
     getDisponibilidad,
@@ -237,5 +347,8 @@ module.exports = {
     getTurnoEstudiante,
     getReservaActiva,
     updateConfiguracion,
-    getDiasEstudiante
+    getDiasEstudiante,
+    getHistorialEstudiante,
+    getFechasPagadas,
+    getEstudianteStats
 }

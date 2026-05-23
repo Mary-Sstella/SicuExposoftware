@@ -38,8 +38,8 @@ function RangoCard({ rango, turnos, onToggle }: Props) {
   }
 
   return (
-    <div className={`bg-white rounded-2xl shadow-md border border-gray-300 overflow-hidden ${!rango.activo ? 'opacity-50 grayscale' : ''}`}>
-      <div className="px-5 py-4 flex items-center justify-between border-b border-gray-200">
+    <div className={`bg-white rounded-2xl shadow-md border border-gray-600 overflow-hidden ${!rango.activo ? 'opacity-50 grayscale' : ''}`}>
+      <div className="px-5 py-4 flex items-center justify-between border-b border-gray-600">
         <div className="flex items-center gap-3">
           <button onClick={() => setExpandido(!expandido)} className="text-gray-400 hover:text-violet-500">
             {expandido ? <ChevronUp size={16} /> : <ChevronDown size={16} />}

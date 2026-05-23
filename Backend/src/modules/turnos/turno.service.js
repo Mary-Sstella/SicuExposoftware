@@ -36,6 +36,19 @@ const getDiasEstudiante = async (id_estudiante) => {
     return await turnoRepository.getDiasEstudiante(id_estudiante)
 }
 
+const getHistorialEstudiante = async (id_estudiante) => {
+    return await turnoRepository.getHistorialEstudiante(id_estudiante)
+}
+
+const getFechasPagadas = async (id_estudiante) => {
+    return await turnoRepository.getFechasPagadas(id_estudiante)
+}
+
+const getEstudianteStats = async (id) => {
+    return await turnoRepository.getEstudianteStats(id)
+}
+
+
 module.exports = {
     getConfiguracionTurnos,
     getDisponibilidad,
@@ -45,5 +58,8 @@ module.exports = {
     updateConfiguracion,
     getReservaActiva,
     crearReserva,
-    getDiasEstudiante
+    getDiasEstudiante,
+    getHistorialEstudiante,
+    getFechasPagadas,
+    getEstudianteStats
 }

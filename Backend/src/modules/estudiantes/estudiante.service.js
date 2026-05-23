@@ -19,7 +19,7 @@ const createEstudiante = async (data) => {
     const estudiante = await estudianteRepository.createEstudiante(data)
 
     // Hashear número de identificación como contraseña
-    const passwordHash = await bcrypt.hash(data.numero_identificacion.toString(), 10)
+    const passwordHash = await bcrypt.hash(data.numero_identificacion.toString().trim(), 10)
 
     // Crear usuario automáticamente
     await prisma.usuarios.create({

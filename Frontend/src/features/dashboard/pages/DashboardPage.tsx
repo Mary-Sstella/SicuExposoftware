@@ -12,8 +12,8 @@ const tooltipStyle = {
   fontSize: '12px',
   padding: '10px 14px',
 }
-const xTickStyle = { fontSize: 12, fill: '#94a3b8' }
-const yTickStyle = { fontSize: 11, fill: '#6b7280' }
+const xTickStyle = { fontSize: 12, fill: '#475569' }
+const yTickStyle = { fontSize: 11, fill: '#475569' }
 const legendStyle = { fontSize: '12px', paddingTop: '16px', color: '#111827' }
 
 function DashboardPage() {
@@ -31,34 +31,44 @@ function DashboardPage() {
       {/* Tarjetas */}
       <div className="grid grid-cols-4 gap-4 mb-6">
         <StatCard
-          title="Total Estudiantes"
-          value={loading ? '...' : summary?.total_estudiantes ?? 0}
-          icon={<Users size={20} className="text-violet-500" />}
-          description="Registrados en el sistema"
+            title="Total Estudiantes"
+            value={loading ? '...' : summary?.total_estudiantes ?? 0}
+            icon={<Users size={20} className="text-violet-500" />}
+            description="Registrados en el sistema"
+            change={summary?.total_estudiantes_change}
+            changeLabel="vs. mes anterior"
         />
         <StatCard
-          title="Activos"
-          value={loading ? '...' : summary?.estudiantes_activos ?? 0}
-          icon={<UserCheck size={20} className="text-violet-500" />}
-          description="Con estado activo"
+            title="Activos"
+            value={loading ? '...' : summary?.estudiantes_activos ?? 0}
+            icon={<UserCheck size={20} className="text-violet-500" />}
+            description="Con estado activo"
+            change={summary?.estudiantes_activos_change}
+            changeLabel="vs. mes anterior"
         />
         <StatCard
-          title="Pagos Pendientes"
-          value={loading ? '...' : summary?.pagos_pendientes ?? 0}
-          icon={<CreditCard size={20} className="text-violet-500" />}
-          description="Por cobrar"
+            title="Pagos Pendientes"
+            value={loading ? '...' : summary?.pagos_pendientes ?? 0}
+            icon={<CreditCard size={20} className="text-violet-500" />}
+            description="Por cobrar"
+            change={summary?.pagos_pendientes_change}
+            changeLabel="vs. mes anterior"
         />
         <StatCard
-          title="Asistencias Hoy"
-          value={loading ? '...' : summary?.asistencias_hoy ?? 0}
-          icon={<CalendarCheck size={20} className="text-violet-500" />}
-          description="Registradas hoy"
+            title="Asistencias Hoy"
+            value={loading ? '...' : summary?.asistencias_hoy ?? 0}
+            icon={<CalendarCheck size={20} className="text-violet-500" />}
+            description="Registradas hoy"
+            change={summary?.asistencias_hoy_change}
+            changeLabel="vs. ayer"
         />
+
+
       </div>
 
       <div className="grid grid-cols-3 gap-6 mb-6">
         {/* Gráfica */}
-        <div className="col-span-2 bg-white rounded-2xl p-6 shadow-md border border-gray-300 hover:shadow-lg transition-shadow duration-200">
+        <div className="col-span-2 bg-white rounded-2xl p-6 shadow-md border border-gray-700 hover:shadow-lg transition-shadow duration-200">
           <div className="mb-5">
             <h2 className="text-base font-semibold text-gray-700">Asistencia Semanal</h2>
           </div>
@@ -69,14 +79,14 @@ function DashboardPage() {
               <YAxis axisLine={false} tickLine={false} tick={yTickStyle} />
               <Tooltip contentStyle={tooltipStyle} labelStyle={{ fontWeight: 600, color: '#374151', marginBottom: 4 }} cursor={{ fill: '#f5f3ff' }} />
               <Legend wrapperStyle={legendStyle} iconType="circle" iconSize={8} />
-              <Bar dataKey="presentes" fill="#8B5CF6" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="ausentes" fill="#EC489960" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="presentes" fill="#8f67ee" radius={[6, 6, 0, 0]} stroke="#6D28D9" strokeWidth={1.5} />
+              <Bar dataKey="ausentes" fill="#EC489960" radius={[6, 6, 0, 0]} stroke="#F472B6" strokeWidth={1.5} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         {/* Calendario */}
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-300 hover:shadow-lg transition-shadow duration-200">
+        <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-700 hover:shadow-lg transition-shadow duration-200">
           <div className="mb-4">
             <h2 className="text-base font-semibold text-gray-700">Calendario</h2>
           </div>
@@ -85,7 +95,7 @@ function DashboardPage() {
       </div>
 
       {/* Actividad reciente */}
-      <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-300 hover:shadow-lg transition-shadow duration-200">
+      <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-600 hover:shadow-lg transition-shadow duration-200">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-base font-semibold text-gray-700">Actividad Reciente</h2>

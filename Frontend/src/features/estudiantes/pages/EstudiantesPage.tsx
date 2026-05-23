@@ -30,7 +30,7 @@ function EstudiantesPage() {
   return (
     <>
       <div className="flex-1 p-8 overflow-y-auto bg-slate-100">
-        <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-300">
+        <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-700">
           <div className="mb-6">
             <h2 className="text-base font-semibold text-gray-700">Listado de estudiantes inscritos en el sistema</h2>
           </div>
@@ -42,13 +42,13 @@ function EstudiantesPage() {
                 placeholder="Buscar por nombre o cédula..."
                 value={busqueda}
                 onChange={(e) => handleBusqueda(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-violet-200"
+               className="w-full pl-9 pr-4 py-2 text-sm border border-gray-500 rounded-xl outline-none focus:ring-2 focus:ring-violet-200"
               />
             </div>
             <select
               value={filtroEstado}
               onChange={(e) => handleFiltro(e.target.value as 'TODOS' | 'ACTIVO' | 'INACTIVO')}
-              className="px-4 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-violet-200 text-gray-500 bg-white"
+              className="px-4 py-2 text-sm border border-gray-500 rounded-xl outline-none focus:ring-2 focus:ring-violet-200 text-gray-500 bg-white"
             >
               <option value="TODOS">Todos</option>
               <option value="ACTIVO">Activo</option>
@@ -56,7 +56,7 @@ function EstudiantesPage() {
             </select>
             <button
               onClick={() => setModalAbierto(true)}
-              className="ml-auto px-5 py-2 bg-gradient-to-br from-violet-600 to-violet-400 hover:opacity-90 text-white text-sm font-semibold rounded-2xl transition-opacity shadow-md"
+              className="ml-auto px-5 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold rounded-2xl transition-all shadow-lg border-2 border-violet-700"
             >
               + Inscribir Estudiante
             </button>

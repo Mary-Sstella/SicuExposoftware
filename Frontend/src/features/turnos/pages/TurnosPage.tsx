@@ -41,22 +41,18 @@ function TurnosPage() {
     <div className="flex-1 p-8 overflow-y-auto bg-slate-100">
 
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-base font-semibold text-gray-700">Panel de Turnos</h2>
-          <p className="text-xs text-gray-400">Gestión de rangos horarios y turnos del día</p>
-        </div>
         <input
           type="date"
           value={fecha}
           onChange={(e) => setFecha(e.target.value)}
-          className="border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 bg-white shadow-sm"
+          className="border border-gray-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 bg-white shadow-sm"
         />
       </div>
 
       {/* Stat cards */}
       <div className="grid grid-cols-4 gap-4 mb-6">
         {stats.map((s) => (
-          <div key={s.title} className="bg-white rounded-2xl p-5 shadow-md border border-gray-300 flex items-center gap-4">
+          <div key={s.title} className="bg-white rounded-2xl p-5 shadow-md border border-gray-700 flex items-center gap-4">
             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${s.gradient}`}>
               {s.icon}
             </div>
@@ -80,7 +76,7 @@ function TurnosPage() {
               placeholder="Buscar estudiante o cédula..."
               value={buscar}
               onChange={(e) => setBuscar(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-300 bg-white"
+              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-300 bg-white"
             />
           </div>
           {loading ? (
@@ -102,7 +98,7 @@ function TurnosPage() {
         {/* Panel derecho */}
         <div className="flex flex-col gap-4">
 
-          <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-300">
+          <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-700">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-8 h-8 rounded-xl bg-violet-50 flex items-center justify-center">
                 <Bell size={15} className="text-violet-500" />
@@ -140,7 +136,7 @@ function TurnosPage() {
             )}
           </div>
 
-          <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-300">
+          <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-700">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-8 h-8 rounded-xl bg-violet-50 flex items-center justify-center">
                 <Clock size={15} className="text-violet-500" />

@@ -12,7 +12,7 @@ const DIAS_ETIQUETAS = [
 const DIAS_SEMANA = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado']
 
 const formatFecha = (fecha: string) =>
-    new Date(fecha + 'T12:00:00').toLocaleDateString('es-CO', {
+    new Date(fecha.split('T')[0] + 'T12:00:00').toLocaleDateString('es-CO', {
         weekday: 'long', day: 'numeric', month: 'long'
     })
 
@@ -34,7 +34,7 @@ function HacerReserva() {
     } = useHacerReserva()
 
     if (loading) return (
-        <div className="bg-white border border-gray-300 shadow-md rounded-2xl p-6 animate-pulse flex flex-col gap-3">
+        <div className="bg-white border border-gray-700 shadow-md rounded-2xl p-4 animate-pulse flex flex-col gap-3">
             <div className="h-4 bg-gray-100 rounded w-1/3" />
             <div className="h-10 bg-gray-100 rounded" />
             <div className="h-10 bg-gray-100 rounded w-2/3" />
@@ -42,7 +42,7 @@ function HacerReserva() {
     )
 
     if (reservaActiva) return (
-        <div className="bg-white border border-gray-300 shadow-md rounded-2xl p-6 flex flex-col gap-4">
+        <div className="bg-white border border-gray-700 shadow-md rounded-2xl p-3 flex flex-col gap-2">
             <div className="flex items-center gap-2">
                 <CalendarCheck size={18} className="text-violet-500" />
                 <h3 className="text-sm font-bold text-gray-700">Tu próxima reserva</h3>
@@ -68,7 +68,7 @@ function HacerReserva() {
     )
 
     if (reservaCreada) return (
-        <div className="bg-white border border-gray-300 shadow-md rounded-2xl p-6 flex flex-col items-center gap-4 text-center">
+        <div className="bg-white border border-gray-700 shadow-md rounded-2xl p-4 flex flex-col items-center gap-4 text-center">
             <CheckCircle2 size={40} className="text-green-500" />
             <div>
                 <p className="text-sm font-bold text-gray-800">¡Reserva confirmada!</p>
@@ -97,11 +97,11 @@ function HacerReserva() {
         }
 
         return (
-            <div className="bg-white border border-gray-300 shadow-md rounded-2xl p-6 flex flex-col gap-4">
+            <div className="bg-white border border-gray-700 shadow-md rounded-2xl p-3 flex flex-col gap-2">
                 <h3 className="text-sm font-bold text-gray-700">Hacer reserva</h3>
 
                 <div>
-                    <p className="text-xs text-gray-400 mb-2">Tus días habilitados</p>
+                    <p className="text-xs text-gray-400 mb-1">Tus días habilitados</p>
                     <div className="flex gap-2">
                         {DIAS_ETIQUETAS.map(({ key, label }) => (
                             <span
@@ -119,12 +119,12 @@ function HacerReserva() {
                 </div>
 
                 <div>
-                    <p className="text-xs text-gray-400 mb-2">Selecciona una fecha (mínimo mañana, solo tus días)</p>
+                    <p className="text-xs text-gray-400 mb-1">Selecciona una fecha (mínimo mañana, solo tus días)</p>
                     <input
                         type="date"
                         min={manana()}
                         onChange={handleFecha}
-                        className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-violet-300"
+                        className="w-full border border-gray-200 rounded-xl px-3 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-violet-300"
                     />
                 </div>
 
@@ -139,7 +139,7 @@ function HacerReserva() {
     }
 
     return (
-        <div className="bg-white border border-gray-300 shadow-md rounded-2xl p-6 flex flex-col gap-4">
+        <div className="bg-white border border-gray-700 shadow-md rounded-2xl p-3 flex flex-col gap-2">
             <div className="flex items-center gap-2">
                 <button onClick={volver} className="text-gray-400 hover:text-gray-600">
                     <ChevronLeft size={18} />

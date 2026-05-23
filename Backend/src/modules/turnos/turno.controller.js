@@ -109,6 +109,36 @@ const getDiasEstudiante = async (req, res, next) => {
     }
 }
 
+const getHistorialEstudiante = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const historial = await turnoService.getHistorialEstudiante(id)
+        res.json(historial)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getFechasPagadas = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const data = await turnoService.getFechasPagadas(id)
+        res.json(data)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getEstudianteStats = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const data = await turnoService.getEstudianteStats(id)
+        res.json(data)
+    } catch (error) {
+        next(error)
+    }
+}
+
 
 module.exports = {
     getConfiguracionTurnos,
@@ -118,5 +148,8 @@ module.exports = {
     updateConfiguracion,
     getReservaActiva,
     crearReserva,
-    getDiasEstudiante
+    getDiasEstudiante,
+    getHistorialEstudiante,
+    getFechasPagadas,
+    getEstudianteStats
 }
