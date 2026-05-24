@@ -25,8 +25,30 @@ const getMisResenas = (id_estudiante) => {
     });
 };
 
+const togglePublicado = (id, publicado) =>{
+    return prisma.resenas.update({
+        where: {id_rese_a: id},
+        data: {publicado},
+    })
+}
+
+const getResenasPublicas = () => {
+    return prisma.resenas.findMany({
+        where: { publicado: true },
+        orderBy: { fecha_creacion: 'desc' },
+        include: {
+            estudiante: {
+                select: { nombres: true, apellidos: true },
+            },
+        },
+    });
+};
+
 module.exports = {
     createResena,
     getResenas,
     getMisResenas,
+    togglePublicado,
+    getResenasPublicas
+
 };

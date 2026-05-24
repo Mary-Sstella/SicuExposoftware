@@ -45,8 +45,31 @@ const getMisResenas = async (req, res, next) => {
     }
 };
 
+const togglePublicado = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { publicado } = req.body;
+        const resultado = await resenaService.togglePublicado(Number(id), publicado);
+        res.json(resultado);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getResenasPublicas = async (req, res, next) => {
+    try {
+        const resenas = await resenaService.getResenasPublicas();
+        res.json(resenas);
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 module.exports = {
     createResena,
     getResenas,
     getMisResenas,
+    togglePublicado,
+    getResenasPublicas
 };

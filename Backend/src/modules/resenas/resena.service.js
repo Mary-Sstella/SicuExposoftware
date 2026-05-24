@@ -26,8 +26,18 @@ const getMisResenas = (id_estudiante) => {
     return resenaRepository.getMisResenas(id_estudiante);
 };
 
+const togglePublicado = (id, publicado) => {
+    return resenaRepository.togglePublicado(id, publicado);
+};
+
+const getResenasPublicas = () => {
+    return resenaRepository.getResenasPublicas();
+};
+
 module.exports = {
     createResena,
     getResenas,
     getMisResenas,
+    togglePublicado,
+    getResenasPublicas
 };
