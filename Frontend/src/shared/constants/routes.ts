@@ -13,5 +13,6 @@ export const ROUTES = {
   CARTERA: '/cartera',
   COMENTARIOS: '/comentarios',
   STUDENT_RESENAS: '/student/resenas',
+  TURNERO: '/turnero',
 
 }

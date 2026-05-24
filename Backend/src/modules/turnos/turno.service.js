@@ -48,6 +48,9 @@ const getEstudianteStats = async (id) => {
     return await turnoRepository.getEstudianteStats(id)
 }
 
+const getTurneroActual = () => turnoRepository.getTurneroActual()
+
+
 
 module.exports = {
     getConfiguracionTurnos,
@@ -61,5 +64,6 @@ module.exports = {
     getDiasEstudiante,
     getHistorialEstudiante,
     getFechasPagadas,
-    getEstudianteStats
+    getEstudianteStats, 
+    getTurneroActual
 }

@@ -16,6 +16,6 @@ router.get('/estudiante/:id/dias', verifyToken, controller.getDiasEstudiante)
 router.get('/estudiante/:id/historial', verifyToken, controller.getHistorialEstudiante)
 router.get('/estudiante/:id/fechas-pagadas', verifyToken, controller.getFechasPagadas)
 router.get('/estudiante/:id/stats', verifyToken, controller.getEstudianteStats)
-
+router.get('/turnero', controller.getTurneroActual)
 
 module.exports = router
