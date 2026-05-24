@@ -140,6 +140,15 @@ const getEstudianteStats = async (req, res, next) => {
 }
 
 
+const getTurneroActual = async (req, res, next) => {
+    try {
+        const data = await turnoService.getTurneroActual()
+        res.json(data)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getConfiguracionTurnos,
     getDisponibilidad,
@@ -151,5 +160,6 @@ module.exports = {
     getDiasEstudiante,
     getHistorialEstudiante,
     getFechasPagadas,
-    getEstudianteStats
+    getEstudianteStats,
+    getTurneroActual
 }

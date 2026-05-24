@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react'
 import { useAsistencia } from '../hooks/useAsistencia'
 import AsistenciaTable from '../components/AsistenciaTable'
-import { Fingerprint, Keyboard } from 'lucide-react'
+import { Fingerprint, Keyboard, Monitor } from 'lucide-react'
 import api from '../../../shared/api/axios'
 
 function AsistenciaPage() {
@@ -72,13 +72,21 @@ function AsistenciaPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-700">
-        <div className="flex items-center justify-between mb-4">
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-700">
+          <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-base font-semibold text-gray-700">Asistencias de Hoy</h2>
-            <p className="text-xs text-gray-400">{asistencias.length} estudiantes con reserva</p>
+              <h2 className="text-base font-semibold text-gray-700">Asistencias de Hoy</h2>
+              <p className="text-xs text-gray-400">{asistencias.length} estudiantes con reserva</p>
           </div>
-        </div>
+          <button
+          //blank le dice al navegador que abre esa URL en una pestaña nueva
+              onClick={() => window.open('/turnero', '_blank')}
+              className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition"
+          >
+              <Monitor size={16} />
+              Proyectar Turnero
+          </button>
+      </div>
         {loading ? (
           <p className="text-sm text-gray-400">Cargando...</p>
         ) : (

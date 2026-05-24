@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { X, Upload, Calendar, AlertCircle, Loader2 } from 'lucide-react'
+import { useAuthStore } from '../../../features/auth/store/authStore'
 import { crearPago } from '../services/billeteraService'
 import api from '../../../shared/api/axios'
 
@@ -60,6 +61,17 @@ function SubirPagoModal({ diasRegistrados, onClose, onSuccess }: Props) {
   const [errorEnvio, setErrorEnvio] = useState<string | null>(null)
   const [fechaInicio, setFechaInicio] = useState<string | null>(null)
   const [fechaFin, setFechaFin] = useState<string | null>(null)
+  const { id_estudiante } = useAuthStore()
+const [fechasPagadas, setFechasPagadas] = useState<string[]>([])
+
+useEffect(() => {
+  if (id_estudiante) {
+    api.get(`/turnos/estudiante/${id_estudiante}/fechas-pagadas`)
+      .then(res => setFechasPagadas(res.data))
+      .catch(() => {})
+  }
+}, [id_estudiante])
+
 
   useEffect(() => {
     api.get('/configuracion-formulario').then(res => {
@@ -148,7 +160,7 @@ function SubirPagoModal({ diasRegistrados, onClose, onSuccess }: Props) {
               <p className="text-sm text-gray-400 text-center py-4">No tienes días asignados</p>
             ) : (
               <div className="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1">
-                {fechas.map(({ label, iso }) => (
+                {fechas.filter(f => !fechasPagadas.includes(f.iso)).map(({ label, iso }) => (
                   <label key={iso} className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-50 cursor-pointer">
                     <input type="checkbox" checked={seleccionados.includes(iso)}
                       onChange={() => toggleDia(iso)} className="accent-violet-500 w-4 h-4" />

@@ -19,6 +19,7 @@ import ConfiguracionPage from '../../features/configuracion/pages/ConfiguracionP
 import CarteraPage from '../../features/cartera/pages/CarteraPage'
 import ResenasPage from '../../features/resenas/pages/ResenasPage'
 import ResenasEstudiantePage from '../../features/resenas/pages/ResenasEstudiantePage'
+import TurneroPage from '../../features/turnero/pages/TurneroPage'
 
 
 
@@ -48,6 +49,7 @@ function AppRouter() {
         <Route path={ROUTES.STUDENT_PAGO} element={<BilleteraPage />} />
         <Route path={ROUTES.STUDENT_RESENAS} element={<ResenasEstudiantePage />} />
         </Route>
+        <Route path={ROUTES.TURNERO} element={<TurneroPage />} />
         <Route path="*" element={<Navigate to={ROUTES.LOGIN} />} />
         
       </Routes>

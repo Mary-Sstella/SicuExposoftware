@@ -161,18 +161,12 @@ const asignarTurnoAutomatico = async (id_estudiante, fecha, id_configuracion) =>
 
         const aprobado = new Date(p.fecha_revision)
 
-        if (p.tipo_periodo === 'semanal') {
-            const dow = aprobado.getDay()
-            const lunes = new Date(aprobado)
-            lunes.setDate(aprobado.getDate() - (dow === 0 ? 6 : dow - 1))
-            lunes.setHours(0, 0, 0, 0)
-            const domingo = new Date(lunes)
-            domingo.setDate(lunes.getDate() + 6)
-            domingo.setHours(23, 59, 59, 999)
-            return fechaReserva >= lunes && fechaReserva <= domingo
-        }
+        if (p.tipo_periodo === 'SEMANAL') {
+            return true
+         }
 
-        if (p.tipo_periodo === 'mensual') {
+
+        if (p.tipo_periodo === 'MENSUAL') {
             return aprobado.getMonth() === fechaReserva.getMonth() &&
                    aprobado.getFullYear() === fechaReserva.getFullYear()
         }
@@ -276,7 +270,7 @@ const getHistorialEstudiante = async (id_estudiante) => {
 const getFechasPagadas = async (id_estudiante) => {
     const pagos = await prisma.pagos.findMany({
         where: { id_estudiante: parseInt(id_estudiante), estado: 'APROBADO' },
-        select: { tipo_periodo: true, fecha_revision: true, dias_pagados: true }
+        select: { tipo_periodo: true, fecha_revision: true, dias_pagados: true, cantidad_almuerzos: true, almuerzos_usados: true }
     })
 
     const DIAS_SEMANA = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado']
@@ -287,34 +281,38 @@ const getFechasPagadas = async (id_estudiante) => {
         const dias = Array.isArray(pago.dias_pagados) ? pago.dias_pagados : JSON.parse(pago.dias_pagados)
         const aprobado = new Date(pago.fecha_revision)
 
-        let inicio, fin
-
-        if (pago.tipo_periodo === 'semanal') {
-            const dow = aprobado.getDay()
-            inicio = new Date(aprobado)
-            inicio.setDate(aprobado.getDate() - (dow === 0 ? 6 : dow - 1))
-            inicio.setHours(0, 0, 0, 0)
-            fin = new Date(inicio)
-            fin.setDate(inicio.getDate() + 6)
-            fin.setHours(23, 59, 59, 999)
-        } else if (pago.tipo_periodo === 'mensual') {
-            inicio = new Date(aprobado.getFullYear(), aprobado.getMonth(), 1)
-            fin = new Date(aprobado.getFullYear(), aprobado.getMonth() + 1, 0)
-            fin.setHours(23, 59, 59, 999)
-        } else {
-            continue
-        }
-
-        const current = new Date(inicio)
-        while (current <= fin) {
-            const nombreDia = DIAS_SEMANA[current.getDay()]
-            if (dias.includes(nombreDia)) {
-                const y = current.getFullYear()
-                const m = String(current.getMonth() + 1).padStart(2, '0')
-                const d = String(current.getDate()).padStart(2, '0')
-                fechas.push(`${y}-${m}-${d}`)
+        if (pago.tipo_periodo === 'SEMANAL') {
+            const hoy = new Date()
+            hoy.setHours(0, 0, 0, 0)
+            const restantes = pago.cantidad_almuerzos - pago.almuerzos_usados
+            let count = 0
+            const cur = new Date(hoy)
+            for (let i = 0; i < 60 && count < restantes; i++) {
+                const nombreDia = DIAS_SEMANA[cur.getDay()]
+                if (dias.includes(nombreDia)) {
+                    const y = cur.getFullYear()
+                    const m = String(cur.getMonth() + 1).padStart(2, '0')
+                    const d = String(cur.getDate()).padStart(2, '0')
+                    fechas.push(`${y}-${m}-${d}`)
+                    count++
+                }
+                cur.setDate(cur.getDate() + 1)
             }
-            current.setDate(current.getDate() + 1)
+        } else if (pago.tipo_periodo === 'MENSUAL') {
+            const inicio = new Date(aprobado.getFullYear(), aprobado.getMonth(), 1)
+            const fin = new Date(aprobado.getFullYear(), aprobado.getMonth() + 1, 0)
+            fin.setHours(23, 59, 59, 999)
+            const current = new Date(inicio)
+            while (current <= fin) {
+                const nombreDia = DIAS_SEMANA[current.getDay()]
+                if (dias.includes(nombreDia)) {
+                    const y = current.getFullYear()
+                    const m = String(current.getMonth() + 1).padStart(2, '0')
+                    const d = String(current.getDate()).padStart(2, '0')
+                    fechas.push(`${y}-${m}-${d}`)
+                }
+                current.setDate(current.getDate() + 1)
+            }
         }
     }
 
@@ -337,6 +335,33 @@ const getEstudianteStats = async (id_estudiante) => {
     return { inasistencias, almuerzos_consumidos, pagos_aprobados, pagos_rechazados }
 }
 
+const getTurneroActual = async () => {
+    const hoy = new Date()
+    hoy.setHours(0, 0, 0, 0)
+
+    const pendientes = await prisma.reservas.findMany({
+        where: {
+            fecha: hoy,
+            numero_turno: { not: null },
+            estado: 'PENDIENTE'
+        },
+        orderBy: { numero_turno: 'asc' },
+        take: 2,
+        select: {
+            numero_turno: true,
+            nombre_estudiante: true,
+            hora_inicio: true,
+            hora_fin: true
+        }
+    })
+
+    return {
+        turno_actual: pendientes[0] || null,
+        siguiente: pendientes[1] || null
+    }
+}
+
+
 
 
 module.exports = {
@@ -350,5 +375,6 @@ module.exports = {
     getDiasEstudiante,
     getHistorialEstudiante,
     getFechasPagadas,
-    getEstudianteStats
+    getEstudianteStats,
+    getTurneroActual
 }
