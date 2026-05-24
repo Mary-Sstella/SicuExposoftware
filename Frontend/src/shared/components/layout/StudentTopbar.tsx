@@ -6,6 +6,7 @@ import { useAuthStore } from '../../../features/auth/store/authStore'
 const tabs = [
     { label: 'Mi Turno', path: '/student' },
     { label: 'Billetera', path: '/student/pago' },
+    { label: 'Reseñas', path: '/student/resenas' },
 ]
 
 function StudentTopbar() {

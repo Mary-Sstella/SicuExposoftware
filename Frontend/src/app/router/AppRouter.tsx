@@ -17,6 +17,9 @@ import SolicitudesPage from '../../features/solicitudes/pages/SolicitudesPage'
 import BilleteraPage from '../../features/billetera/pages/BilleteraPage'
 import ConfiguracionPage from '../../features/configuracion/pages/ConfiguracionPage'
 import CarteraPage from '../../features/cartera/pages/CarteraPage'
+import ResenasPage from '../../features/resenas/pages/ResenasPage'
+import ResenasEstudiantePage from '../../features/resenas/pages/ResenasEstudiantePage'
+
 
 
 
@@ -38,10 +41,12 @@ function AppRouter() {
           <Route path={ROUTES.SOLICITUDES} element={<SolicitudesPage />} />
           <Route path={ROUTES.CARTERA} element={<CarteraPage />} />
           <Route path={ROUTES.CONFIGURACION} element={<ConfiguracionPage />} />
+          <Route path={ROUTES.COMENTARIOS} element={<ResenasPage />} />
         </Route>
         <Route element={<StudentLayout />}>
         <Route path={ROUTES.STUDENT} element={<EstudiantePage />} />
         <Route path={ROUTES.STUDENT_PAGO} element={<BilleteraPage />} />
+        <Route path={ROUTES.STUDENT_RESENAS} element={<ResenasEstudiantePage />} />
         </Route>
         <Route path="*" element={<Navigate to={ROUTES.LOGIN} />} />
         

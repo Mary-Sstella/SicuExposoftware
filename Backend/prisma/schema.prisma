@@ -217,8 +217,11 @@ model resenas {
   calificacion   Int
   texto          String
   fecha_creacion DateTime   @default(now()) @db.Timestamp(6)
+  publicado      Boolean    @default(false)
   estudiante     estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction, map: "reseñas_id_estudiante_fkey")
 }
+
+
 
 model inscripciones {
   id_inscripcion       Int      @id @default(autoincrement())
