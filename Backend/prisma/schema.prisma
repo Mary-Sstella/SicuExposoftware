@@ -191,6 +191,7 @@ model usuarios {
   ultimo_acceso            DateTime?                  @db.Timestamp(6)
   actividades              actividades[]
   configuracion_formulario configuracion_formulario[]
+  menu                     menu[]
   estudiante               estudiante?                @relation(fields: [id_estudiante], references: [id_estudiante], onUpdate: NoAction)
 }
 
@@ -220,8 +221,6 @@ model resenas {
   publicado      Boolean    @default(false)
   estudiante     estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction, map: "reseñas_id_estudiante_fkey")
 }
-
-
 
 model inscripciones {
   id_inscripcion       Int      @id @default(autoincrement())
@@ -282,6 +281,15 @@ model huellas {
   finger_id      Int        @unique
   fecha_registro DateTime?  @default(now()) @db.Timestamp(6)
   estudiante     estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction, map: "fk_huella_estudiante")
+}
+
+model menu {
+  id_menu      Int       @id @default(autoincrement())
+  archivo_url  String    @db.VarChar(500)
+  tipo_archivo String    @db.VarChar(10)
+  subido_por   Int?
+  fecha_subida DateTime  @default(now()) @db.Timestamp(6)
+  usuarios     usuarios? @relation(fields: [subido_por], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
 }
 
 enum dia_enum {

@@ -69,4 +69,21 @@ const uploadSoporte = (req, res, next) => {
     })
 }
 
-module.exports = { uploadInscripcion, uploadPago, uploadSoporte };
+const _uploadMenu = upload.fields([
+    { name: 'archivo', maxCount: 1 },
+]);
+
+const uploadMenu = (req, res, next) => {
+    _uploadMenu(req, res, (err) => {
+        if (err) {
+            console.log('Error upload:', err.code, err.message)
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).json({ msg: 'El archivo no debe superar 5MB' })
+            }
+            return res.status(400).json({ msg: err.message })
+        }
+        next()
+    })
+}
+
+module.exports = { uploadInscripcion, uploadPago, uploadSoporte, uploadMenu };
