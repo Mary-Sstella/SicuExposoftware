@@ -1,5 +1,6 @@
 const soporteRepository = require('./soporte.repository');
 const supabase = require('../../config/supabase');
+const { enviarRespuestaSoporte } = require('../../shared/utils/email');
 
 const BUCKET = 'soporte-docs';
 
@@ -58,8 +59,17 @@ const getSoporteById = async (id) => {
     return soporte;
 };
 
-const responderSoporte = (id, respuesta) => {
-    return soporteRepository.responderSoporte(id, respuesta);
+const responderSoporte = async (id, respuesta) => {
+    const resultado = await soporteRepository.responderSoporte(id, respuesta);
+
+    enviarRespuestaSoporte({
+        nombre: resultado.nombre,
+        correo: resultado.correo,
+        asunto: resultado.asunto,
+        respuesta,
+    });
+
+    return resultado;
 };
 
 const updateEstadoSoporte = (id, estado) => {

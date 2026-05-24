@@ -2,6 +2,7 @@ const inscripcionRepository = require('./inscripcion.repository');
 const supabase = require('../../config/supabase');
 const prisma = require('../../config/prisma');
 const bcrypt = require('bcryptjs');
+const { enviarCredenciales } = require('../../shared/utils/email');
 
 const BUCKET = 'inscripciones-docs';
 
@@ -161,6 +162,14 @@ const aprobarInscripcion = async (id, dias) => {
     });
 
     return { inscripcion: inscripcionActualizada, diasAprobados, esNuevo };
+  }).then((resultado) => {
+    enviarCredenciales({
+      nombre: inscripcion.nombre,
+      correo: inscripcion.correo_institucional,
+      diasAprobados: resultado.diasAprobados,
+      esNuevo: resultado.esNuevo,
+    });
+    return resultado;
   });
 };
 
