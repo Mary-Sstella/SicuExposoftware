@@ -12,6 +12,7 @@ const configuracionRoutes = require('../modules/configuracion/configuracion.rout
 const pagoRoutes = require('../modules/pagos/pago.routes')
 const soporteRoutes = require('../modules/soporte/soporte.routes')
 const resenaRoutes = require('../modules/resenas/resena.routes')
+const menuRoutes = require('../modules/menu/menu.routes')
 
 const router = Router()
 
@@ -28,5 +29,6 @@ router.use('/configuracion-formulario', configuracionRoutes)
 router.use('/pagos', pagoRoutes)
 router.use('/soporte', soporteRoutes)
 router.use('/resenas', resenaRoutes)
+router.use('/menu', menuRoutes)
 
 module.exports = router
