@@ -1,4 +1,5 @@
 const prisma = require('../../config/prisma')
+const { generarExcelEstadisticas } = require('./estadisticas.excel')
 
 const getEstudiantesPorCarrera = async (req, res, next) => {
     try {
@@ -70,4 +71,16 @@ const getRangosPopulares = async (req, res, next) => {
     }
 }
 
-module.exports = { getEstudiantesPorCarrera, getAsistenciaMensual, getRangosPopulares }
+const exportarEstadisticas = async (req, res, next) => {
+    try {
+        const workbook = await generarExcelEstadisticas()
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        res.setHeader('Content-Disposition', 'attachment; filename=estadisticas_sicu.xlsx')
+        await workbook.xlsx.write(res)
+        res.end()
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { getEstudiantesPorCarrera, getAsistenciaMensual, getRangosPopulares, exportarEstadisticas }
