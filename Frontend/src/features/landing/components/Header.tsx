@@ -23,14 +23,14 @@ function Header(){
                     title={!registroActivo ? 'El registro está cerrado en este momento' : undefined}
                     className={`px-6 py-2 rounded-lg font-semibold transition ${
                         registroActivo
-                            ? 'bg-gradient-to-r from-purple-600 to-fuchsia-500 text-white hover:opacity-90 cursor-pointer'
+                            ? 'bg-gradient-to-r from-violet-600 to-violet-500 text-white hover:opacity-90 cursor-pointer'
                             : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                     }`}>
                     Registrarse
                 </button>
                 <button
                     onClick={() => navigate(ROUTES.LOGIN)}
-                    className="border-2 border-purple-500 text-purple-600 px-6 py-2 rounded-lg font-semibold hover:bg-purple-50 transition">
+                    className="border-2 border-violet-500 text-violet-600 px-6 py-2 rounded-lg font-semibold hover:bg-violet-50 transition">
                     Iniciar Sesión
                 </button>
             </div>

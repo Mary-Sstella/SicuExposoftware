@@ -1,6 +1,6 @@
 const multer = require('multer');
 
-const ALLOWED_TYPES = ['application/pdf', 'image/png'];
+const ALLOWED_TYPES = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
 const fileFilter = (_req, file, cb) => {

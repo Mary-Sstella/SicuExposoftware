@@ -1,8 +1,10 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { useAuth } from "../hooks/useAuth"
-import { Mail, Lock, Eye, EyeOff, LogIn, GraduationCap } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, LogIn, GraduationCap, ArrowLeft } from 'lucide-react'
 
 function LoginForm() {
+  const navigate = useNavigate()
   const [isStudent, setIsStudent] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showStudentPassword, setShowStudentPassword] = useState(false)
@@ -18,6 +20,14 @@ function LoginForm() {
 
   return (
     <div className="flex w-full rounded-2xl shadow-2xl overflow-hidden bg-white relative" style={{ minHeight: '560px' }}>
+
+      {/* Botón volver al landing */}
+      <button
+        onClick={() => navigate('/')}
+        className="absolute top-4 left-4 z-30 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-gray-400 hover:text-violet-600 hover:bg-violet-50 transition"
+      >
+        <ArrowLeft size={14} /> Volver
+      </button>
 
       {/* Panel admin */}
       <div className="w-1/2 p-10 flex flex-col justify-center gap-4 z-10">

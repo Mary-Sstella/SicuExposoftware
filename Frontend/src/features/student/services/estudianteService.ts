@@ -42,3 +42,16 @@ export const getEstudianteStats = async (id_estudiante: number) => {
     const res = await api.get(`/turnos/estudiante/${id_estudiante}/stats`)
     return res.data as { inasistencias: number; almuerzos_consumidos: number; pagos_aprobados: number; pagos_rechazados: number }
 }
+
+export const getPerfilEstudiante = async (id_estudiante: number) => {
+    const res = await api.get(`/estudiantes/${id_estudiante}`)
+    return res.data as {
+        nombres: string
+        apellidos: string
+        numero_identificacion: string
+        programa: string
+        semestre: number
+        estado: string
+    }
+}
+

@@ -26,7 +26,7 @@ function BenefitsSection() {
     ]
 
     return(
-        <section className="bg-gradient-to-r from-purple-500 to-fuchsia-400 py-32 px-10">
+        <section className="bg-gradient-to-r from-violet-600 to-violet-500 py-32 px-10">
             <h2 className="text-3xl font-bold text-white text-center mb-4">Beneficios del Sistema</h2>
             <p className="text-white/80 text-center mb-12 max-w-xl mx-auto">Todo lo que necesitas para gestionar el comedor y tu almuerzo 
             en un solo lugar</p>
