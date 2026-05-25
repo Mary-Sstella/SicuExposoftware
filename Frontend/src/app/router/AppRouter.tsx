@@ -42,7 +42,7 @@ function AppRouter() {
           <Route path={ROUTES.SOLICITUDES} element={<SolicitudesPage />} />
           <Route path={ROUTES.CARTERA} element={<CarteraPage />} />
           <Route path={ROUTES.CONFIGURACION} element={<ConfiguracionPage />} />
-          <Route path={ROUTES.COMENTARIOS} element={<ResenasPage />} />
+          <Route path={ROUTES.BUZON} element={<ResenasPage />} />
         </Route>
         <Route element={<StudentLayout />}>
         <Route path={ROUTES.STUDENT} element={<EstudiantePage />} />

@@ -3,6 +3,8 @@ import Footer from '../components/Footer'
 import Header from '../components/Header'
 import HeroSection from '../components/HeroSection'
 import PasosSection from '../components/PasosSection'
+import SoporteModal from '../../soporte/components/SoporteModal'
+
 
 function LandingPage() {
   return (
@@ -14,6 +16,7 @@ function LandingPage() {
       <BenefitsSection />
       <PasosSection />
       <Footer />
+      <SoporteModal />
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useRef, useEffect } from 'react'
 import { UserCircle2 } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 
@@ -8,7 +8,7 @@ const routeTitles: Record<string, string> = {
     '/asistencia': 'Asistencia',
     '/turnos': 'Turnos',
     '/cartera': 'Cartera',
-    '/comentarios': 'Comentarios',
+    '/buzon': 'Buzón',
     '/estadisticas': 'Estadísticas',
     '/solicitudes': 'Solicitudes',
     '/configuracion': 'Configuración',
@@ -17,14 +17,11 @@ const routeTitles: Record<string, string> = {
 function Topbar() {
     const { pathname } = useLocation()
     const title = routeTitles[pathname] ?? 'Dashboard'
-    const [abierto, setAbierto] = useState(false)
     const ref = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {
-            if (ref.current && !ref.current.contains(e.target as Node)) {
-                setAbierto(false)
-            }
+            if (ref.current && !ref.current.contains(e.target as Node)) {}
         }
         document.addEventListener('mousedown', handleClick)
         return () => document.removeEventListener('mousedown', handleClick)
@@ -35,7 +32,6 @@ function Topbar() {
             <h1 className="text-lg font-bold text-gray-800">{title}</h1>
             <div ref={ref} className="relative">
                 <button
-                    onClick={() => setAbierto(a => !a)}
                     className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-xl transition-colors"
                 >
                     <UserCircle2 size={34} className="text-violet-500" />
@@ -44,7 +40,6 @@ function Topbar() {
                         <p className="text-xs text-gray-400">Admin</p>
                     </div>
                 </button>
-
             </div>
         </div>
     )

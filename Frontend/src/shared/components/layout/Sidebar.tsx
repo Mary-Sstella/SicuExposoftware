@@ -9,7 +9,7 @@ const navItems = [
   { icon: ClipboardCheck, label: 'Asistencia', path: '/asistencia' },
   { icon: Clock, label: 'Turnos', path: '/turnos' },
   { icon: CreditCard, label: 'Cartera', path: '/cartera' },
-  { icon: MessageSquare, label: 'Comentarios', path: '/comentarios' },
+  { icon: MessageSquare, label: 'Buzón', path: '/buzon' },
   { icon: BarChart2, label: 'Estadísticas', path: '/estadisticas' },
   { icon: ClipboardList, label: 'Solicitudes', path: '/solicitudes' },
 ]
