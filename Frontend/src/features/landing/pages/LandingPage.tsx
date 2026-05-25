@@ -8,8 +8,8 @@ import SoporteModal from '../../soporte/components/SoporteModal'
 
 function LandingPage() {
   return (
-    <div className="min-h-screen bg-purple-100">
-      <div className="bg-purple-50">
+    <div className="min-h-screen bg-violet-100">
+      <div className="bg-violet-50">
       <Header />
       <HeroSection />
       </div>

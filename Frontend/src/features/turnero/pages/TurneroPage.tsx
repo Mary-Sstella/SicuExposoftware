@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import api from '../../../shared/api/axios'
 
+// Datos de un turno individual que devuelve el backend
 interface TurnoInfo {
     numero_turno: number
     nombre_estudiante: string
@@ -9,24 +10,28 @@ interface TurnoInfo {
 }
 
 interface TurneroData {
-    turno_actual: TurnoInfo | null
+    turno_actual: TurnoInfo | null // Turno que se está atendiendo ahora
     siguiente: TurnoInfo | null
 }
 
 function TurneroPage() {
+    // Turno que se está atendiendo ahora
     const [data, setData] = useState<TurneroData>({ turno_actual: null, siguiente: null })
+    // Estado del reloj en tiempo real, se actualiza cada segundo
     const [hora, setHora] = useState(new Date())
-
+    // Consulta el backend para obtener los turnos más recientes
     const fetchTurnero = () => {
         api.get('/turnos/turnero')
             .then(res => setData(res.data))
             .catch(() => {})
     }
 
+    // Refresca los turnos cada 4 segundos para mantener la pantalla actualizada
     useEffect(() => {
         fetchTurnero()
         const pollInterval = setInterval(fetchTurnero, 4000)
         const clockInterval = setInterval(() => setHora(new Date()), 1000)
+        // Limpia ambos intervalos al desmontar el componente para evitar memory leaks
         return () => {
             clearInterval(pollInterval)
             clearInterval(clockInterval)
@@ -73,11 +78,9 @@ function TurneroPage() {
                         <p className="text-purple-600 text-2xl">{data.siguiente.nombre_estudiante}</p>
                     </>
                 ) : (
-                    <p className="text-purple-600 text-3xl">—</p>
+                    <p className="text-purple-600 text-3xl">-</p>
                 )}
             </div>
-
-            <p className="absolute bottom-6 text-purple-600 text-sm tracking-wider">SICU · Comedor Universitario</p>
         </div>
     )
 }

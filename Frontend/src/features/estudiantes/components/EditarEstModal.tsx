@@ -64,7 +64,10 @@ function EditarEstModal({ estudiante, onClose, onSuccess }: Props) {
     setLoading(true)
     setError(null)
     try {
-      await api.put(`/estudiantes/${estudiante.id_estudiante}/dias`, { ...form, dias })
+      await Promise.all([
+        api.put(`/estudiantes/${estudiante.id_estudiante}`, form),
+        api.put(`/estudiantes/${estudiante.id_estudiante}/dias`, { dias }),
+      ])
       onSuccess()
       onClose()
     } catch (err: unknown) {
@@ -74,6 +77,7 @@ function EditarEstModal({ estudiante, onClose, onSuccess }: Props) {
       setLoading(false)
     }
   }
+
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={onClose}>

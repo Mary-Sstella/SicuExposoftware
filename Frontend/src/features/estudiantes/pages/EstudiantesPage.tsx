@@ -1,7 +1,6 @@
 import { useEstudiantes } from '../hooks/useEstudiantes'
 import EstudiantesTable from '../components/EstudiantesTable'
 import { useState } from 'react'
-import InscribirEstudianteModal from '../components/InscribirEstudianteModal'
 import { Search } from 'lucide-react'
 
 const POR_PAGINA = 9
@@ -10,7 +9,6 @@ function EstudiantesPage() {
   const { estudiantes, loading, refetch } = useEstudiantes()
   const [busqueda, setBusqueda] = useState('')
   const [filtroEstado, setFiltroEstado] = useState<'TODOS' | 'ACTIVO' | 'INACTIVO'>('TODOS')
-  const [modalAbierto, setModalAbierto] = useState(false)
   const [pagina, setPagina] = useState(1)
 
   const estudiantesFiltrados = estudiantes
@@ -54,12 +52,6 @@ function EstudiantesPage() {
               <option value="ACTIVO">Activo</option>
               <option value="INACTIVO">Inactivo</option>
             </select>
-            <button
-              onClick={() => setModalAbierto(true)}
-              className="ml-auto px-5 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold rounded-2xl transition-all shadow-lg border-2 border-violet-700"
-            >
-              + Inscribir Estudiante
-            </button>
           </div>
 
           {loading ? (
@@ -105,12 +97,6 @@ function EstudiantesPage() {
         </div>
       </div>
 
-      {modalAbierto && (
-        <InscribirEstudianteModal
-          onClose={() => setModalAbierto(false)}
-          onSuccess={refetch}
-        />
-      )}
     </>
   )
 }
