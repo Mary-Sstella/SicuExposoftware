@@ -17,7 +17,7 @@ const MAPA_DIAS = {
 const subirArchivo = async (file, carpeta) => {
     const nombreLimpio = file.originalname
         .normalize('NFD')
-        .replace(/[̀-ͯ]/g, '')
+        .replace(/[\u0300-\u036f]/g, '')
         .replace(/[^a-zA-Z0-9._-]/g, '_')
 
     const ruta = `${carpeta}/${Date.now()}-${nombreLimpio}`
@@ -63,7 +63,6 @@ const getInscripcionById = async (id) => {
 
   return { ...inscripcion, sisben_url, cedula_url };
 };
-
 
 const aprobarInscripcion = async (id, dias) => {
   const inscripcion = await inscripcionRepository.getInscripcionById(id);
@@ -165,7 +164,8 @@ const aprobarInscripcion = async (id, dias) => {
   }).then((resultado) => {
     enviarCredenciales({
       nombre: inscripcion.nombre,
-      correo: inscripcion.correo_institucional,
+      correo: inscripcion.correo_personal || inscripcion.correo_institucional,
+      correoInstitucional: inscripcion.correo_institucional,
       diasAprobados: resultado.diasAprobados,
       esNuevo: resultado.esNuevo,
     });
@@ -202,7 +202,6 @@ const getCupos = async () => {
     viernes:   { ocupados: oViernes,   total: config.cupo_viernes },
   };
 };
-
 
 module.exports = {
   subirArchivo,
