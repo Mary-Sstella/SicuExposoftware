@@ -48,7 +48,7 @@ function QRModal({id_reserva, onClose}: Props) {
                 {codigo && (
                     <div className="flex flex-col items-center gap-4">
                         <div className="bg-white p-4 rounded-2xl border-2 border-violet-100">
-                           <QRCodeSVG value={codigo} size={200} />
+                           <QRCodeSVG value={codigo} size={256} level="H" />
                         </div>
                         <p className="text-xs text-gray-400 text-center">
                             Muéstrale este QR al administrador.<br />

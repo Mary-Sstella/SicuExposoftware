@@ -1,5 +1,5 @@
 const qrRepository = require('./qr.repository')
-const jwt = require('jsonwebtoken')
+const crypto = require('crypto')
 const prisma = require('../../config/prisma')
 
 const generarQR = async (id_reserva, id_estudiante) => {
@@ -22,17 +22,13 @@ const generarQR = async (id_reserva, id_estudiante) => {
         return qrExistente
     }
 
-    const token = jwt.sign(
-        { id_reserva, id_estudiante, fecha: hoy },
-        process.env.JWT_SECRET,
-        { expiresIn: Math.floor((expiracion - Date.now()) / 1000) }
-    )
+    const codigoCorto = crypto.randomBytes(6).toString('hex')
 
     return await qrRepository.crearQR({
         id_reserva,
         id_estudiante,
-        codigo_qr: token,
-        url_qr: token,
+        codigo_qr: codigoCorto,
+        url_qr: codigoCorto,
         fecha_generacion: new Date(),
         valido_hasta: expiracion,
         usado: false
@@ -46,15 +42,8 @@ const escanearQR = async (codigo_qr) => {
     if (qr.usado) throw new Error('QR_YA_USADO')
     if (qr.valido_hasta < new Date()) throw new Error('QR_EXPIRADO')
 
-    let payload
-    try {
-        payload = jwt.verify(codigo_qr, process.env.JWT_SECRET)
-    } catch {
-        throw new Error('QR_INVALIDO')
-    }
-
     const reserva = await prisma.reservas.findUnique({
-        where: { id_reserva: payload.id_reserva },
+        where: { id_reserva: qr.id_reserva },
         include: {
             estudiante: {
                 select: {
@@ -70,7 +59,7 @@ const escanearQR = async (codigo_qr) => {
     if (reserva.estado === 'ENTREGADA') throw new Error('YA_ENTREGADA')
 
     await prisma.reservas.update({
-        where: { id_reserva: payload.id_reserva },
+        where: { id_reserva: qr.id_reserva },
         data: { estado: 'ENTREGADA', metodo: 'QR' }
     })
 
