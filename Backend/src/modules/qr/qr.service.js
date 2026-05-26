@@ -1,5 +1,5 @@
 const qrRepository = require('./qr.repository')
-const crypto = require('crypto')
+const jwt = require('jsonwebtoken')
 const prisma = require('../../config/prisma')
 
 const generarQR = async (id_reserva, id_estudiante) => {
@@ -18,17 +18,21 @@ const generarQR = async (id_reserva, id_estudiante) => {
     const expiracion = new Date(`${hoy}T23:59:59-05:00`)
 
     const qrExistente = await qrRepository.getQRPorReserva(id_reserva)
-    if (qrExistente && !qrExistente.usado && qrExistente.valido_hasta > new Date() && qrExistente.codigo_qr.length <= 20) {
+    if (qrExistente && !qrExistente.usado && qrExistente.valido_hasta > new Date()) {
         return qrExistente
     }
 
-    const codigoCorto = crypto.randomBytes(8).toString('hex')
+    const token = jwt.sign(
+        { id_reserva, id_estudiante, fecha: hoy },
+        process.env.JWT_SECRET,
+        { expiresIn: Math.floor((expiracion - Date.now()) / 1000) }
+    )
 
     return await qrRepository.crearQR({
         id_reserva,
         id_estudiante,
-        codigo_qr: codigoCorto,
-        url_qr: codigoCorto,
+        codigo_qr: token,
+        url_qr: token,
         fecha_generacion: new Date(),
         valido_hasta: expiracion,
         usado: false
@@ -42,8 +46,15 @@ const escanearQR = async (codigo_qr) => {
     if (qr.usado) throw new Error('QR_YA_USADO')
     if (qr.valido_hasta < new Date()) throw new Error('QR_EXPIRADO')
 
+    let payload
+    try {
+        payload = jwt.verify(codigo_qr, process.env.JWT_SECRET)
+    } catch {
+        throw new Error('QR_INVALIDO')
+    }
+
     const reserva = await prisma.reservas.findUnique({
-        where: { id_reserva: qr.id_reserva },
+        where: { id_reserva: payload.id_reserva },
         include: {
             estudiante: {
                 select: {
@@ -59,8 +70,8 @@ const escanearQR = async (codigo_qr) => {
     if (reserva.estado === 'ENTREGADA') throw new Error('YA_ENTREGADA')
 
     await prisma.reservas.update({
-        where: { id_reserva: qr.id_reserva },
-        data: { estado: 'ENTREGADA', metodo: 'QR'}
+        where: { id_reserva: payload.id_reserva },
+        data: { estado: 'ENTREGADA', metodo: 'QR' }
     })
 
     await qrRepository.marcarUsado(qr.id_qr)
