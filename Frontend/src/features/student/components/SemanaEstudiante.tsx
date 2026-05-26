@@ -85,17 +85,17 @@ function SemanaEstudiante() {
                             statusText = `#${registro.numero_turno}`
                             statusColor = esHoy ? 'text-green-200' : 'text-green-600'
                             dotColor = 'bg-green-400'
-                            subText = registro.hora_inicio.slice(0, 5)
+                            subText = registro.hora_inicio?.slice(0, 5) ?? ''
                         } else if (registro.estado === 'AUSENTE') {
                             statusText = 'Ausente'
                             statusColor = esHoy ? 'text-red-200' : 'text-red-400'
                             dotColor = 'bg-red-400'
-                            subText = registro.hora_inicio.slice(0, 5)
+                            subText = registro.hora_inicio?.slice(0, 5) ?? ''
                         } else if (registro.estado === 'PENDIENTE') {
                             statusText = `#${registro.numero_turno}`
                             statusColor = esHoy ? 'text-amber-200' : 'text-amber-500'
                             dotColor = 'bg-amber-400'
-                            subText = registro.hora_inicio.slice(0, 5)
+                            subText = registro.hora_inicio?.slice(0, 5) ?? ''
                         }
                     } else if (pagado && !esPasado) {
                         statusText = 'Pagado'
