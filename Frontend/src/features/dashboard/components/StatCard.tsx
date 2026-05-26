@@ -1,4 +1,5 @@
 import { ArrowUpRight, TrendingUp, TrendingDown } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 interface StatCardProps {
     title: string
@@ -9,11 +10,13 @@ interface StatCardProps {
     changeLabel?: string
     iconBg?: string
     blob?: string
+    path?: string
 }
 
-function StatCard({ title, value, icon, description, change, changeLabel, iconBg = 'bg-violet-50', blob }: StatCardProps) {
+function StatCard({ title, value, icon, description, change, changeLabel, iconBg = 'bg-violet-50', blob, path }: StatCardProps) {
     const isPositive = change !== undefined && change > 0
     const isNegative = change !== undefined && change < 0
+    const navigate = useNavigate()
 
     return (
         <div className="relative overflow-hidden bg-white rounded-2xl p-5 shadow-sm border border-gray-700 hover:shadow-md transition-shadow duration-200">
@@ -29,9 +32,14 @@ function StatCard({ title, value, icon, description, change, changeLabel, iconBg
                         {description && <p className="text-xs text-gray-400">{description}</p>}
                     </div>
                 </div>
-                <button className="w-8 h-8 rounded-xl border border-gray-700 flex items-center justify-center text-gray-700 hover:text-black hover:border-black transition-colors flex-shrink-0">
-                    <ArrowUpRight size={14} />
-                </button>
+                {path && (
+                    <button
+                        onClick={() => navigate(path)}
+                        className="w-8 h-8 rounded-xl border border-gray-700 flex items-center justify-center text-gray-700 hover:bg-violet-600 hover:text-white hover:border-violet-600 transition-all flex-shrink-0"
+                    >
+                        <ArrowUpRight size={14} />
+                    </button>
+                )}
             </div>
 
             {change !== undefined && (

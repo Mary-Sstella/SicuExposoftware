@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+@layer base {
+  button:not(:disabled) { cursor: pointer; }
+  input, textarea, select { cursor: text; }
+  select { cursor: pointer; }
+  label[for], label > input { cursor: pointer; }
+  @keyframes scan {
+    0%   { top: 0%; }
+    100% { top: 100%; }
+}
+
+}

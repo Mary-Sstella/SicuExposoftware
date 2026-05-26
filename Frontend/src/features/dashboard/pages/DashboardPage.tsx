@@ -37,6 +37,7 @@ function DashboardPage() {
             description="Registrados en el sistema"
             change={summary?.total_estudiantes_change}
             changeLabel="vs. mes anterior"
+            path="/estudiantes"
         />
         <StatCard
             title="Activos"
@@ -45,6 +46,7 @@ function DashboardPage() {
             description="Con estado activo"
             change={summary?.estudiantes_activos_change}
             changeLabel="vs. mes anterior"
+            path="/estudiantes"
         />
         <StatCard
             title="Pagos Pendientes"
@@ -53,6 +55,7 @@ function DashboardPage() {
             description="Por cobrar"
             change={summary?.pagos_pendientes_change}
             changeLabel="vs. mes anterior"
+            path="/cartera"
         />
         <StatCard
             title="Asistencias Hoy"
@@ -61,6 +64,7 @@ function DashboardPage() {
             description="Registradas hoy"
             change={summary?.asistencias_hoy_change}
             changeLabel="vs. ayer"
+            path="/asistencia"
         />
 
 

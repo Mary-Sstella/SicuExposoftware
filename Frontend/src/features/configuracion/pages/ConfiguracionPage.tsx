@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Settings, Calendar, Users, Clock, ToggleLeft, ToggleRight, Loader2, Check, AlertCircle, Upload, Trash2, UtensilsCrossed } from 'lucide-react'
+import { Settings, Calendar, Users, Clock, Loader2, Check, AlertCircle, Upload, Trash2, UtensilsCrossed } from 'lucide-react'
 import {
   getConfiguracion, updateConfiguracion,
   getConfiguracionTurnos, updateConfiguracionTurno,
@@ -338,9 +338,9 @@ function ConfiguracionPage() {
                   : 'El botón de registro está oculto'}
               </p>
             </div>
-            {form.activo
-              ? <ToggleRight size={32} className="text-violet-500 shrink-0" />
-              : <ToggleLeft size={32} className="text-gray-300 shrink-0" />}
+            <div className={`relative w-14 h-7 rounded-full transition-all duration-300 shrink-0 ${form.activo ? 'bg-violet-500' : 'bg-gray-200'}`}>
+              <div className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 ${form.activo ? 'left-8' : 'left-1'}`} />
+            </div>
           </button>
         </div>
 

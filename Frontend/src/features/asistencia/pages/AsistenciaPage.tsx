@@ -1,8 +1,10 @@
 ﻿import { useState } from 'react'
 import { useAsistencia } from '../hooks/useAsistencia'
 import AsistenciaTable from '../components/AsistenciaTable'
-import { Fingerprint, Keyboard, Monitor } from 'lucide-react'
+import { Keyboard, Monitor } from 'lucide-react'
 import api from '../../../shared/api/axios'
+import EscanerQR from '../components/EscanerQR'
+
 
 function AsistenciaPage() {
   const { asistencias, loading, refetch } = useAsistencia()
@@ -32,17 +34,7 @@ function AsistenciaPage() {
     <div className="flex-1 p-8 overflow-y-auto bg-gray-50">
 
       <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col items-center justify-center gap-3 min-h-[180px] border border-gray-700">
-          <div className="w-16 h-16 rounded-full bg-violet-100 flex items-center justify-center">
-            <Fingerprint size={36} className="text-violet-500" />
-          </div>
-          <div className="text-center">
-            <p className="text-sm font-bold text-gray-700">Lector Biométrico</p>
-            <p className="text-xs text-gray-400">Sistema de verificación en tiempo real</p>
-          </div>
-          <span className="text-xs px-3 py-1 bg-gray-100 text-gray-400 rounded-full">Esperando huella...</span>
-        </div>
-
+         <EscanerQR />
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-700">
           <div className="flex items-center gap-2 mb-4">
             <Keyboard size={18} className="text-violet-500" />

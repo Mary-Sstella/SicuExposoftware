@@ -55,3 +55,9 @@ export const getPerfilEstudiante = async (id_estudiante: number) => {
     }
 }
 
+export const generarQR = async (id_reserva: number) => {
+    const res = await api.get(`/qr/${id_reserva}`)
+    return res.data as { codigo_qr: string }
+}
+
+

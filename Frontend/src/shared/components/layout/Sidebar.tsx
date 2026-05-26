@@ -4,14 +4,14 @@ import { useAuthStore } from '../../../features/auth/store/authStore'
 import { useNavigate, useLocation } from 'react-router-dom'
 
 const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
-  { icon: Users, label: 'Estudiantes', path: '/estudiantes' },
-  { icon: ClipboardCheck, label: 'Asistencia', path: '/asistencia' },
-  { icon: Clock, label: 'Turnos', path: '/turnos' },
-  { icon: CreditCard, label: 'Cartera', path: '/cartera' },
-  { icon: MessageSquare, label: 'Buzón', path: '/buzon' },
-  { icon: BarChart2, label: 'Estadísticas', path: '/estadisticas' },
-  { icon: ClipboardList, label: 'Solicitudes', path: '/solicitudes' },
+  { icon: LayoutDashboard, label: 'Dashboard',    path: '/dashboard',    iconClass: 'group-hover:scale-110' },
+  { icon: Users,           label: 'Estudiantes',  path: '/estudiantes',  iconClass: 'group-hover:-translate-y-1' },
+  { icon: ClipboardCheck,  label: 'Asistencia',   path: '/asistencia',   iconClass: 'group-hover:rotate-12' },
+  { icon: Clock,           label: 'Turnos',       path: '/turnos',       iconClass: 'group-hover:rotate-45' },
+  { icon: CreditCard,      label: 'Cartera',      path: '/cartera',      iconClass: 'group-hover:-translate-y-1 group-hover:scale-105' },
+  { icon: MessageSquare,   label: 'Buzón',        path: '/buzon',        iconClass: 'group-hover:-rotate-12' },
+  { icon: BarChart2,       label: 'Estadísticas', path: '/estadisticas', iconClass: 'origin-bottom group-hover:scale-y-125' },
+  { icon: ClipboardList,   label: 'Solicitudes',  path: '/solicitudes',  iconClass: 'group-hover:rotate-6' },
 ]
 
 function Sidebar() {
@@ -33,18 +33,18 @@ function Sidebar() {
 
       {/* Nav */}
       <nav className="flex-1 px-3 flex flex-col gap-1">
-        {navItems.map(({ icon: Icon, label, path }) => {
+        {navItems.map(({ icon: Icon, label, path, iconClass }) => {
           const isActive = pathname === path
           return (
             <button
               key={label}
               onClick={() => navigate(path)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 w-full text-left
+              className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 w-full text-left
                 ${isActive ? 'bg-violet-600 text-white font-semibold shadow-sm' : 'text-gray-800 hover:bg-violet-100 hover:text-violet-700'}
                 ${collapsed ? 'justify-center' : ''}
               `}
             >
-              <Icon size={20} className="flex-shrink-0" />
+              <Icon size={20} className={`flex-shrink-0 transition-transform duration-300 ${iconClass}`} />
               {!collapsed && <span className="text-sm font-medium">{label}</span>}
             </button>
           )

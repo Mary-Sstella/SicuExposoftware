@@ -77,16 +77,18 @@ const getTurnosPorFecha = async (fecha, buscar) => {
 
 // Turno del estudiante para hoy (null si no tiene)
 const getTurnoEstudiante = async (id_estudiante) => {
-    const hoy = new Date()
-    hoy.setHours(0, 0, 0, 0)
+    const hoyColombia = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Bogota' })
+    const fechaInicio = new Date(hoyColombia + 'T00:00:00.000Z')
+    const fechaFin = new Date(hoyColombia + 'T23:59:59.999Z')
 
     return await prisma.reservas.findFirst({
         where: {
             id_estudiante: parseInt(id_estudiante),
-            fecha: hoy,
+            fecha: { gte: fechaInicio, lte: fechaFin },
             numero_turno: { not: null }
         },
         select: {
+            id_reserva: true,  
             numero_turno: true,
             hora_inicio: true,
             hora_fin: true,

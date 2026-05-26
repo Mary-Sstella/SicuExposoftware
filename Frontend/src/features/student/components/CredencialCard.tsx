@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Ticket, Info, Download, RefreshCw, QrCode } from 'lucide-react'
+import { QRCodeSVG } from 'qrcode.react'
 import { useAuthStore } from '../../auth/store/authStore'
-import { getPerfilEstudiante } from '../services/estudianteService'
+import { getPerfilEstudiante, generarQR } from '../services/estudianteService'
 import { useMisTurnos } from '../hooks/useMisTurnos'
 
 interface Perfil {
@@ -16,6 +17,9 @@ interface Perfil {
 function CredencialCard() {
     const { id_estudiante } = useAuthStore()
     const [perfil, setPerfil] = useState<Perfil | null>(null)
+    const [codigoQR, setCodigoQR] = useState<string | null>(null)
+    const [cargandoQR, setCargandoQR] = useState(false)
+    const qrRef = useRef<HTMLDivElement>(null)
     const { turno } = useMisTurnos()
 
     useEffect(() => {
@@ -23,12 +27,55 @@ function CredencialCard() {
         getPerfilEstudiante(id_estudiante).then(setPerfil)
     }, [id_estudiante])
 
+    const handleGenerarQR = useCallback(async () => {
+        if (!turno?.id_reserva) return
+        setCargandoQR(true)
+        try {
+            const data = await generarQR(turno.id_reserva)
+            setCodigoQR(data.codigo_qr)
+        } catch {
+            setCodigoQR(null)
+        } finally {
+            setCargandoQR(false)
+        }
+    }, [turno?.id_reserva])
+
+    useEffect(() => {
+        if (turno?.id_reserva && turno.estado !== 'ENTREGADA' && turno.estado !== 'AUSENTE') {
+            handleGenerarQR()
+        }
+    }, [turno?.id_reserva, handleGenerarQR])
+
+    const handleDescargar = () => {
+        if (!qrRef.current) return
+        const svg = qrRef.current.querySelector('svg')
+        if (!svg) return
+
+        const svgData = new XMLSerializer().serializeToString(svg)
+        const canvas = document.createElement('canvas')
+        canvas.width = 250
+        canvas.height = 250
+        const ctx = canvas.getContext('2d')!
+        const img = new Image()
+        img.onload = () => {
+            ctx.fillStyle = 'white'
+            ctx.fillRect(0, 0, 250, 250)
+            ctx.drawImage(img, 0, 0, 250, 250)
+            const a = document.createElement('a')
+            a.download = `QR-turno-${turno?.numero_turno ?? 'hoy'}.png`
+            a.href = canvas.toDataURL('image/png')
+            a.click()
+        }
+        img.src = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgData)))}`
+    }
+
     const inicial = perfil ? `${perfil.nombres[0]}${perfil.apellidos[0]}` : '?'
+    const tieneTurnoPendiente = turno?.id_reserva && turno.estado !== 'ENTREGADA' && turno.estado !== 'AUSENTE'
 
     return (
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full">
 
-            {/* Banner + Avatar en wrapper relativo para posicionamiento absoluto */}
+            {/* Banner + Avatar */}
             <div className="relative">
                 <div className="bg-gradient-to-br from-violet-600 to-purple-500 px-4 pt-4 pb-10 rounded-t-3xl overflow-hidden">
                     <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10" />
@@ -44,8 +91,6 @@ function CredencialCard() {
                         )}
                     </div>
                 </div>
-
-                {/* Avatar absolutamente posicionado sobre el borde del banner */}
                 <div className="absolute -bottom-8 left-1/2 -translate-x-1/2">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center shadow-lg border-4 border-white">
                         <span className="text-xl font-black text-white">{inicial}</span>
@@ -53,7 +98,7 @@ function CredencialCard() {
                 </div>
             </div>
 
-            {/* Info debajo del avatar */}
+            {/* Nombre y programa */}
             <div className="flex flex-col items-center pt-10 px-4 pb-2 text-center">
                 <p className="text-base font-black text-gray-800">
                     {perfil ? `${perfil.nombres} ${perfil.apellidos}` : '—'}
@@ -64,7 +109,7 @@ function CredencialCard() {
                 </p>
             </div>
 
-            {/* QR */}
+            {/* Sección QR */}
             <div className="mx-4 mt-3 flex-1 rounded-2xl border border-dashed border-gray-200 p-4 flex flex-col gap-3">
                 <div className="flex items-center gap-1.5">
                     <Ticket size={12} className="text-violet-400" />
@@ -74,13 +119,35 @@ function CredencialCard() {
                 </div>
 
                 <div className="flex flex-col items-center gap-2 flex-1 justify-center">
-                    <div className="w-16 h-16 rounded-2xl bg-violet-50 flex items-center justify-center">
-                        <QrCode size={36} className="text-violet-500" strokeWidth={1.5} />
-                    </div>
-                    <p className="text-sm font-bold text-violet-600">Generar mi QR</p>
-                    <p className="text-[10px] text-gray-400 text-center">
-                        Disponible 15 min antes de tu turno
-                    </p>
+                    {/* QR generado */}
+                    {codigoQR ? (
+                        <div ref={qrRef} className="bg-white p-2 rounded-xl border border-violet-100">
+                            <QRCodeSVG value={codigoQR} size={130} />
+                        </div>
+                    ) : (
+                        /* Placeholder con botón para generar */
+                        <button
+                            onClick={handleGenerarQR}
+                            disabled={!tieneTurnoPendiente || cargandoQR}
+                            className={`flex flex-col items-center gap-2 w-full py-3 rounded-2xl transition
+                                ${tieneTurnoPendiente
+                                    ? 'hover:bg-violet-50 cursor-pointer'
+                                    : 'cursor-default opacity-60'
+                                }`}
+                        >
+                            <div className="w-16 h-16 rounded-2xl bg-violet-50 flex items-center justify-center">
+                                <QrCode size={36} className="text-violet-500" strokeWidth={1.5} />
+                            </div>
+                            <p className="text-sm font-bold text-violet-600">
+                                {cargandoQR ? 'Generando...' : 'Generar mi QR'}
+                            </p>
+                            {!tieneTurnoPendiente && (
+                                <p className="text-[10px] text-gray-400 text-center">
+                                    Sin reserva para hoy
+                                </p>
+                            )}
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -97,10 +164,18 @@ function CredencialCard() {
 
             {/* Botones */}
             <div className="mx-4 mt-3 mb-4 flex gap-2">
-                <button className="flex-1 flex items-center justify-center gap-1.5 py-2.5 border border-gray-200 rounded-2xl text-xs font-semibold text-gray-600 hover:bg-gray-50 transition">
+                <button
+                    onClick={handleDescargar}
+                    disabled={!codigoQR}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 border border-gray-200 rounded-2xl text-xs font-semibold text-gray-600 hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                >
                     <Download size={13} /> Descargar
                 </button>
-                <button className="flex-1 flex items-center justify-center gap-1.5 py-2.5 border border-gray-200 rounded-2xl text-xs font-semibold text-gray-600 hover:bg-gray-50 transition">
+                <button
+                    onClick={handleGenerarQR}
+                    disabled={!tieneTurnoPendiente || cargandoQR}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 border border-gray-200 rounded-2xl text-xs font-semibold text-gray-600 hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                >
                     <RefreshCw size={13} /> Regenerar
                 </button>
             </div>
