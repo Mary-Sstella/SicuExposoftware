@@ -16,6 +16,7 @@ function EstudiantePage() {
     const { id_estudiante } = useAuthStore()
     const [modalReserva, setModalReserva] = useState(false)
     const [nombre, setNombre] = useState('')
+    const [codigoQR, setCodigoQR] = useState<string | null>(null)  // ← nuevo
 
     useEffect(() => {
         if (id_estudiante)
@@ -29,7 +30,7 @@ function EstudiantePage() {
 
             {/* Columna izquierda: Credencial */}
             <div className="w-74 flex-shrink-0">
-                <CredencialCard />
+                <CredencialCard onQRGenerado={setCodigoQR} />  {/* ← prop nueva */}
             </div>
 
             {/* Columna derecha */}
@@ -59,7 +60,7 @@ function EstudiantePage() {
 
                 {/* Turno hoy + Menú del día */}
                 <div className="grid grid-cols-2 gap-3">
-                    <MiTurnoHoy />
+                    <MiTurnoHoy codigoQR={codigoQR} />  {/* ← prop nueva */}
                     <MenuDelDia />
                 </div>
 

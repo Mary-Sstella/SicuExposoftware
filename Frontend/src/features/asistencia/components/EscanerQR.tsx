@@ -29,6 +29,7 @@ function EscanerQR() {
     }
 
     const handleScan = async (detected: { rawValue: string }[]) => {
+        console.log('detectado:', detected)  
         if (procesando || !detected.length) return
         setProcesando(true)
         setActivo(false)
@@ -39,7 +40,9 @@ function EscanerQR() {
             const msg = (err as { response?: { data?: { msg?: string } } })?.response?.data?.msg
             setError(msg || 'QR inválido o ya utilizado')
         }
+
     }
+    
 
     return (
         <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col gap-4 border border-gray-700">
@@ -81,7 +84,7 @@ function EscanerQR() {
                     <Scanner
                         onScan={handleScan}
                         onError={() => {}}
-                        constraints={deviceId ? { deviceId } : { facingMode: 'environment' }}
+                        constraints={deviceId ? { deviceId } : { facingMode: 'user' }}
                         sound={true}
                         components={{ finder: true }}
                         scanDelay={300}
