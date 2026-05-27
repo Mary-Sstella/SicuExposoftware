@@ -10,7 +10,6 @@ const estadisticasRoutes = require('../modules/estadisticas/estadisticas.routes'
 const inscripcionRoutes = require('../modules/inscripciones/inscripcion.routes')
 const configuracionRoutes = require('../modules/configuracion/configuracion.routes')
 const pagoRoutes = require('../modules/pagos/pago.routes')
-const biometriaRoutes = require('../modules/biometria/biometria.routes')
 
 const router = Router()
 
@@ -25,6 +24,5 @@ router.use('/estadisticas', estadisticasRoutes)
 router.use('/inscripciones', inscripcionRoutes)
 router.use('/configuracion-formulario', configuracionRoutes)
 router.use('/pagos', pagoRoutes)
-router.use('/huellas', biometriaRoutes)
 
 module.exports = router
