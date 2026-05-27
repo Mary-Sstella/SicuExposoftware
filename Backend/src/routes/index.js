@@ -14,6 +14,7 @@ const soporteRoutes = require('../modules/soporte/soporte.routes')
 const resenaRoutes = require('../modules/resenas/resena.routes')
 const menuRoutes = require('../modules/menu/menu.routes')
 const qrRoutes = require('../modules/qr/qr.routes')
+const biometriaRoutes = require('../modules/biometria/biometria.routes')
 
 const router = Router()
 
@@ -32,5 +33,6 @@ router.use('/soporte', soporteRoutes)
 router.use('/resenas', resenaRoutes)
 router.use('/menu', menuRoutes)
 router.use('/qr', qrRoutes)
+router.use('/huellas', biometriaRoutes)
 
 module.exports = router
