@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Ticket, Info, Download, RefreshCw, QrCode } from 'lucide-react'
-import { QRCodeSVG } from 'qrcode.react'
+import { Ticket, Info, Download, RefreshCw, QrCode, AlertCircle } from 'lucide-react'
+import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react'
 import { useAuthStore } from '../../auth/store/authStore'
 import { getPerfilEstudiante, generarQR } from '../services/estudianteService'
 import { useMisTurnos } from '../hooks/useMisTurnos'
+
+interface Props {
+    onQRGenerado?: (codigo: string) => void
+}
 
 interface Perfil {
     nombres: string
@@ -14,13 +18,14 @@ interface Perfil {
     estado: string
 }
 
-function CredencialCard() {
+function CredencialCard({ onQRGenerado }: Props) {
     const { id_estudiante } = useAuthStore()
     const [perfil, setPerfil] = useState<Perfil | null>(null)
     const [codigoQR, setCodigoQR] = useState<string | null>(null)
     const [cargandoQR, setCargandoQR] = useState(false)
+    const [errorQR, setErrorQR] = useState<string | null>(null)
     const qrRef = useRef<HTMLDivElement>(null)
-    const { turno } = useMisTurnos()
+    const { turno, loading: loadingTurno } = useMisTurnos()
 
     useEffect(() => {
         if (!id_estudiante) return
@@ -30,43 +35,34 @@ function CredencialCard() {
     const handleGenerarQR = useCallback(async () => {
         if (!turno?.id_reserva) return
         setCargandoQR(true)
+        setErrorQR(null)
         try {
             const data = await generarQR(turno.id_reserva)
             setCodigoQR(data.codigo_qr)
-        } catch {
+            onQRGenerado?.(data.codigo_qr)
+        } catch (err: unknown) {
+            const msg = (err as { response?: { data?: { msg?: string } } })?.response?.data?.msg
+            setErrorQR(msg || 'No se pudo generar el QR')
             setCodigoQR(null)
         } finally {
             setCargandoQR(false)
         }
-    }, [turno?.id_reserva])
+    }, [turno?.id_reserva, onQRGenerado])
 
     useEffect(() => {
+        if (loadingTurno) return
         if (turno?.id_reserva && turno.estado !== 'ENTREGADA' && turno.estado !== 'AUSENTE') {
             handleGenerarQR()
         }
-    }, [turno?.id_reserva, handleGenerarQR])
+    }, [loadingTurno, turno?.id_reserva, handleGenerarQR])
 
     const handleDescargar = () => {
-        if (!qrRef.current) return
-        const svg = qrRef.current.querySelector('svg')
-        if (!svg) return
-
-        const svgData = new XMLSerializer().serializeToString(svg)
-        const canvas = document.createElement('canvas')
-        canvas.width = 250
-        canvas.height = 250
-        const ctx = canvas.getContext('2d')!
-        const img = new Image()
-        img.onload = () => {
-            ctx.fillStyle = 'white'
-            ctx.fillRect(0, 0, 250, 250)
-            ctx.drawImage(img, 0, 0, 250, 250)
-            const a = document.createElement('a')
-            a.download = `QR-turno-${turno?.numero_turno ?? 'hoy'}.png`
-            a.href = canvas.toDataURL('image/png')
-            a.click()
-        }
-        img.src = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgData)))}`
+        const canvas = document.getElementById('qr-canvas-descarga') as HTMLCanvasElement
+        if (!canvas) return
+        const a = document.createElement('a')
+        a.download = `QR-turno-${turno?.numero_turno ?? 'hoy'}.png`
+        a.href = canvas.toDataURL('image/png')
+        a.click()
     }
 
     const inicial = perfil ? `${perfil.nombres[0]}${perfil.apellidos[0]}` : '?'
@@ -75,7 +71,6 @@ function CredencialCard() {
     return (
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full">
 
-            {/* Banner + Avatar */}
             <div className="relative">
                 <div className="bg-gradient-to-br from-violet-600 to-purple-500 px-4 pt-4 pb-10 rounded-t-3xl overflow-hidden">
                     <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10" />
@@ -98,7 +93,6 @@ function CredencialCard() {
                 </div>
             </div>
 
-            {/* Nombre y programa */}
             <div className="flex flex-col items-center pt-10 px-4 pb-2 text-center">
                 <p className="text-base font-black text-gray-800">
                     {perfil ? `${perfil.nombres} ${perfil.apellidos}` : '—'}
@@ -109,7 +103,6 @@ function CredencialCard() {
                 </p>
             </div>
 
-            {/* Sección QR */}
             <div className="mx-4 mt-3 flex-1 rounded-2xl border border-dashed border-gray-200 p-4 flex flex-col gap-3">
                 <div className="flex items-center gap-1.5">
                     <Ticket size={12} className="text-violet-400" />
@@ -119,13 +112,30 @@ function CredencialCard() {
                 </div>
 
                 <div className="flex flex-col items-center gap-2 flex-1 justify-center">
-                    {/* QR generado */}
                     {codigoQR ? (
                         <div ref={qrRef} className="bg-white p-2 rounded-xl border border-violet-100">
+                            {/* QR visible en pantalla */}
                             <QRCodeSVG value={codigoQR} size={130} />
+                            {/* Canvas oculto solo para descarga a alta resolución */}
+                            <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+                                <QRCodeCanvas value={codigoQR} size={512} id="qr-canvas-descarga" includeMargin={true} />
+                            </div>
+                        </div>
+                    ) : errorQR ? (
+                        <div className="flex flex-col items-center gap-2 text-center">
+                            <AlertCircle size={28} className="text-red-400" />
+                            <p className="text-xs text-red-400 font-semibold">{errorQR}</p>
+                            {tieneTurnoPendiente && (
+                                <button
+                                    onClick={handleGenerarQR}
+                                    disabled={cargandoQR}
+                                    className="text-xs text-violet-600 hover:underline mt-1"
+                                >
+                                    Reintentar
+                                </button>
+                            )}
                         </div>
                     ) : (
-                        /* Placeholder con botón para generar */
                         <button
                             onClick={handleGenerarQR}
                             disabled={!tieneTurnoPendiente || cargandoQR}
@@ -141,7 +151,7 @@ function CredencialCard() {
                             <p className="text-sm font-bold text-violet-600">
                                 {cargandoQR ? 'Generando...' : 'Generar mi QR'}
                             </p>
-                            {!tieneTurnoPendiente && (
+                            {!tieneTurnoPendiente && !loadingTurno && (
                                 <p className="text-[10px] text-gray-400 text-center">
                                     Sin reserva para hoy
                                 </p>
@@ -151,7 +161,6 @@ function CredencialCard() {
                 </div>
             </div>
 
-            {/* Info turno */}
             {turno?.hora_inicio && (
                 <div className="mx-4 mt-3 flex items-start gap-2">
                     <Info size={12} className="text-violet-400 flex-shrink-0 mt-0.5" />
@@ -162,7 +171,6 @@ function CredencialCard() {
                 </div>
             )}
 
-            {/* Botones */}
             <div className="mx-4 mt-3 mb-4 flex gap-2">
                 <button
                     onClick={handleDescargar}
@@ -179,7 +187,6 @@ function CredencialCard() {
                     <RefreshCw size={13} /> Regenerar
                 </button>
             </div>
-
         </div>
     )
 }

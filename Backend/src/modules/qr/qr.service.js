@@ -18,11 +18,11 @@ const generarQR = async (id_reserva, id_estudiante) => {
     const expiracion = new Date(`${hoy}T23:59:59-05:00`)
 
     const qrExistente = await qrRepository.getQRPorReserva(id_reserva)
-    if (qrExistente && !qrExistente.usado && qrExistente.valido_hasta > new Date()) {
+    if (qrExistente && !qrExistente.usado && qrExistente.valido_hasta > new Date() && qrExistente.codigo_qr.length <= 20) {
         return qrExistente
     }
 
-    const codigoCorto = crypto.randomBytes(6).toString('hex')
+    const codigoCorto = crypto.randomBytes(8).toString('hex')
 
     return await qrRepository.crearQR({
         id_reserva,

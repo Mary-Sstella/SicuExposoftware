@@ -1,25 +1,35 @@
 import { useEffect, useState } from 'react'
-import { X, QrCode, Loader2 } from 'lucide-react'
-import { QRCodeSVG } from 'qrcode.react'
-import { generarQR } from '../services/estudianteService'
-
+import { X, QrCode, Loader2, AlertCircle } from 'lucide-react'
+import api from '../../../shared/api/axios'
 
 interface Props {
     id_reserva: number
     onClose: () => void
 }
 
-function QRModal({id_reserva, onClose}: Props) {
+function QRModal({ id_reserva, onClose }: Props) {
     const [codigo, setCodigo] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
-        generarQR(id_reserva)
-        .then(res => setCodigo(res.codigo_qr))
-        .catch(err => setError(err?.response?.data?.msg || 'Error al generar QR'))
-        .finally(() => setLoading(false))
+        // Llamada directa a la API en lugar de pasar por el servicio intermediario
+        api.get(`/qr/${id_reserva}`)
+            .then(res => {
+                const code = res.data?.codigo_qr
+                if (!code) throw new Error('El servidor no devolvió un código QR')
+                setCodigo(code)
+            })
+            .catch(err => {
+                const msg = err?.response?.data?.msg || err?.message || 'Error al generar el QR'
+                setError(msg)
+            })
+            .finally(() => setLoading(false))
     }, [id_reserva])
+
+    const qrUrl = codigo
+        ? `https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=${encodeURIComponent(codigo)}&ecc=H&margin=10`
+        : null
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -42,13 +52,31 @@ function QRModal({id_reserva, onClose}: Props) {
                 )}
 
                 {error && (
-                    <div className="bg-red-50 text-red-500 text-sm rounded-xl px-4 py-3 text-center">{error}</div>
+                    <div className="flex flex-col items-center gap-3 py-4">
+                        <AlertCircle size={32} className="text-red-400" />
+                        <div className="bg-red-50 text-red-500 text-sm rounded-xl px-4 py-3 text-center w-full">
+                            {error}
+                        </div>
+                        <button
+                            onClick={onClose}
+                            className="text-xs text-gray-400 hover:text-gray-600"
+                        >
+                            Cerrar
+                        </button>
+                    </div>
                 )}
 
-                {codigo && (
+                {qrUrl && (
                     <div className="flex flex-col items-center gap-4">
                         <div className="bg-white p-4 rounded-2xl border-2 border-violet-100">
-                           <QRCodeSVG value={codigo} size={256} level="H" />
+                            <img
+                                src={qrUrl}
+                                alt="Código QR"
+                                width={256}
+                                height={256}
+                                className="rounded-xl"
+                                onError={() => setError('No se pudo cargar la imagen del QR. Verifica tu conexión.')}
+                            />
                         </div>
                         <p className="text-xs text-gray-400 text-center">
                             Muéstrale este QR al administrador.<br />
@@ -59,7 +87,6 @@ function QRModal({id_reserva, onClose}: Props) {
             </div>
         </div>
     )
-
 }
 
 export default QRModal

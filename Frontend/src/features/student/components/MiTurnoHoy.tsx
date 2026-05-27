@@ -1,9 +1,13 @@
 import { useState } from 'react'
-import { CheckCircle2, XCircle, Clock, CalendarDays, QrCode } from 'lucide-react'
+import { CheckCircle2, XCircle, Clock, CalendarDays, QrCode, X } from 'lucide-react'
+import { QRCodeSVG } from 'qrcode.react'
 import { useMisTurnos } from '../hooks/useMisTurnos'
-import QRModal from './QRModal'
 
-function MiTurnoHoy() {
+interface Props {
+    codigoQR: string | null
+}
+
+function MiTurnoHoy({ codigoQR }: Props) {
     const { turno, loading } = useMisTurnos()
     const [mostrarQR, setMostrarQR] = useState(false)
 
@@ -67,15 +71,37 @@ function MiTurnoHoy() {
                 {!llego && !ausente && turno.id_reserva && (
                     <button
                         onClick={() => setMostrarQR(true)}
-                        className="flex items-center justify-center gap-2 w-full py-2 rounded-xl border-2 border-violet-200 text-violet-600 text-xs font-semibold hover:bg-violet-50 transition"
+                        disabled={!codigoQR}
+                        className="flex items-center justify-center gap-2 w-full py-2 rounded-xl border-2 border-violet-200 text-violet-600 text-xs font-semibold hover:bg-violet-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                         <QrCode size={14} /> Ver mi QR
                     </button>
                 )}
             </div>
 
-            {mostrarQR && turno.id_reserva && (
-                <QRModal id_reserva={turno.id_reserva} onClose={() => setMostrarQR(false)} />
+            {mostrarQR && codigoQR && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-3xl shadow-xl w-full max-w-sm p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-2">
+                                <QrCode size={20} className="text-violet-600" />
+                                <h2 className="text-base font-bold text-gray-800">Tu QR de hoy</h2>
+                            </div>
+                            <button onClick={() => setMostrarQR(false)} className="text-gray-300 hover:text-gray-500 transition">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="flex flex-col items-center gap-4">
+                            <div className="bg-white p-4 rounded-2xl border-2 border-violet-100">
+                                <QRCodeSVG value={codigoQR} size={256} />
+                            </div>
+                            <p className="text-xs text-gray-400 text-center">
+                                Muéstrale este QR al administrador.<br />
+                                <span className="font-semibold text-amber-500">Válido solo por hoy</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
             )}
         </>
     )
