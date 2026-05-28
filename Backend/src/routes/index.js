@@ -33,6 +33,5 @@ router.use('/soporte', soporteRoutes)
 router.use('/resenas', resenaRoutes)
 router.use('/menu', menuRoutes)
 router.use('/qr', qrRoutes)
-router.use('/huellas', biometriaRoutes)
-
+router.use('/biometria', biometriaRoutes)
 module.exports = router

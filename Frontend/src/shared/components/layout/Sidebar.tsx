@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react'
-import { LayoutDashboard, Users, ClipboardCheck, Clock, CreditCard, MessageSquare, BarChart2, ChevronLeft, ChevronRight, LogOut, ClipboardList, Settings } from 'lucide-react'
+import { LayoutDashboard, Users, ClipboardCheck, Clock, CreditCard, MessageSquare, BarChart2, ChevronLeft, ChevronRight, LogOut, ClipboardList, Settings, Fingerprint } from 'lucide-react'  // ← agrega Fingerprint
 import { useAuthStore } from '../../../features/auth/store/authStore'
 import { useNavigate, useLocation } from 'react-router-dom'
 
@@ -12,6 +12,7 @@ const navItems = [
   { icon: MessageSquare,   label: 'Buzón',        path: '/buzon',        iconClass: 'group-hover:-rotate-12' },
   { icon: BarChart2,       label: 'Estadísticas', path: '/estadisticas', iconClass: 'origin-bottom group-hover:scale-y-125' },
   { icon: ClipboardList,   label: 'Solicitudes',  path: '/solicitudes',  iconClass: 'group-hover:rotate-6' },
+  { icon: Fingerprint,     label: 'Biometría',    path: '/biometria',    iconClass: 'group-hover:scale-110' },  // ← nueva
 ]
 
 function Sidebar() {

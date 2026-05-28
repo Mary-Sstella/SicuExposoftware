@@ -4,14 +4,13 @@ import AsistenciaTable from '../components/AsistenciaTable'
 import { Keyboard, Monitor } from 'lucide-react'
 import api from '../../../shared/api/axios'
 import EscanerQR from '../components/EscanerQR'
-
+import HuellaPanel from '../components/HuellaPanel'
 
 function AsistenciaPage() {
   const { asistencias, loading, refetch } = useAsistencia()
   const [cedula, setCedula] = useState('')
   const [registrando, setRegistrando] = useState(false)
   const [mensaje, setMensaje] = useState<{ tipo: 'ok' | 'error', texto: string } | null>(null)
-
 
   const handleRegistrar = async () => {
     if (!cedula.trim()) return
@@ -33,8 +32,11 @@ function AsistenciaPage() {
   return (
     <div className="flex-1 p-8 overflow-y-auto bg-gray-50">
 
-      <div className="grid grid-cols-2 gap-4 mb-6">
-         <EscanerQR />
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        <EscanerQR />
+
+        <HuellaPanel onAsistenciaRegistrada={refetch} />
+
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-700">
           <div className="flex items-center gap-2 mb-4">
             <Keyboard size={18} className="text-violet-500" />
@@ -46,8 +48,8 @@ function AsistenciaPage() {
             type="text"
             placeholder="Ingrese la cédula..."
             value={cedula}
-            onChange={(e) => setCedula(e.target.value)} //cuando se escribe algo en el input, guarda lo que hay escrito en la variable cedula
-            onKeyDown={(e) => e.key === 'Enter' && handleRegistrar()} //cuando se usa el enter llama a handleRegistrar()
+            onChange={(e) => setCedula(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleRegistrar()}
             className="w-full border border-gray-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-500 mb-3"
           />
           {mensaje && (
@@ -64,21 +66,20 @@ function AsistenciaPage() {
         </div>
       </div>
 
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-700">
-          <div className="flex items-center justify-between mb-4">
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-700">
+        <div className="flex items-center justify-between mb-4">
           <div>
-              <h2 className="text-base font-semibold text-gray-700">Asistencias de Hoy</h2>
-              <p className="text-xs text-gray-400">{asistencias.length} estudiantes con reserva</p>
+            <h2 className="text-base font-semibold text-gray-700">Asistencias de Hoy</h2>
+            <p className="text-xs text-gray-400">{asistencias.length} estudiantes con reserva</p>
           </div>
           <button
-          //blank le dice al navegador que abre esa URL en una pestaña nueva
-              onClick={() => window.open('/turnero', '_blank')}
-              className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition"
+            onClick={() => window.open('/turnero', '_blank')}
+            className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition"
           >
-              <Monitor size={16} />
-              Proyectar Turnero
+            <Monitor size={16} />
+            Proyectar Turnero
           </button>
-      </div>
+        </div>
         {loading ? (
           <p className="text-sm text-gray-400">Cargando...</p>
         ) : (

@@ -32,8 +32,34 @@ const marcarEntregado = (id_detalle) => {
     });
 };
 
+const registrarHuella = (id_estudiante, finger_id) => {
+    return prisma.huellas.upsert({
+        where: { finger_id },
+        update: { id_estudiante },
+        create: { id_estudiante, finger_id },
+    })
+}
+
+const getEstudiantePorCedula = (numero_identificacion) => {
+    return prisma.estudiante.findFirst({
+        where: { numero_identificacion: BigInt(numero_identificacion) },
+        select: {
+            id_estudiante: true,
+            nombres: true,
+            apellidos: true,
+            numero_identificacion: true,
+            programa: true,
+            huellas: { select: { finger_id: true }, take: 1 }
+        }
+    })
+}
+
+
+
 module.exports = {
     getHuellaConEstudiante,
     getDetalleHoy,
     marcarEntregado,
+    registrarHuella,
+    getEstudiantePorCedula
 };

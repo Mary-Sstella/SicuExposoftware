@@ -39,4 +39,22 @@ const validarHuella = async (finger_id) => {
     }
 }
 
-module.exports = { validarHuella }
+
+const registrarHuella = (id_estudiante, finger_id) => {
+    return biometriaRepository.registrarHuella(id_estudiante, finger_id)
+}
+
+const getEstudiantePorCedula = async (cedula) => {
+    const est = await biometriaRepository.getEstudiantePorCedula(cedula)
+    if (!est) return null
+    return {
+        id_estudiante: est.id_estudiante,
+        nombres: est.nombres,
+        apellidos: est.apellidos,
+        numero_identificacion: est.numero_identificacion?.toString(),
+        programa: est.programa,
+        finger_id: est.huellas[0]?.finger_id ?? null
+    }
+}
+
+module.exports = { validarHuella, registrarHuella, getEstudiantePorCedula }
