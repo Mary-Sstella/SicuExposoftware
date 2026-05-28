@@ -62,7 +62,9 @@ function SubirPagoModal({ diasRegistrados, onClose, onSuccess }: Props) {
   const [fechaInicio, setFechaInicio] = useState<string | null>(null)
   const [fechaFin, setFechaFin] = useState<string | null>(null)
   const { id_estudiante } = useAuthStore()
-const [fechasPagadas, setFechasPagadas] = useState<string[]>([])
+  const [fechasPagadas, setFechasPagadas] = useState<string[]>([])
+  const [precioPorAlmuerzo, setPrecioPorAlmuerzo] = useState(0)
+  const [montoEstudiante, setMontoEstudiante] = useState('')
 
 useEffect(() => {
   if (id_estudiante) {
@@ -73,18 +75,25 @@ useEffect(() => {
 }, [id_estudiante])
 
 
-  useEffect(() => {
-    api.get('/configuracion-formulario').then(res => {
-      const cfg = res.data
-      if (cfg.fecha_inicio) setFechaInicio(cfg.fecha_inicio.split('T')[0])
-      if (cfg.fecha_fin_semestre) setFechaFin(cfg.fecha_fin_semestre.split('T')[0])
-    }).catch(() => {})
-  }, [])
+ 
+
+useEffect(() => {
+  api.get('/configuracion-formulario').then(res => {
+    const cfg = res.data
+    if (cfg.fecha_inicio) setFechaInicio(cfg.fecha_inicio.split('T')[0])
+    if (cfg.fecha_fin_semestre) setFechaFin(cfg.fecha_fin_semestre.split('T')[0])
+    if (cfg.precio_comida) setPrecioPorAlmuerzo(Number(cfg.precio_comida))
+  }).catch(() => {})
+}, [])
+
 
   const fechas = useMemo(() => getProximasFechas(diasRegistrados, fechaInicio, fechaFin), [diasRegistrados, fechaInicio, fechaFin])
   const minimo = tipo === 'SEMANAL' ? 2 : 8
   const cantidad = seleccionados.length
   const cumpleMinimo = cantidad >= minimo
+  const subtotal = cantidad * precioPorAlmuerzo
+  const montoValido = montoEstudiante !== '' && Number(montoEstudiante) === subtotal
+
 
   const toggleDia = (iso: string) => {
     setSeleccionados(prev =>
@@ -96,8 +105,9 @@ useEffect(() => {
     if (file.type === 'application/pdf') setArchivo(file)
   }
 
-  const handleSubmit = async () => {
+    const handleSubmit = async () => {
     if (!cumpleMinimo || !archivo || enviando) return
+    if (precioPorAlmuerzo > 0 && !montoValido) return
     setEnviando(true)
     setErrorEnvio(null)
     try {
@@ -105,7 +115,12 @@ useEffect(() => {
         .map(iso => fechas.find(f => f.iso === iso)?.dia ?? '')
         .filter(Boolean)
 
-      await crearPago({ tipo_periodo: tipo, dias_pagados: diasNombres, archivo })
+      await crearPago({
+        tipo_periodo: tipo,
+        dias_pagados: diasNombres,
+        archivo,
+        monto_estudiante: precioPorAlmuerzo > 0 ? subtotal : undefined,
+      })
       onSuccess()
       onClose()
     } catch (e: any) {
@@ -114,6 +129,7 @@ useEffect(() => {
       setEnviando(false)
     }
   }
+
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -176,7 +192,42 @@ useEffect(() => {
               </div>
             )}
           </div>
-
+            {cantidad > 0 && precioPorAlmuerzo > 0 && (
+            <div className="bg-violet-50 border border-violet-100 rounded-2xl px-4 py-3 flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-500">
+                  {cantidad} almuerzo{cantidad !== 1 ? 's' : ''} × ${precioPorAlmuerzo.toLocaleString('es-CO')}
+                </span>
+                <span className="text-base font-black text-violet-700">
+                  ${subtotal.toLocaleString('es-CO')}
+                </span>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                  Monto que vas a pagar
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  value={montoEstudiante}
+                  onChange={e => setMontoEstudiante(e.target.value)}
+                  placeholder={`Debe ser $${subtotal.toLocaleString('es-CO')}`}
+                  className={`mt-1.5 w-full px-3 py-2 rounded-xl border text-sm outline-none focus:ring-2 transition ${
+                    montoEstudiante === ''
+                      ? 'border-gray-200 focus:ring-violet-200'
+                      : montoValido
+                      ? 'border-green-300 bg-green-50 focus:ring-green-200 text-green-700'
+                      : 'border-red-300 bg-red-50 focus:ring-red-200 text-red-600'
+                  }`}
+                />
+                {montoEstudiante !== '' && !montoValido && (
+                  <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                    <AlertCircle size={11} /> El monto no coincide con el subtotal del sistema
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Comprobante PDF</p>
             <div
@@ -214,7 +265,7 @@ useEffect(() => {
               className="flex-1 py-2.5 border border-gray-200 text-gray-500 rounded-xl text-sm font-semibold hover:bg-gray-50 transition disabled:opacity-50">
               Cancelar
             </button>
-            <button onClick={handleSubmit} disabled={!cumpleMinimo || !archivo || enviando}
+            <button onClick={handleSubmit} disabled={!cumpleMinimo || !archivo || enviando || (precioPorAlmuerzo > 0 && !montoValido)}
               className="flex-1 py-2.5 bg-gradient-to-br from-violet-500 to-purple-400 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
               {enviando ? <><Loader2 size={15} className="animate-spin" /> Enviando...</> : 'Enviar pago'}
             </button>

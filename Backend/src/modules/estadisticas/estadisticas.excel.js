@@ -46,6 +46,20 @@ async function generarExcelEstadisticas() {
     }))
     rangosConTotal.sort((a, b) => b.total_reservas - a.total_reservas)
 
+    const estudiantes = await prisma.estudiante.findMany({
+        orderBy: { apellidos: 'asc' },
+        select: {
+            nombres: true,
+            apellidos: true,
+            numero_identificacion: true,
+            programa: true,
+            estado: true,
+            correo_institucional: true,
+        }
+    })
+
+
+
     const workbook = new ExcelJS.Workbook()
     workbook.creator = 'Sistema SICU'
     workbook.created = new Date()
@@ -100,6 +114,34 @@ async function generarExcelEstadisticas() {
     })
     hojaRangos.addRows(rangosConTotal.map(r => ({ rango: r.hora_inicio + ' - ' + r.hora_fin, capacidad: r.capacidad_maxima, total: r.total_reservas })))
     aplicarBordes(hojaRangos)
+
+    // Hoja 4 — Estudiantes inscritos
+    // Hoja 4 — Estudiantes inscritos
+const hojaEstudiantes = workbook.addWorksheet('Estudiantes Inscritos')
+        hojaEstudiantes.columns = [
+            { header: 'Apellidos',  key: 'apellidos',  width: 25 },
+            { header: 'Nombres',    key: 'nombres',    width: 25 },
+            { header: 'Cédula',     key: 'cedula',     width: 18 },
+            { header: 'Programa',   key: 'programa',   width: 35 },
+            { header: 'Correo',     key: 'correo',     width: 35 },
+            { header: 'Estado',     key: 'estado',     width: 15 },
+    ]
+        hojaEstudiantes.getRow(1).eachCell(cell => {
+            cell.fill = headerStyle.fill
+            cell.font = headerStyle.font
+            cell.alignment = headerStyle.alignment
+    })
+        hojaEstudiantes.addRows(estudiantes.map(e => ({
+            apellidos: e.apellidos ?? '',
+            nombres:   e.nombres ?? '',
+            cedula:    e.numero_identificacion ? e.numero_identificacion.toString() : '',
+            programa:  e.programa ?? '',
+            correo:    e.correo_institucional ?? '',
+            estado:    e.estado,
+    })))
+    aplicarBordes(hojaEstudiantes)
+
+
 
     return workbook
 }

@@ -46,7 +46,10 @@ function AsistenciaTable ({asistencias}: Props){
         <td className="px-4 py-3 text-gray-500">{item.numero_identificacion}</td>
         <td className="px-4 py-3 text-gray-500">{item.carrera}</td>
         <td className="px-4 py-3 text-gray-500">{item.turno ?? '--'}</td>
-        <td className="px-4 py-3 text-gray-500">{item.metodo ?? '--'}</td>
+        {/*<td className="px-4 py-3 text-gray-500">{item.metodo ?? '--'}</td>*/}
+        <td className="px-4 py-3 text-gray-500">
+          {item.estado === 'ENTREGADA' ? (item.metodo ?? '--') : '—'}
+        </td>
         <td className="px-4 py-3">
           <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
             item.estado === 'CONFIRMADO' || item.estado === 'ENTREGADA'

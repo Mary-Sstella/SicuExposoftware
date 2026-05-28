@@ -3,7 +3,13 @@ const pool = require('../../config/db')
 
 // Obtener todos los estudiantes
 const getEstudiantes = async () => {
-    return await prisma.estudiante.findMany()
+        return await prisma.estudiante.findMany({
+            orderBy: [
+                { apellidos: 'asc' },
+                { nombres: 'asc' }
+            ]
+    })
+
 }
 
 // Obtener por ID
