@@ -1,10 +1,109 @@
 import { useState, useEffect } from 'react'
-import { Settings, Calendar, Users, Clock, ToggleLeft, ToggleRight, Loader2, Check, AlertCircle } from 'lucide-react'
+import { Settings, Calendar, Users, Clock, Loader2, Check, AlertCircle, Upload, Trash2, UtensilsCrossed } from 'lucide-react'
 import {
   getConfiguracion, updateConfiguracion,
   getConfiguracionTurnos, updateConfiguracionTurno,
   type ConfiguracionTurno,
 } from '../services/configuracionService'
+import { getMenu, uploadMenu, deleteMenu, type Menu } from '../../menu/services/menuService'
+
+
+function MenuAdmin() {
+  const [menu, setMenu] = useState<Menu | null>(null)
+  const [subiendo, setSubiendo] = useState(false)
+  const [eliminando, setEliminando] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const cargar = () => getMenu().then(setMenu).catch(() => setMenu(null))
+
+  useEffect(() => { cargar() }, [])
+
+  const handleArchivo = async (file: File) => {
+    setSubiendo(true)
+    setError(null)
+    try {
+      await uploadMenu(file)
+      await cargar()
+    } catch (e: any) {
+      const msg = e?.response?.data?.msg ?? 'Error al subir el archivo'
+      setError(msg)
+    } finally {
+      setSubiendo(false)
+    }
+  }
+
+  const handleEliminar = async () => {
+    setEliminando(true)
+    setError(null)
+    try { await deleteMenu(); setMenu(null) }
+    catch { setError('Error al eliminar el menú') }
+    finally { setEliminando(false) }
+  }
+
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm col-span-2">
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-violet-100 rounded-xl flex items-center justify-center">
+            <UtensilsCrossed size={18} className="text-violet-600" />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-gray-800">Menú del comedor</h2>
+            <p className="text-xs text-gray-400">Sube una imagen (PNG, JPG) o PDF</p>
+          </div>
+        </div>
+        {menu && (
+          <button onClick={handleEliminar} disabled={eliminando}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-500 hover:bg-red-50 transition disabled:opacity-50">
+            <Trash2 size={14} /> {eliminando ? 'Eliminando...' : 'Eliminar menú'}
+          </button>
+        )}
+      </div>
+
+      {error && (
+        <div className="mb-4 px-4 py-3 bg-red-50 rounded-xl text-xs text-red-500 font-medium">
+          {error}
+        </div>
+      )}
+
+      {menu ? (
+        <div className="flex gap-4 items-center">
+          <div style={{ width: '80px', height: '80px', flexShrink: 0, overflow: 'hidden', borderRadius: '12px', border: '1px solid #f3f4f6', background: '#f9fafb' }}>
+            {menu.tipo_archivo.startsWith('image/') ? (
+              <img src={menu.archivo_firmada_url} alt="Menú actual" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            ) : (
+              <iframe src={menu.archivo_firmada_url} style={{ width: '100%', height: '100%', border: 0 }} title="Menú actual" />
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <p className="text-sm text-gray-600">Menú cargado correctamente.</p>
+            <label className="flex items-center gap-2 px-4 py-2 bg-violet-50 hover:bg-violet-100 text-violet-600 rounded-xl text-sm font-semibold cursor-pointer transition w-fit">
+              <Upload size={14} />
+              {subiendo ? 'Subiendo...' : 'Reemplazar'}
+              <input type="file" accept="image/*,application/pdf" className="hidden"
+                onChange={e => { const f = e.target.files?.[0]; if (f) handleArchivo(f) }} />
+            </label>
+          </div>
+        </div>
+      ) : (
+        <label
+          className="flex flex-col items-center gap-3 p-8 border-2 border-dashed border-gray-200 rounded-2xl hover:border-violet-300 hover:bg-gray-50 cursor-pointer transition"
+          onDragOver={e => e.preventDefault()}
+          onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleArchivo(f) }}
+        >
+          <Upload size={28} className="text-gray-300" />
+          <p className="text-sm text-gray-400 font-medium">
+            {subiendo ? 'Subiendo...' : 'Arrastra o haz clic para subir el menú'}
+          </p>
+          <p className="text-xs text-gray-300">PNG, JPG, WEBP o PDF · Máx 5MB</p>
+          <input type="file" accept="image/*,application/pdf" className="hidden"
+            onChange={e => { const f = e.target.files?.[0]; if (f) handleArchivo(f) }} />
+        </label>
+      )}
+    </div>
+  )
+}
+
 
 const DIAS = [
   { key: 'cupo_lunes',     label: 'Lunes' },
@@ -155,9 +254,18 @@ function ConfiguracionPage() {
                 onChange={e => setForm(f => ({ ...f, fecha_fin_semestre: e.target.value }))}
                 className={`mt-1.5 ${inputClass}`} />
             </div>
+
+            <div>
+              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Precio por almuerzo ($)</label>
+                <input
+                  type="number" min={0} step={100}
+                  value={form.precio_comida}
+                  onChange={e => setForm(f => ({ ...f, precio_comida: Number(e.target.value) || 0 }))}
+                  className={`mt-1.5 ${inputClass}`}
+                />
+          </div>
           </div>
         </div>
-
         {/* Cupos por día */}
         <div className="bg-white rounded-2xl p-6 shadow-sm">
           <div className="flex items-center gap-3 mb-5">
@@ -239,11 +347,13 @@ function ConfiguracionPage() {
                   : 'El botón de registro está oculto'}
               </p>
             </div>
-            {form.activo
-              ? <ToggleRight size={32} className="text-violet-500 shrink-0" />
-              : <ToggleLeft size={32} className="text-gray-300 shrink-0" />}
+            <div className={`relative w-14 h-7 rounded-full transition-all duration-300 shrink-0 ${form.activo ? 'bg-violet-500' : 'bg-gray-200'}`}>
+              <div className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 ${form.activo ? 'left-8' : 'left-1'}`} />
+            </div>
           </button>
         </div>
+
+        <MenuAdmin />
 
       </div>
     </div>

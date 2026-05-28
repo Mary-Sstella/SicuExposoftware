@@ -49,7 +49,8 @@ const getPagos = async (req, res, next) => {
 const getMisPagos = async (req, res, next) => {
     try {
         const id_estudiante = await getIdEstudiante(req.usuario.id);
-        const resultado = await pagoService.getMisPagos(id_estudiante);
+        const { estado } = req.query;
+        const resultado = await pagoService.getMisPagos(id_estudiante, estado);
         res.json(resultado);
     } catch (error) {
         next(error);
@@ -88,6 +89,7 @@ const getPdfUrl = async (req, res, next) => {
         next(error);
     }
 };
+
 
 
 module.exports = {

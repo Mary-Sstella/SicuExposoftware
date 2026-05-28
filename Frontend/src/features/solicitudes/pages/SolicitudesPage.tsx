@@ -34,11 +34,11 @@ const ESTADO_BADGE: Record<string, string> = {
 }
 
 const CUPOS_CONFIG = [
-  { key: 'lunes',     label: 'LUNES',     iconBg: 'from-pink-400 to-rose-400',     bar: 'bg-pink-400',   text: 'text-pink-500'   },
-  { key: 'martes',    label: 'MARTES',    iconBg: 'from-violet-500 to-purple-400', bar: 'bg-violet-500', text: 'text-violet-600' },
-  { key: 'miercoles', label: 'MIÉRCOLES', iconBg: 'from-blue-400 to-cyan-400',     bar: 'bg-blue-400',   text: 'text-blue-500'   },
-  { key: 'jueves',    label: 'JUEVES',    iconBg: 'from-green-400 to-emerald-400', bar: 'bg-green-400',  text: 'text-green-600'  },
-  { key: 'viernes',   label: 'VIERNES',   iconBg: 'from-orange-400 to-amber-400',  bar: 'bg-orange-400', text: 'text-orange-500' },
+  { key: 'lunes',     label: 'LUNES',     initial: 'L', iconBg: 'from-violet-400 to-purple-400', bar: 'bg-violet-400', text: 'text-violet-600' },
+  { key: 'martes',    label: 'MARTES',    initial: 'M', iconBg: 'from-violet-400 to-purple-400', bar: 'bg-violet-400', text: 'text-violet-600' },
+  { key: 'miercoles', label: 'MIÉRCOLES', initial: 'M', iconBg: 'from-violet-400 to-purple-400', bar: 'bg-violet-400', text: 'text-violet-600' },
+  { key: 'jueves',    label: 'JUEVES',    initial: 'J', iconBg: 'from-violet-400 to-purple-400', bar: 'bg-violet-400', text: 'text-violet-600' },
+  { key: 'viernes',   label: 'VIERNES',   initial: 'V', iconBg: 'from-violet-400 to-purple-400', bar: 'bg-violet-400', text: 'text-violet-600' },
 ] as const
 
 const DIAS_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']
@@ -125,15 +125,15 @@ function SolicitudesPage() {
       {/* Cupos por día */}
       {cupos && (
         <div className="flex gap-4">
-          {CUPOS_CONFIG.map(({ key, label, iconBg, bar, text }) => {
+          {CUPOS_CONFIG.map(({ key, label, iconBg, bar, text, initial }) => {
             const data = cupos[key]
             const libres = data.total - data.ocupados
             const pct = Math.round((data.ocupados / data.total) * 100)
             return (
-              <div key={key} className="flex-1 bg-white rounded-2xl border border-gray-200 p-4 flex flex-col gap-2">
+              <div key={key} className="flex-1 bg-white rounded-2xl border border-gray-700 p-4 flex flex-col gap-2">
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${iconBg} flex items-center justify-center flex-shrink-0`}>
-                    <FileText size={18} className="text-white" />
+                    <span className="text-white font-black text-base">{initial}</span>
                   </div>
                   <div>
                     <p className={`text-xs font-bold uppercase tracking-wide ${text}`}>{label}</p>
@@ -156,15 +156,15 @@ function SolicitudesPage() {
       <div className="flex gap-4">
 
         {/* Tabla */}
-        <div className={`bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col ${drawerOpen ? 'flex-1' : 'w-full'}`}>
+        <div className={`bg-white rounded-2xl border border-gray-700 overflow-hidden flex flex-col ${drawerOpen ? 'flex-1' : 'w-full'}`}>
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">Nombre</th>
-                <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">Cédula</th>
-                <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">Fecha solicitud</th>
-                <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">Estado</th>
-                <th className="px-6 py-3" />
+              <tr className="bg-violet-600 text-white text-left">
+                <th className="px-6 py-3 font-medium rounded-tl-xl">Nombre</th>
+                <th className="px-6 py-3 font-medium">Cédula</th>
+                <th className="px-6 py-3 font-medium">Fecha solicitud</th>
+                <th className="px-6 py-3 font-medium">Estado</th>
+                <th className="px-6 py-3 rounded-tr-xl" />
               </tr>
             </thead>
             <tbody>
@@ -177,9 +177,9 @@ function SolicitudesPage() {
                   <tr
                     key={i.id_inscripcion}
                     onClick={() => handleSelect(i.id_inscripcion)}
-                    className={`border-b border-gray-100 last:border-0 cursor-pointer hover:bg-violet-50 transition-colors ${
-                      selected?.id_inscripcion === i.id_inscripcion ? 'bg-violet-50' : ''
-                    }`}
+                    className={`border-t border-violet-400 cursor-pointer hover:bg-purple-50 transition-colors ${
+                    selected?.id_inscripcion === i.id_inscripcion ? 'bg-violet-50' : ''
+                  }`}
                   >
                     <td className="px-6 py-4 font-semibold text-gray-800">{i.nombre} {i.apellidos}</td>
                     <td className="px-6 py-4 text-gray-500">{i.cedula}</td>
@@ -231,7 +231,7 @@ function SolicitudesPage() {
 
         {/* Drawer */}
         {drawerOpen && (
-          <div className="w-80 bg-white rounded-2xl border border-gray-200 overflow-y-auto flex-shrink-0">
+          <div className="w-80 bg-white rounded-2xl border border-gray-700 overflow-y-auto flex-shrink-0">
             {loadingDetail ? (
               <div className="flex items-center justify-center h-40 text-gray-400 text-sm">Cargando...</div>
             ) : selected ? (

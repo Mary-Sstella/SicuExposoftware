@@ -12,7 +12,7 @@ function Footer(){
                     href="https://www.unicesar.edu.co"
                     target="_blank"
                     rel= "noopener noreferrer"
-                    className="text-purple-400 text-sm hover:text-purple-300 transition mt-1 inline-block">
+                    className="text-violet-400 text-sm hover:text-purple-300 transition mt-1 inline-block">
                         Universidad del Cesar
                     </a>
                 </div>
@@ -22,7 +22,7 @@ function Footer(){
                     <a href="https://www.instagram.com/unipopularcesar?igsh=aXQ0ODd1aDk3YXl1"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-purple-400 text-sm hover:text-purple-300 transition">
+                    className="text-purple-400 text-sm hover:text-violet-300 transition">
                         @unipopularcesar
                     </a>
                 </div>

@@ -124,6 +124,7 @@ model estudiante {
   cartera                cartera[]
   comprobantes           comprobantes[]
   detalle_reserva        detalle_reserva[]
+  huellas                huellas[]
   pagos                  pagos[]
   qr_generados           qr_generados[]
   resenas                resenas[]
@@ -190,20 +191,24 @@ model usuarios {
   ultimo_acceso            DateTime?                  @db.Timestamp(6)
   actividades              actividades[]
   configuracion_formulario configuracion_formulario[]
+  menu                     menu[]
   estudiante               estudiante?                @relation(fields: [id_estudiante], references: [id_estudiante], onUpdate: NoAction)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model soporte {
-  id_soporte      Int        @id @default(autoincrement())
-  id_estudiante   Int
-  asunto          String     @db.VarChar(100)
+  id_soporte      Int         @id @default(autoincrement())
+  id_estudiante   Int?
+  asunto          String      @db.VarChar(100)
   descripcion     String
-  estado          String     @default("PENDIENTE") @db.VarChar(20)
+  estado          String      @default("PENDIENTE") @db.VarChar(20)
   respuesta       String?
-  fecha_creacion  DateTime   @default(now()) @db.Timestamp(6)
-  fecha_respuesta DateTime?  @db.Timestamp(6)
-  estudiante      estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
+  fecha_creacion  DateTime    @default(now()) @db.Timestamp(6)
+  fecha_respuesta DateTime?   @db.Timestamp(6)
+  nombre          String?     @db.VarChar(100)
+  correo          String?     @db.VarChar(150)
+  archivo_url     String?     @db.VarChar(500)
+  estudiante      estudiante? @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -213,6 +218,7 @@ model resenas {
   calificacion   Int
   texto          String
   fecha_creacion DateTime   @default(now()) @db.Timestamp(6)
+  publicado      Boolean    @default(false)
   estudiante     estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction, map: "reseñas_id_estudiante_fkey")
 }
 
@@ -267,6 +273,29 @@ model pagos {
   fecha_subida       DateTime   @default(now()) @db.Timestamp(6)
   fecha_revision     DateTime?  @db.Timestamp(6)
   estudiante         estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
+  codigo_qr          String?    @db.VarChar(1000)
+  url_qr             String?    @db.VarChar(1000)
+  subtotal_sistema  Decimal?   @db.Decimal(10, 2)
+  monto_estudiante  Decimal?   @db.Decimal(10, 2)
+
+
+}
+
+model huellas {
+  id_huella      Int        @id @default(autoincrement())
+  id_estudiante  Int
+  finger_id      Int        @unique
+  fecha_registro DateTime?  @default(now()) @db.Timestamp(6)
+  estudiante     estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction, map: "fk_huella_estudiante")
+}
+
+model menu {
+  id_menu      Int       @id @default(autoincrement())
+  archivo_url  String    @db.VarChar(500)
+  tipo_archivo String    @db.VarChar(10)
+  subido_por   Int?
+  fecha_subida DateTime  @default(now()) @db.Timestamp(6)
+  usuarios     usuarios? @relation(fields: [subido_por], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
 }
 
 enum dia_enum {

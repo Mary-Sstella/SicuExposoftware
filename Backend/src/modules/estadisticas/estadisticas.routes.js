@@ -8,5 +8,6 @@ const router = Router()
 router.get('/carreras', verifyToken, verifyRole(ROLES.ADMIN), controller.getEstudiantesPorCarrera)
 router.get('/asistencia-mensual', verifyToken, verifyRole(ROLES.ADMIN), controller.getAsistenciaMensual)
 router.get('/rangos-populares', verifyToken, verifyRole(ROLES.ADMIN), controller.getRangosPopulares)
+router.get('/exportar', verifyToken, verifyRole(ROLES.ADMIN), controller.exportarEstadisticas)
 
 module.exports = router

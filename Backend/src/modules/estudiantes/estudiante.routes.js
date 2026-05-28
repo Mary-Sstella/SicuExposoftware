@@ -15,5 +15,6 @@ router.post('/', verifyToken, verifyRole(ROLES.ADMIN), createEstudianteValidator
 router.put('/:id', verifyToken, verifyRole(ROLES.ADMIN), updateEstudianteValidator, validate, controller.updateEstudiante)
 router.put('/:id/dias', verifyToken, verifyRole(ROLES.ADMIN), controller.updateEstudianteDias)
 router.delete('/:id', verifyToken, verifyRole(ROLES.ADMIN), controller.deleteEstudiante)
+router.post('/:id/reset-password', verifyToken, verifyRole(ROLES.ADMIN), controller.resetPassword)
 
 module.exports = router

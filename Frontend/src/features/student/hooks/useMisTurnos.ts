@@ -6,6 +6,7 @@ import { getMiTurnoHoy } from "../services/estudianteService"
 
 
 interface MiTurno {
+    id_reserva: number | null
     numero_turno: number | null
     hora_inicio: string | null
     hora_fin: string | null

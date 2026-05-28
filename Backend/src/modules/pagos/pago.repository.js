@@ -20,13 +20,15 @@ const getPagos = (estado) => {
     });
 };
 
-const getMisPagos = (id_estudiante) => {
+const getMisPagos = (id_estudiante, estado) => {
     return prisma.pagos.findMany({
-        where: { id_estudiante },
+        where: { 
+            id_estudiante,
+            ...(estado ? { estado } : {})
+        },
         orderBy: { fecha_subida: 'desc' },
     });
 };
-
 const getPagoById = (id) => {
     return prisma.pagos.findUnique({
         where: { id_pago: id },

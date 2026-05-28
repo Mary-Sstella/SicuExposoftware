@@ -21,7 +21,7 @@ function PasosSection() {
     ]
 
     return(
-        <section className="bg-purple-50 py-24 px-10">
+        <section className="bg-violet-50 py-24 px-10">
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16">
                 <div className="flex-1 flex justify-center">
                     <img src="/lista.png"
@@ -35,7 +35,7 @@ function PasosSection() {
                     </div>
                     {pasos.map((p)=>(
                         <div key={p.numero} className="flex items-start gap-5">
-                            <span className="text-4xl font-black bg-gradient-to-b from-purple-600 to-fuchsia-500 bg-clip-text text-transparent leading-none">
+                            <span className="text-4xl font-black bg-gradient-to-b from-violet-600 to-violet-500 bg-clip-text text-transparent leading-none">
                                 {p.numero}
                             </span>
                             <div>

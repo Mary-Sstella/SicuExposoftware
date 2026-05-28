@@ -222,6 +222,27 @@ const deleteEstudiante = async (req, res, next) => {
     }
 }
 
+const resetPassword = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const estudiante = await prisma.estudiante.findUnique({
+            where: { id_estudiante: parseInt(id) },
+            select: { numero_identificacion: true }
+        })
+        if (!estudiante) return next(new AppError(404, 'Estudiante no encontrado'))
+
+        const hash = await bcrypt.hash(estudiante.numero_identificacion.toString(), 10)
+        await prisma.usuarios.updateMany({
+            where: { id_estudiante: parseInt(id) },
+            data: { password_hash: hash }
+        })
+        res.json({ msg: 'Contraseña restablecida a número de cédula' })
+    } catch (error) {
+        next(error)
+    }
+}
+
+
 module.exports = {
     getEstudiantes,
     getEstudianteById,
@@ -230,5 +251,6 @@ module.exports = {
     createEstudiante,
     updateEstudiante,
     updateEstudianteDias,
-    deleteEstudiante
+    deleteEstudiante,
+    resetPassword
 }

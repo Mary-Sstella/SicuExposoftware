@@ -3,41 +3,59 @@ const { AppError } = require('../../shared/middleware/error.middleware')
 
 const getSummary = async (req, res, next) => {
     try {
-        const totalEstudiantes = await prisma.estudiante.count()
-
-        const estudiantesActivos = await prisma.estudiante.count({
-            where: { estado: 'ACTIVO' }
-        })
-
-        const estudiantesInactivos = await prisma.estudiante.count({
-            where: { estado: 'INACTIVO' }
-        })
-
-        const pagosPendientes = await prisma.cartera.count({
-            where: { estado: 'PENDIENTE' }
-        })
+        const ahora = new Date()
+        const inicioEsteMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1)
+        const inicioMesPasado = new Date(ahora.getFullYear(), ahora.getMonth() - 1, 1)
+        const finMesPasado = new Date(ahora.getFullYear(), ahora.getMonth(), 0, 23, 59, 59, 999)
 
         const hoy = new Date()
         hoy.setHours(0, 0, 0, 0)
+        const ayer = new Date(hoy)
+        ayer.setDate(hoy.getDate() - 1)
 
-        const asistenciasHoy = await prisma.reservas.count({
-            where: {
-                estado: 'ENTREGADA',
-                fecha: hoy
-            }
-        })
+        const calcPct = (actual, anterior) => {
+            if (anterior === 0) return actual > 0 ? 100 : 0
+            return Math.round(((actual - anterior) / anterior) * 1000) / 10
+        }
+
+        const [
+            totalActual,
+            totalMesPasado,
+            activosActual,
+            activosMesPasado,
+            pagosPendientes,
+            pagosNuevosMes,
+            pagosNuevosMesPasado,
+            asistenciasHoy,
+            asistenciasAyer
+        ] = await Promise.all([
+            prisma.estudiante.count(),
+            prisma.estudiante.count({ where: { fecha_registro: { lt: inicioEsteMes } } }),
+            prisma.estudiante.count({ where: { estado: 'ACTIVO' } }),
+            prisma.estudiante.count({ where: { estado: 'ACTIVO', fecha_registro: { lt: inicioEsteMes } } }),
+            prisma.cartera.count({ where: { estado: 'PENDIENTE' } }),
+            prisma.cartera.count({ where: { fecha_factura: { gte: inicioEsteMes } } }),
+            prisma.cartera.count({ where: { fecha_factura: { gte: inicioMesPasado, lte: finMesPasado } } }),
+            prisma.reservas.count({ where: { estado: 'ENTREGADA', fecha: hoy } }),
+            prisma.reservas.count({ where: { estado: 'ENTREGADA', fecha: ayer } })
+        ])
 
         res.json({
-            total_estudiantes: totalEstudiantes,
-            estudiantes_activos: estudiantesActivos,
-            estudiantes_inactivos: estudiantesInactivos,
+            total_estudiantes: totalActual,
+            total_estudiantes_change: calcPct(totalActual, totalMesPasado),
+            estudiantes_activos: activosActual,
+            estudiantes_activos_change: calcPct(activosActual, activosMesPasado),
+            estudiantes_inactivos: totalActual - activosActual,
             pagos_pendientes: pagosPendientes,
-            asistencias_hoy: asistenciasHoy
+            pagos_pendientes_change: calcPct(pagosNuevosMes, pagosNuevosMesPasado),
+            asistencias_hoy: asistenciasHoy,
+            asistencias_hoy_change: calcPct(asistenciasHoy, asistenciasAyer)
         })
     } catch (error) {
         next(error)
     }
 }
+
 
 const getAsistenciaSemanal = async (req, res, next) => {
     try {

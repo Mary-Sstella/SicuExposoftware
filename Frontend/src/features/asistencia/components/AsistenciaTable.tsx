@@ -18,7 +18,7 @@ function AsistenciaTable ({asistencias}: Props){
         <div className="overflow-x-auto rounded-xl border border-gray-100">
             <table className="w-full text-sm">
                 <thead>
-                    <tr className="bg-violet-400 text-white text-left">
+                    <tr className="bg-violet-600 text-white text-left">
                     <th className="px-4 py-3 font-medium rounded-tl-xl">Hora</th>
                     <th className="px-4 py-3 font-medium">Estudiante</th>
                     <th className="px-4 py-3 font-medium">Cédula</th>
@@ -46,7 +46,10 @@ function AsistenciaTable ({asistencias}: Props){
         <td className="px-4 py-3 text-gray-500">{item.numero_identificacion}</td>
         <td className="px-4 py-3 text-gray-500">{item.carrera}</td>
         <td className="px-4 py-3 text-gray-500">{item.turno ?? '--'}</td>
-        <td className="px-4 py-3 text-gray-500">{item.metodo ?? '--'}</td>
+        {/*<td className="px-4 py-3 text-gray-500">{item.metodo ?? '--'}</td>*/}
+        <td className="px-4 py-3 text-gray-500">
+          {item.estado === 'ENTREGADA' ? (item.metodo ?? '--') : '—'}
+        </td>
         <td className="px-4 py-3">
           <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
             item.estado === 'CONFIRMADO' || item.estado === 'ENTREGADA'

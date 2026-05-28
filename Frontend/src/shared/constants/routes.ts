@@ -11,4 +11,8 @@ export const ROUTES = {
   STUDENT_PAGO: '/student/pago',
   CONFIGURACION: '/configuracion',
   CARTERA: '/cartera',
+  BUZON: '/buzon',
+  STUDENT_RESENAS: '/student/resenas',
+  TURNERO: '/turnero',
+
 }

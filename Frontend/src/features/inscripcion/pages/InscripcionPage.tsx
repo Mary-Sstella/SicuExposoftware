@@ -35,6 +35,7 @@ function InscripcionPage() {
   const [errores, setErrores] = useState<Record<string, string>>({})
   const [errorEnvio, setErrorEnvio] = useState<string | null>(null)
   const [enviando, setEnviando] = useState(false)
+  const [enviado, setEnviado] = useState(false)
   const [form, setForm] = useState<FormData>({
     nombre: '',
     apellidos: '',
@@ -130,7 +131,7 @@ function InscripcionPage() {
       setEnviando(true)
       setErrorEnvio(null)
       await createInscripcion(formData)
-      navigate(ROUTES.LOGIN)
+      setEnviado(true)
     } catch (e: any) {
       const msg: string = e?.response?.data?.msg ?? 'Error al enviar la solicitud. Intenta de nuevo.'
       if (msg.toLowerCase().includes('cédula') || msg.toLowerCase().includes('cedula')) {
@@ -146,6 +147,27 @@ function InscripcionPage() {
       setEnviando(false)
     }
   }
+
+  if (enviado) return (
+  <div className="min-h-screen bg-purple-50 flex items-center justify-center p-6">
+    <div className="bg-white rounded-3xl shadow-xl w-full max-w-md p-10 flex flex-col items-center gap-5 text-center">
+      <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+        <FileCheck size={40} className="text-green-500" />
+      </div>
+      <h2 className="text-2xl font-bold text-gray-800">¡Solicitud enviada!</h2>
+      <p className="text-sm text-gray-400 leading-relaxed">
+        Tu registro fue enviado exitosamente.<br />
+        El administrador revisará tu solicitud y recibirás una respuesta pronto.
+      </p>
+      <button
+        onClick={() => navigate('/')}
+        className="mt-2 px-8 py-2.5 bg-gradient-to-r from-purple-600 to-fuchsia-500 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition shadow-sm">
+        Ir a la pagina principal
+      </button>
+    </div>
+  </div>
+)
+
 
   return (
     <div className="min-h-screen bg-purple-50 flex items-center justify-center p-6">

@@ -36,15 +36,13 @@ const getUrlFirmada = async (ruta) => {
 const createPago = async (data, file, id_estudiante) => {
     if (!file) throw new Error('PDF_REQUERIDO');
 
-    const reserva = await prisma.reservas.findFirst({
-        where: { id_estudiante, estado: 'PENDIENTE' },
-        orderBy: { fecha: 'desc' },
-    });
-
-    if (!reserva) throw new Error('SIN_RESERVA');
-
     const CAMPOS_DIAS = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
-    const diasAprobados = CAMPOS_DIAS.filter((d) => reserva[d] === true);
+    const todasReservas = await prisma.reservas.findMany({
+        where: { id_estudiante },
+        select: { lunes: true, martes: true, miercoles: true, jueves: true, viernes: true }
+    });
+    const diasAprobados = CAMPOS_DIAS.filter(d => todasReservas.some(r => r[d] === true));
+    if (diasAprobados.length === 0) throw new Error('SIN_RESERVA');
 
     const dias_pagados = JSON.parse(data.dias_pagados);
 
@@ -59,6 +57,10 @@ const createPago = async (data, file, id_estudiante) => {
             ? dias_pagados.length
             : Number(data.cantidad_almuerzos);
 
+    const config = await prisma.configuracion_formulario.findFirst()
+    const precio = config?.precio_comida ? Number(config.precio_comida) : 0
+    const subtotal_sistema = cantidad_almuerzos * precio
+    const monto_estudiante = data.monto_estudiante ? Number(data.monto_estudiante) : null
     const pdf_url = await subirComprobante(file);
 
     return pagoRepository.createPago({
@@ -67,6 +69,8 @@ const createPago = async (data, file, id_estudiante) => {
         dias_pagados,
         cantidad_almuerzos,
         pdf_url,
+        subtotal_sistema,
+        monto_estudiante,
         estado: 'PENDIENTE',
     });
 };
@@ -75,19 +79,16 @@ const getPagos = (estado) => {
     return pagoRepository.getPagos(estado);
 };
 
-const getMisPagos = async (id_estudiante) => {
-    if (!id_estudiante) return {pagos: [], saldo_disponible:0, dias_registrados: []}
-    const pagos = await pagoRepository.getMisPagos(id_estudiante);
-
-    const reserva = await prisma.reservas.findFirst({
-        where: { id_estudiante, estado: 'PENDIENTE' },
-        orderBy: { fecha: 'desc' },
-    });
+const getMisPagos = async (id_estudiante, estado) => {
+    if (!id_estudiante) return { pagos: [], saldo_disponible: 0, dias_registrados: [] }
+    const pagos = await pagoRepository.getMisPagos(id_estudiante, estado);
 
     const CAMPOS_DIAS = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
-    const dias_registrados = reserva
-        ? CAMPOS_DIAS.filter((d) => reserva[d] === true)
-        : [];
+    const todasReservas = await prisma.reservas.findMany({
+        where: { id_estudiante },
+        select: { lunes: true, martes: true, miercoles: true, jueves: true, viernes: true }
+    });
+    const dias_registrados = CAMPOS_DIAS.filter(d => todasReservas.some(r => r[d] === true));
 
     const saldo_disponible = pagos
         .filter((p) => p.estado === 'APROBADO')

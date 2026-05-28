@@ -24,7 +24,7 @@ function CarreraChart({ data }: Props) {
     const hasMore = sorted.length > VISIBLE_COUNT
 
     return (
-        <div className="bg-white rounded-2xl p-6 shadow-sm">
+        <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-300">
             <div className="flex items-start justify-between mb-5">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-violet-100 rounded-xl flex items-center justify-center">
