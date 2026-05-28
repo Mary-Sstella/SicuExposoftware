@@ -13,17 +13,21 @@ export const crearPago = async(params: {
     tipo_periodo: 'SEMANAL' | 'MENSUAL'
     dias_pagados: string[]
     archivo: File
+    monto_estudiante?: number
 })=> {
-    const formData = new FormData() // Agregar los campos al FormData
+    const formData = new FormData()
     formData.append('tipo_periodo', params.tipo_periodo)
     formData.append('dias_pagados', JSON.stringify(params.dias_pagados))
     formData.append('comprobante_pdf', params.archivo)
+    if (params.monto_estudiante !== undefined) {
+        formData.append('monto_estudiante', String(params.monto_estudiante))
+    }
     const res = await api.post('/pagos', formData, {
         headers: {'Content-Type': 'multipart/form-data'},
     })
-
     return res.data
 }
+
 
 export const getPdfUrl = async (id_pago: number): Promise<string> => {
     const res = await api.get(`/pagos/${id_pago}/pdf`);

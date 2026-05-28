@@ -57,6 +57,10 @@ const createPago = async (data, file, id_estudiante) => {
             ? dias_pagados.length
             : Number(data.cantidad_almuerzos);
 
+    const config = await prisma.configuracion_formulario.findFirst()
+    const precio = config?.precio_comida ? Number(config.precio_comida) : 0
+    const subtotal_sistema = cantidad_almuerzos * precio
+    const monto_estudiante = data.monto_estudiante ? Number(data.monto_estudiante) : null
     const pdf_url = await subirComprobante(file);
 
     return pagoRepository.createPago({
@@ -65,6 +69,8 @@ const createPago = async (data, file, id_estudiante) => {
         dias_pagados,
         cantidad_almuerzos,
         pdf_url,
+        subtotal_sistema,
+        monto_estudiante,
         estado: 'PENDIENTE',
     });
 };

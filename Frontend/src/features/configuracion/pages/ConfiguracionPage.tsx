@@ -254,9 +254,18 @@ function ConfiguracionPage() {
                 onChange={e => setForm(f => ({ ...f, fecha_fin_semestre: e.target.value }))}
                 className={`mt-1.5 ${inputClass}`} />
             </div>
+
+            <div>
+              <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Precio por almuerzo ($)</label>
+                <input
+                  type="number" min={0} step={100}
+                  value={form.precio_comida}
+                  onChange={e => setForm(f => ({ ...f, precio_comida: Number(e.target.value) || 0 }))}
+                  className={`mt-1.5 ${inputClass}`}
+                />
+          </div>
           </div>
         </div>
-
         {/* Cupos por día */}
         <div className="bg-white rounded-2xl p-6 shadow-sm">
           <div className="flex items-center gap-3 mb-5">
