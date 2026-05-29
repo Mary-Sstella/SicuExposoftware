@@ -30,7 +30,7 @@ const validarHuella = async (finger_id) => {
         }
     }
 
-    await biometriaRepository.marcarEntregado(almuerzoPendiente.id_detalle)
+   await biometriaRepository.marcarEntregado(almuerzoPendiente.id_reserva)
 
     return {
         success: true,

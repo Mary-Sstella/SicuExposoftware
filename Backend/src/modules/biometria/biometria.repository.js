@@ -12,22 +12,20 @@ const getHuellaConEstudiante = (finger_id) => {
 };
 
 const getDetalleHoy = (id_estudiante, estado) => {
-    return prisma.detalle_reserva.findFirst({
+    return prisma.reservas.findFirst({
         where: {
             id_estudiante,
-            fecha_comida: new Date(new Date().toDateString()),
+            fecha: new Date(new Date().toDateString()),
             estado,
         },
     });
 };
 
-const marcarEntregado = (id_detalle) => {
-    return prisma.detalle_reserva.update({
-        where: { id_detalle },
+const marcarEntregado = (id_reserva) => {
+    return prisma.reservas.update({
+        where: { id_reserva },
         data: {
-            estado: 'ENTREGADO',
-            asistio: 'SI',
-            fecha_entrega: new Date(),
+            estado: 'ENTREGADA',
         },
     });
 };
