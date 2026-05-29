@@ -54,12 +54,10 @@ const getEstudiantePorCedula = (numero_identificacion) => {
     })
 }
 
-
-
-module.exports = {
-    getHuellaConEstudiante,
-    getDetalleHoy,
-    marcarEntregado,
+module.exports = { 
+    getHuellaConEstudiante, 
+    getDetalleHoy, 
+    marcarEntregado, 
     registrarHuella,
-    getEstudiantePorCedula
-};
+    getEstudiantePorCedula 
+}

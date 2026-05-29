@@ -39,7 +39,6 @@ const validarHuella = async (finger_id) => {
     }
 }
 
-
 const registrarHuella = (id_estudiante, finger_id) => {
     return biometriaRepository.registrarHuella(id_estudiante, finger_id)
 }
