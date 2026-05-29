@@ -12,11 +12,11 @@ const iniciarWebSocket = (server) => {
     wss = new WebSocket.Server({ server })
 
     wss.on('connection', (ws) => {
-        console.log('🔗 ESP32 conectado por WebSocket')
+        console.log(' ESP32 conectado por WebSocket')
 
         ws.on('message', async (msg) => {
             const texto = msg.toString()
-            console.log('📨 ESP32:', texto)
+            console.log(' ESP32:', texto)
 
             let data
             try {
@@ -43,7 +43,7 @@ const iniciarWebSocket = (server) => {
                                 finger_id: data.finger_id
                             }
                         })
-                        console.log('✅ Huella registrada en BD')
+                        console.log(' Huella registrada en BD')
                         notificarFrontend({ evento: 'REGISTRO_BD_OK', mensaje: 'Huella registrada correctamente' })
 
                     } else if (tipo === 'ACTUALIZAR') {
@@ -57,11 +57,11 @@ const iniciarWebSocket = (server) => {
                                 finger_id: data.finger_id
                             }
                         })
-                        console.log('✅ Huella actualizada en BD')
+                        console.log(' Huella actualizada en BD')
                         notificarFrontend({ evento: 'ACTUALIZACION_BD_OK', mensaje: 'Huella actualizada correctamente' })
                     }
                 } catch (err) {
-                    console.error('❌ Error actualizando BD:', err.message)
+                    console.error(' Error actualizando BD:', err.message)
                     notificarFrontend({ evento: 'ERROR_BD', mensaje: 'Error guardando en base de datos' })
                 }
 
@@ -79,10 +79,10 @@ const iniciarWebSocket = (server) => {
                     await prisma.huellas.delete({
                         where: { finger_id }
                     })
-                    console.log('✅ Huella eliminada de BD')
+                    console.log(' Huella eliminada de BD')
                     notificarFrontend({ evento: 'ELIMINACION_BD_OK', mensaje: 'Huella eliminada correctamente' })
                 } catch (err) {
-                    console.error('❌ Error eliminando de BD:', err.message)
+                    console.error(' Error eliminando de BD:', err.message)
                     notificarFrontend({ evento: 'ERROR_BD', mensaje: 'Error eliminando de base de datos' })
                 }
 
@@ -96,7 +96,7 @@ const iniciarWebSocket = (server) => {
         })
 
         ws.on('close', () => {
-            console.log('🔌 ESP32 desconectado')
+            console.log(' ESP32 desconectado')
         })
     })
 }
