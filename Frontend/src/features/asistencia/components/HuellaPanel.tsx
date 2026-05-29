@@ -1,98 +1,169 @@
-import { useState } from 'react'
-import { Fingerprint, CheckCircle2, XCircle } from 'lucide-react'
-import api from '../../../shared/api/axios'
+import { useState, useEffect, useRef } from 'react'
+import { Fingerprint, X, CheckCircle2, XCircle } from 'lucide-react'
 
 interface Props {
-  onAsistenciaRegistrada: () => void
+    onClose: () => void
+    onAsistenciaRegistrada: () => void
 }
 
 interface Resultado {
-  success: boolean
-  mensaje: string
-  estudiante?: { id: number; nombre: string }
+    success: boolean
+    mensaje: string
+    estudiante?: { id: number; nombre: string }
 }
 
-function HuellaPanel({ onAsistenciaRegistrada }: Props) {
-  const [fingerId, setFingerId] = useState('')
-  const [validando, setValidando] = useState(false)
-  const [resultado, setResultado] = useState<Resultado | null>(null)
+function HuellaModal({ onClose, onAsistenciaRegistrada }: Props) {
+    const [estado, setEstado] = useState<'esperando' | 'procesando' | 'exito' | 'error'>('esperando')
+    const [resultado, setResultado] = useState<Resultado | null>(null)
+    const wsRef = useRef<WebSocket | null>(null)
 
-  const handleValidar = async () => {
-    if (!fingerId.trim()) return
-    setValidando(true)
-    setResultado(null)
-    try {
-      const res = await api.post('/biometria/validar', { finger_id: Number(fingerId) })
-      setResultado(res.data)
-      if (res.data.success) onAsistenciaRegistrada()
-    } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { msg?: string } } })?.response?.data?.msg
-      setResultado({ success: false, mensaje: msg || 'Error al validar huella' })
-    } finally {
-      setValidando(false)
+    useEffect(() => {
+        const backendUrl = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000/sicu')
+            .replace('http://', 'ws://')
+            .replace('https://', 'wss://')
+            .replace('/sicu', '')
+
+        const ws = new WebSocket(backendUrl)
+        wsRef.current = ws
+
+        ws.onmessage = (msg) => {
+            let data: { evento: string; success?: boolean; mensaje?: string; estudiante?: { id: number; nombre: string } }
+            try { data = JSON.parse(msg.data) } catch { return }
+
+            if (data.evento === 'HUELLA_DETECTADA') {
+                setEstado('procesando')
+            }
+
+            if (data.evento === 'ASISTENCIA_RESULTADO' || data.evento === 'VALIDACION_OK' || data.evento === 'VALIDACION_ERROR') {
+                setResultado({
+                    success: data.success ?? false,
+                    mensaje: data.mensaje ?? '',
+                    estudiante: data.estudiante
+                })
+                setEstado(data.success ? 'exito' : 'error')
+                if (data.success) {
+                    onAsistenciaRegistrada()
+                    setTimeout(onClose, 2500)
+                }
+            }
+        }
+
+        return () => ws.close()
+    }, [])
+
+    const reiniciar = () => {
+        setEstado('esperando')
+        setResultado(null)
     }
-  }
 
-  const reiniciar = () => {
-    setResultado(null)
-    setFingerId('')
-  }
-
-  return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col gap-4 border border-gray-700">
-      <div className="flex items-center gap-2">
-        <Fingerprint size={18} className="text-violet-500" />
-        <p className="text-sm font-bold text-gray-700">Huella Digital</p>
-        <p className="text-xs text-gray-400 ml-auto">Asistencia biométrica</p>
-      </div>
-
-      {!resultado ? (
+    return (
         <>
-          <div className="flex flex-col items-center gap-3 py-2">
-            <div className="w-16 h-16 rounded-2xl bg-violet-50 flex items-center justify-center">
-              <Fingerprint size={36} className="text-violet-400" strokeWidth={1.5} />
+            <style>{`
+                @keyframes scan {
+                    0%, 100% { transform: translateY(0px); opacity: 1; }
+                    50% { transform: translateY(88px); opacity: 0.8; }
+                }
+                .scan-bar { animation: scan 2.2s ease-in-out infinite; }
+                @keyframes glow-pulse {
+                    0%, 100% { box-shadow: 0 0 20px 4px rgba(139,92,246,0.25); }
+                    50% { box-shadow: 0 0 35px 10px rgba(139,92,246,0.45); }
+                }
+                .glow-icon { animation: glow-pulse 2.2s ease-in-out infinite; }
+            `}</style>
+
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xs p-8 flex flex-col items-center gap-6">
+
+                    {/* Header */}
+                    <div className="w-full flex items-center justify-between">
+                        <h2 className="text-sm font-bold text-gray-700">Asistencia por Huella</h2>
+                        <button onClick={onClose} className="text-gray-300 hover:text-gray-500 transition">
+                            <X size={18} />
+                        </button>
+                    </div>
+
+                    {/* Estado: esperando */}
+                    {estado === 'esperando' && (
+                        <>
+                            <div className="relative flex items-center justify-center">
+                                {/* Anillos pulsantes */}
+                                <div className="absolute w-44 h-44 rounded-full border border-violet-200 animate-ping opacity-20" />
+                                <div className="absolute w-36 h-36 rounded-full border border-violet-300 animate-ping opacity-25" style={{ animationDelay: '0.5s' }} />
+
+                                {/* Ícono con línea de escaneo */}
+                                <div className="glow-icon relative w-28 h-28 flex items-center justify-center overflow-hidden rounded-full">
+                                    <Fingerprint size={96} className="text-violet-500" strokeWidth={1.2} />
+                                    {/* Línea de escaneo */}
+                                    <div className="scan-bar absolute left-0 right-0 h-0.5 top-0 bg-gradient-to-r from-transparent via-violet-400 to-transparent" />
+                                </div>
+                            </div>
+
+                            <div className="text-center">
+                                <p className="text-sm font-semibold text-gray-700">Esperando huella...</p>
+                                <p className="text-xs text-gray-400 mt-1">Pide al estudiante que coloque<br />su dedo en el sensor</p>
+                            </div>
+
+                            <button onClick={onClose} className="text-xs text-gray-400 hover:text-gray-600 transition">
+                                Cancelar
+                            </button>
+                        </>
+                    )}
+
+                    {/* Estado: procesando */}
+                    {estado === 'procesando' && (
+                        <>
+                            <div className="relative flex items-center justify-center">
+                                <div className="absolute w-36 h-36 rounded-full border border-amber-300 animate-ping opacity-30" />
+                                <Fingerprint size={96} className="text-amber-400 animate-pulse" strokeWidth={1.2} />
+                            </div>
+                            <div className="text-center">
+                                <p className="text-sm font-semibold text-amber-600">Procesando huella...</p>
+                                <p className="text-xs text-gray-400 mt-1">Verificando identidad</p>
+                            </div>
+                        </>
+                    )}
+
+                    {/* Estado: éxito */}
+                    {estado === 'exito' && resultado && (
+                        <>
+                            <CheckCircle2 size={56} className="text-green-500" />
+                            <div className="text-center">
+                                <p className="text-base font-black text-gray-800">{resultado.estudiante?.nombre}</p>
+                                <p className="text-sm text-green-500 mt-1">Asistencia registrada</p>
+                            </div>
+                        </>
+                    )}
+
+                    {/* Estado: error */}
+                    {estado === 'error' && resultado && (
+                        <>
+                            <XCircle size={56} className="text-red-400" />
+                            <div className="text-center">
+                                {resultado.estudiante && (
+                                    <p className="text-sm font-bold text-gray-700 mb-1">{resultado.estudiante.nombre}</p>
+                                )}
+                                <p className="text-xs text-red-400">{resultado.mensaje}</p>
+                            </div>
+                            <div className="flex gap-2 w-full">
+                                <button
+                                    onClick={reiniciar}
+                                    className="flex-1 py-2 border border-gray-200 text-gray-600 text-xs font-semibold rounded-xl hover:bg-gray-50 transition"
+                                >
+                                    Intentar de nuevo
+                                </button>
+                                <button
+                                    onClick={onClose}
+                                    className="flex-1 py-2 bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold rounded-xl transition"
+                                >
+                                    Cerrar
+                                </button>
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
-            <p className="text-xs text-gray-400 text-center">Ingresa el ID del lector o pon el dedo en el sensor</p>
-          </div>
-          <input
-            type="number"
-            placeholder="ID de huella..."
-            value={fingerId}
-            onChange={e => setFingerId(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleValidar()}
-            className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300"
-          />
-          <button
-            onClick={handleValidar}
-            disabled={!fingerId.trim() || validando}
-            className="w-full py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold rounded-xl transition disabled:opacity-60"
-          >
-            {validando ? 'Validando...' : 'Registrar Asistencia'}
-          </button>
         </>
-      ) : (
-        <div className="flex flex-col gap-3">
-          <div className={`flex items-center gap-2 ${resultado.success ? 'text-green-600' : 'text-red-500'}`}>
-            {resultado.success ? <CheckCircle2 size={18} /> : <XCircle size={18} />}
-            <span className="text-sm font-bold">{resultado.success ? 'Asistencia registrada' : 'Error'}</span>
-          </div>
-          {resultado.estudiante && (
-            <div className="bg-green-50 rounded-xl p-4">
-              <p className="text-base font-black text-gray-800">{resultado.estudiante.nombre}</p>
-            </div>
-          )}
-          {!resultado.success && (
-            <div className="bg-red-50 rounded-xl px-4 py-3">
-              <p className="text-xs text-red-500">{resultado.mensaje}</p>
-            </div>
-          )}
-          <button onClick={reiniciar} className="flex items-center justify-center gap-1.5 text-xs text-violet-600 hover:underline">
-            Intentar de nuevo
-          </button>
-        </div>
-      )}
-    </div>
-  )
+    )
 }
 
-export default HuellaPanel
+export default HuellaModal
