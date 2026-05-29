@@ -15,6 +15,7 @@ const resenaRoutes = require('../modules/resenas/resena.routes')
 const menuRoutes = require('../modules/menu/menu.routes')
 const qrRoutes = require('../modules/qr/qr.routes')
 const biometriaRoutes = require('../modules/biometria/biometria.routes')
+const notificacionRoutes = require('../modules/notificaciones/notificacion.routes')
 
 const router = Router()
 
@@ -34,5 +35,6 @@ router.use('/resenas', resenaRoutes)
 router.use('/menu', menuRoutes)
 router.use('/qr', qrRoutes)
 router.use('/huellas', biometriaRoutes)
+router.use('/notificaciones', notificacionRoutes)
 
 module.exports = router

@@ -125,6 +125,7 @@ model estudiante {
   comprobantes           comprobantes[]
   detalle_reserva        detalle_reserva[]
   huellas                huellas[]
+  notificaciones         notificaciones[]
   pagos                  pagos[]
   qr_generados           qr_generados[]
   resenas                resenas[]
@@ -272,13 +273,11 @@ model pagos {
   observacion        String?
   fecha_subida       DateTime   @default(now()) @db.Timestamp(6)
   fecha_revision     DateTime?  @db.Timestamp(6)
-  estudiante         estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
   codigo_qr          String?    @db.VarChar(1000)
   url_qr             String?    @db.VarChar(1000)
-  subtotal_sistema  Decimal?   @db.Decimal(10, 2)
-  monto_estudiante  Decimal?   @db.Decimal(10, 2)
-
-
+  monto_estudiante   Decimal?   @db.Decimal(10, 2)
+  subtotal_sistema   Decimal?   @db.Decimal(10, 2)
+  estudiante         estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model huellas {
@@ -296,6 +295,17 @@ model menu {
   subido_por   Int?
   fecha_subida DateTime  @default(now()) @db.Timestamp(6)
   usuarios     usuarios? @relation(fields: [subido_por], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model notificaciones {
+  id_notificacion Int        @id @default(autoincrement())
+  id_estudiante   Int
+  tipo            String     @db.VarChar(50)
+  titulo          String     @db.VarChar(150)
+  mensaje         String
+  leida           Boolean    @default(false)
+  fecha_creacion  DateTime   @default(now()) @db.Timestamp(6)
+  estudiante      estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
 }
 
 enum dia_enum {
