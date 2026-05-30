@@ -40,4 +40,18 @@ const marcarTodasLeidas = async (req, res, next) => {
     }
 }
 
-module.exports = { getNotificaciones, marcarLeida, marcarTodasLeidas }
+const getVapidPublicKey = (req, res) => {
+    res.json({ publicKey: process.env.VAPID_PUBLIC_KEY })
+}
+
+const suscribirPush = async (req, res, next) => {
+    try {
+        const id_estudiante = await getIdEstudiante(req.usuario.id)
+        await notificacionService.guardarSuscripcion(id_estudiante, req.body)
+        res.json({ msg: 'Suscripción guardada' })
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { getNotificaciones, marcarLeida, marcarTodasLeidas, suscribirPush, getVapidPublicKey }

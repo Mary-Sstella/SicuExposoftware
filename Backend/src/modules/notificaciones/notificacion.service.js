@@ -1,6 +1,8 @@
 const notificacionRepository = require('./notificacion.repository')
 const transporter = require('../../config/mailer')
 const prisma = require('../../config/prisma')
+const webpush = require('../../config/webpush')
+const pushRepository = require('./push.repository')
 
 const crearNotificacion = (id_estudiante, tipo, titulo, mensaje) => {
     return notificacionRepository.crearNotificacion({ id_estudiante, tipo, titulo, mensaje })
@@ -43,6 +45,22 @@ const enviarNotificacion = async (id_estudiante, tipo, titulo, mensaje) => {
         }
     }
 
+    try {
+        const suscripciones = await pushRepository.getSuscripcionesEstudiante(id_estudiante)
+        for (const sus of suscripciones) {
+            const pushSuscripcion = {
+                endpoint: sus.endpoint,
+                keys: { p256dh: sus.p256dh, auth: sus.auth },
+            }
+            await webpush.sendNotification(
+                pushSuscripcion,
+                JSON.stringify({ titulo, mensaje })
+            )
+        }
+    } catch (err) {
+        console.error('Error enviando push:', err.message)
+    }
+
     return notificacion
 }
 
@@ -63,10 +81,20 @@ const marcarTodasLeidas = (id_estudiante) => {
     return notificacionRepository.marcarTodasLeidas(id_estudiante)
 }
 
+const guardarSuscripcion = (id_estudiante, suscripcion) => {
+    return pushRepository.guardarSuscripcion(
+        id_estudiante,
+        suscripcion.endpoint,
+        suscripcion.keys.p256dh,
+        suscripcion.keys.auth
+    )
+}
+
 module.exports = {
     crearNotificacion,
     enviarNotificacion,
     getNotificaciones,
     marcarLeida,
     marcarTodasLeidas,
+    guardarSuscripcion,
 }

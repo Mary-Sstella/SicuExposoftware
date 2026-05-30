@@ -5,10 +5,14 @@ const { ROLES } = require('../../shared/constants/roles')
 
 const router = Router()
 
-router.use(verifyToken, verifyRole(ROLES.ESTUDIANTE))
+// Ruta pública
+router.get('/vapid-public-key', controller.getVapidPublicKey)
 
+// Rutas protegidas
+router.use(verifyToken, verifyRole(ROLES.ESTUDIANTE))
 router.get('/', controller.getNotificaciones)
 router.patch('/leer-todas', controller.marcarTodasLeidas)
 router.patch('/:id_notificacion/leer', controller.marcarLeida)
+router.post('/push-suscripcion', controller.suscribirPush)
 
 module.exports = router
