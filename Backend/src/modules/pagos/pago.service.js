@@ -1,6 +1,7 @@
 const pagoRepository = require('./pago.repository');
 const supabase = require('../../config/supabase');
 const prisma = require('../../config/prisma');
+const { enviarNotificacion } = require('../notificaciones/notificacion.service');
 
 const BUCKET = 'pagos-docs';
 
@@ -104,12 +105,28 @@ const getPdfUrlById = async (id) => {
 };
 
 
-const aprobarPago = (id, observacion) => {
-    return pagoRepository.updateEstadoPago(id, 'APROBADO', observacion);
+const aprobarPago = async (id, observacion) => {
+    const pago = await pagoRepository.getPagoById(id);
+    const resultado = await pagoRepository.updateEstadoPago(id, 'APROBADO', observacion);
+    enviarNotificacion(
+        pago.id_estudiante,
+        'PAGO_APROBADO',
+        '✅ Pago aprobado',
+        'Tu comprobante de pago ha sido aprobado. Ya puedes disfrutar de tus almuerzos.'
+    );
+    return resultado;
 };
 
-const rechazarPago = (id, observacion) => {
-    return pagoRepository.updateEstadoPago(id, 'RECHAZADO', observacion);
+const rechazarPago = async (id, observacion) => {
+    const pago = await pagoRepository.getPagoById(id);
+    const resultado = await pagoRepository.updateEstadoPago(id, 'RECHAZADO', observacion);
+    enviarNotificacion(
+        pago.id_estudiante,
+        'PAGO_RECHAZADO',
+        '❌ Pago rechazado',
+        'Tu comprobante de pago fue rechazado. Por favor verifica el documento y vuelve a intentarlo.'
+    );
+    return resultado;
 };
 
 module.exports = {

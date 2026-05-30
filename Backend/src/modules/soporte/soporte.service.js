@@ -1,6 +1,7 @@
 const soporteRepository = require('./soporte.repository');
 const supabase = require('../../config/supabase');
 const { enviarRespuestaSoporte } = require('../../shared/utils/email');
+const { enviarNotificacion } = require('../notificaciones/notificacion.service');
 
 const BUCKET = 'soporte-docs';
 
@@ -68,6 +69,15 @@ const responderSoporte = async (id, respuesta) => {
         asunto: resultado.asunto,
         respuesta,
     });
+
+    if (resultado.id_estudiante) {
+        enviarNotificacion(
+            resultado.id_estudiante,
+            'SOPORTE_RESPONDIDO',
+            '💬 Respuesta a tu solicitud',
+            `Tu solicitud "${resultado.asunto}" ha sido respondida. Revisa la respuesta en el módulo de soporte.`
+        )
+    }
 
     return resultado;
 };
