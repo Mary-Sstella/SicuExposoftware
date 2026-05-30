@@ -34,9 +34,9 @@ const NotificacionesCampana = () => {
         <div className="relative" ref={panelRef}>
             <button
                 onClick={() => setAbierto(prev => !prev)}
-                className="relative p-2 rounded-full hover:bg-violet-50 transition-colors"
+                className="relative p-2 rounded-full hover:bg-violet-100 transition-colors campana-hover"
             >
-                <Bell size={20} className="text-violet-600" />
+                <Bell size={20} className="text-violet-600 campana-icono transition-colors" />
                 {noLeidas > 0 && (
                     <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
                         {badge}
