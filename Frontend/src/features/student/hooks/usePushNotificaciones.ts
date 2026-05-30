@@ -14,6 +14,16 @@ const usePushNotificaciones = () => {
     }
 
     useEffect(() => {
+        // Listener de sonido — siempre activo independiente de la suscripción
+        const handleMessage = (event: MessageEvent) => {
+            if (event.data?.tipo === 'PLAY_SOUND') {
+                const audio = new Audio('/notification.mp3')
+                audio.volume = 0.5
+                audio.play().catch(() => {})
+            }
+        }
+        navigator.serviceWorker.addEventListener('message', handleMessage)
+
         const registrar = async () => {
             try {
                 if (!('serviceWorker' in navigator) || !('PushManager' in window)) return
@@ -38,6 +48,10 @@ const usePushNotificaciones = () => {
         }
 
         registrar()
+
+        return () => {
+            navigator.serviceWorker.removeEventListener('message', handleMessage)
+        }
     }, [])
 }
 

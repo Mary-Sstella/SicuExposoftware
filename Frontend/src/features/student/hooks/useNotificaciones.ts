@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { getNotificaciones, marcarLeida, marcarTodasLeidas } from '../services/notificacionesService'
 
 interface Notificacion {
@@ -14,6 +14,7 @@ const useNotificaciones = () => {
     const [notificaciones, setNotificaciones] = useState<Notificacion[]>([])
     const [noLeidas, setNoLeidas] = useState<number>(0)
     const [loading, setLoading] = useState<boolean>(false)
+    const prevNoLeidas = useRef<number>(-1)
 
     const fetchData = useCallback(async () => {
         try {
@@ -21,6 +22,12 @@ const useNotificaciones = () => {
             const data = await getNotificaciones()
             setNotificaciones(data.notificaciones)
             setNoLeidas(data.no_leidas)
+            if (data.no_leidas > prevNoLeidas.current && prevNoLeidas.current >= 0) {
+                const audio = new Audio('/notification.mp3')
+                audio.volume = 0.5
+                audio.play().catch((err) => console.error('Error reproduciendo sonido:', err))
+            }
+            prevNoLeidas.current = data.no_leidas
         } catch (error) {
             console.error('Error al obtener notificaciones:', error)
         } finally {
