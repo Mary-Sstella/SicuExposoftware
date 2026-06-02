@@ -26,10 +26,10 @@ function EstudiantePage() {
     const hoyLabel = new Date().toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' })
 
     return (
-        <div className="p-4 flex gap-4 h-full">
+        <div className="p-3 md:p-4 flex flex-col md:flex-row gap-4 h-full">
 
             {/* Columna izquierda: Credencial */}
-            <div className="w-74 flex-shrink-0">
+            <div className="w-full md:w-74 md:flex-shrink-0">
                 <CredencialCard onQRGenerado={setCodigoQR} />  {/* ← prop nueva */}
             </div>
 
@@ -51,7 +51,7 @@ function EstudiantePage() {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <StatCard title="Inasistencias" value={stats?.inasistencias ?? '-'} icon={<UserX size={22} className="text-violet-500" />} description="Veces que no asististe" iconBg="bg-violet-100" blob="bg-violet-200" />
                     <StatCard title="Almuerzos consumidos" value={stats?.almuerzos_consumidos ?? '-'} icon={<UtensilsCrossed size={22} className="text-violet-500" />} description="Total almorzado" iconBg="bg-violet-100" blob="bg-violet-200" />
                     <StatCard title="Pagos aprobados" value={stats?.pagos_aprobados ?? '-'} icon={<CheckCircle size={22} className="text-green-500" />} description="Comprobantes aprobados" iconBg="bg-green-100" blob="bg-green-200" />
@@ -59,7 +59,7 @@ function EstudiantePage() {
                 </div>
 
                 {/* Turno hoy + Menú del día */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <MiTurnoHoy codigoQR={codigoQR} />  {/* ← prop nueva */}
                     <MenuDelDia />
                 </div>

@@ -19,7 +19,7 @@ function LoginForm() {
   } = useAuth()
 
   return (
-    <div className="flex w-full rounded-2xl shadow-2xl overflow-hidden bg-white relative" style={{ minHeight: '560px' }}>
+    <div className="flex flex-col md:flex-row w-full rounded-2xl shadow-2xl overflow-hidden bg-white relative" style={{ minHeight: '560px' }}>
 
       {/* Botón volver al landing */}
       <button
@@ -30,7 +30,7 @@ function LoginForm() {
       </button>
 
       {/* Panel admin */}
-      <div className="w-1/2 p-10 flex flex-col justify-center gap-4 z-10">
+      <div className={`w-full md:w-1/2 p-6 md:p-10 flex-col justify-center gap-4 z-10 ${isStudent ? 'hidden md:flex' : 'flex'}`}>
         <div className="w-11 h-11 rounded-2xl bg-violet-500 mx-auto shadow-md flex items-center justify-center">
           <span className="text-white font-black text-xl">S</span>
         </div>
@@ -95,7 +95,7 @@ function LoginForm() {
       </div>
 
       {/* Panel estudiante */}
-      <div className="w-1/2 p-10 flex flex-col justify-center gap-4 z-10">
+      <div className={`w-full md:w-1/2 p-6 md:p-10 flex-col justify-center gap-4 z-10 ${!isStudent ? 'hidden md:flex' : 'flex'}`}>
         <div className="w-11 h-11 rounded-2xl bg-violet-500 mx-auto shadow-md flex items-center justify-center">
           <span className="text-white font-black text-xl">S</span>
         </div>
@@ -159,9 +159,9 @@ function LoginForm() {
         </p>
       </div>
 
-      {/* Panel deslizante lavanda */}
+      {/* Panel deslizante lavanda — solo en escritorio */}
       <div
-        className="absolute inset-y-0 w-1/2 bg-violet-100 flex flex-col justify-between p-10 rounded-2xl transition-all duration-700 ease-in-out z-20 overflow-hidden"
+        className="hidden md:flex absolute inset-y-0 w-1/2 bg-violet-100 flex-col justify-between p-10 rounded-2xl transition-all duration-700 ease-in-out z-20 overflow-hidden"
         style={{ left: isStudent ? '0%' : '50%' }}
       >
         {/* Círculos decorativos */}

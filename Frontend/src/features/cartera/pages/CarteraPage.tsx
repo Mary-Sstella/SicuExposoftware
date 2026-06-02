@@ -17,9 +17,9 @@ const DIA_LABEL: Record<string, string> = {
 const COL_CONFIG: Record<Estado, {
   dot: string; badge: string; ring: string; dropBg: string
 }> = {
-  PENDIENTE: { dot: 'bg-amber-400',  badge: 'border-amber-300 text-amber-600',  ring: 'ring-amber-200',  dropBg: 'bg-amber-50/60' },
-  APROBADO:  { dot: 'bg-green-400',  badge: 'border-green-300 text-green-600',  ring: 'ring-green-200',  dropBg: 'bg-green-50/60' },
-  RECHAZADO: { dot: 'bg-red-400',    badge: 'border-red-300 text-red-500',      ring: 'ring-red-200',    dropBg: 'bg-red-50/60' },
+  PENDIENTE: { dot: 'bg-amber-400',  badge: 'border-amber-300 text-amber-600',  ring: 'ring-amber-200',  dropBg: 'bg-amber-50/60 dark:bg-amber-900/20' },
+  APROBADO:  { dot: 'bg-green-400',  badge: 'border-green-300 text-green-600',  ring: 'ring-green-200',  dropBg: 'bg-green-50/60 dark:bg-green-900/20' },
+  RECHAZADO: { dot: 'bg-red-400',    badge: 'border-red-300 text-red-500',      ring: 'ring-red-200',    dropBg: 'bg-red-50/60 dark:bg-red-900/20' },
 }
 
 const STAT_CONFIG = [
@@ -28,42 +28,37 @@ const STAT_CONFIG = [
     label: 'Pendiente',
     icon: <ClipboardList size={22} className="text-white" />,
     iconBg: 'bg-gradient-to-br from-amber-400 to-orange-400',
-    cardBg: 'bg-amber-50',
-    border: 'border-amber-200',
-    arrow: 'border-amber-300 text-amber-500',
-    count_text: 'text-amber-700',
+    cardBg: 'bg-amber-50 dark:bg-amber-900/20',
+    border: 'border-amber-200 dark:border-amber-800',
+    count_text: 'text-amber-700 dark:text-amber-400',
   },
   {
     estado: 'APROBADO' as Estado,
     label: 'Aprobado',
     icon: <CheckCircle size={22} className="text-white" />,
     iconBg: 'bg-gradient-to-br from-green-400 to-emerald-500',
-    cardBg: 'bg-green-50',
-    border: 'border-green-200',
-    arrow: 'border-green-300 text-green-500',
-    count_text: 'text-green-700',
+    cardBg: 'bg-green-50 dark:bg-green-900/20',
+    border: 'border-green-200 dark:border-green-800',
+    count_text: 'text-green-700 dark:text-green-400',
   },
   {
     estado: 'RECHAZADO' as Estado,
     label: 'Rechazado',
     icon: <XCircle size={22} className="text-white" />,
     iconBg: 'bg-gradient-to-br from-red-400 to-rose-500',
-    cardBg: 'bg-red-50',
-    border: 'border-red-200',
-    arrow: 'border-red-300 text-red-400',
-    count_text: 'text-red-600',
+    cardBg: 'bg-red-50 dark:bg-red-900/20',
+    border: 'border-red-200 dark:border-red-800',
+    count_text: 'text-red-600 dark:text-red-400',
   },
 ]
 
 function EmptyColumn() {
   return (
     <div className="flex flex-col items-center justify-center py-10 gap-3">
-      <div className="relative">
-        <div className="w-16 h-16 rounded-2xl bg-violet-50 flex items-center justify-center">
-          <Wallet size={30} className="text-violet-200" />
-        </div>
+      <div className="w-16 h-16 rounded-2xl bg-violet-50 dark:bg-violet-900/20 flex items-center justify-center">
+        <Wallet size={30} className="text-violet-200 dark:text-violet-700" />
       </div>
-      <p className="text-sm text-gray-300 font-medium">Sin comprobantes</p>
+      <p className="text-sm text-gray-300 dark:text-gray-600 font-medium">Sin comprobantes</p>
     </div>
   )
 }
@@ -111,48 +106,44 @@ function PagoCard({ pago, activeId, onPdf, pdfLoading, onAprobar, onRechazar }: 
       ref={setNodeRef}
       style={style}
       {...(isPendiente ? { ...attributes, ...listeners } : {})}
-      className={`bg-white rounded-2xl border border-gray-700 p-4 select-none transition-opacity
+      className={`bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-4 select-none transition-opacity
         ${isPendiente ? 'cursor-grab active:cursor-grabbing' : ''}
         ${isBeingDragged ? 'opacity-30' : 'opacity-100'}`}
     >
-      {/* Header */}
       <div className="flex items-start gap-3 mb-3">
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-400 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
           {initials}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-gray-800 truncate">
+          <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">
             {pago.estudiante.nombres} {pago.estudiante.apellidos}
           </p>
           <p className="text-xs text-gray-400 truncate">{pago.estudiante.correo_institucional}</p>
         </div>
-        <span className="text-xs font-semibold px-2 py-0.5 rounded-lg bg-gray-100 text-gray-500 flex-shrink-0">
+        <span className="text-xs font-semibold px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 flex-shrink-0">
           {pago.tipo_periodo === 'SEMANAL' ? 'Sem' : 'Men'}
         </span>
       </div>
 
-      {/* Días + almuerzos */}
       <div className="flex flex-wrap items-center gap-1 mb-3">
         {pago.dias_pagados.map((d: string) => (
-          <span key={d} className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-md">
+          <span key={d} className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-md">
             {DIA_LABEL[d] ?? d}
           </span>
         ))}
-        <span className="text-xs font-semibold text-violet-600 ml-auto">
+        <span className="text-xs font-semibold text-violet-600 dark:text-violet-400 ml-auto">
           {pago.cantidad_almuerzos} alm.
         </span>
       </div>
 
-      {/* Observación */}
       {pago.observacion && (
-        <p className="text-xs text-red-500 mb-3 bg-red-50 px-2 py-1.5 rounded-lg leading-relaxed">
+        <p className="text-xs text-red-500 dark:text-red-400 mb-3 bg-red-50 dark:bg-red-900/20 px-2 py-1.5 rounded-lg leading-relaxed">
           {pago.observacion}
         </p>
       )}
 
-      {/* Footer */}
       <div className="flex items-center justify-between">
-        <span className="text-xs text-gray-300">
+        <span className="text-xs text-gray-300 dark:text-gray-600">
           {new Date(pago.fecha_subida).toLocaleDateString('es-CO')}
         </span>
         <div className="flex items-center gap-1">
@@ -160,7 +151,7 @@ function PagoCard({ pago, activeId, onPdf, pdfLoading, onAprobar, onRechazar }: 
             onPointerDown={e => e.stopPropagation()}
             onClick={e => { e.stopPropagation(); onPdf(pago.id_pago) }}
             disabled={pdfLoading === pago.id_pago}
-            className="p-1.5 text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition"
+            className="p-1.5 text-gray-400 hover:text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-900/30 rounded-lg transition"
           >
             {pdfLoading === pago.id_pago
               ? <Loader2 size={14} className="animate-spin" />
@@ -171,7 +162,7 @@ function PagoCard({ pago, activeId, onPdf, pdfLoading, onAprobar, onRechazar }: 
               <button
                 onPointerDown={e => e.stopPropagation()}
                 onClick={e => { e.stopPropagation(); onAprobar(pago.id_pago) }}
-                className="p-1.5 text-green-500 hover:text-green-700 hover:bg-green-50 rounded-lg transition"
+                className="p-1.5 text-green-500 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition"
                 title="Aprobar"
               >
                 <CheckCircle size={14} />
@@ -179,7 +170,7 @@ function PagoCard({ pago, activeId, onPdf, pdfLoading, onAprobar, onRechazar }: 
               <button
                 onPointerDown={e => e.stopPropagation()}
                 onClick={e => { e.stopPropagation(); onRechazar(pago.id_pago) }}
-                className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition"
                 title="Rechazar"
               >
                 <XCircle size={14} />
@@ -204,10 +195,10 @@ function KanbanColumn({ estado, label, count, isDropTarget, activeId, children }
   const cfg = COL_CONFIG[estado]
 
   return (
-    <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+    <div className="flex flex-col flex-shrink-0 min-w-[260px] md:flex-1 md:min-w-0 overflow-hidden">
       <div className="flex items-center gap-2 px-1 py-2 mb-3">
         <span className={`w-2.5 h-2.5 rounded-full ${cfg.dot}`} />
-        <span className="text-sm font-bold text-gray-700">{label}</span>
+        <span className="text-sm font-bold text-gray-700 dark:text-gray-200">{label}</span>
         <span className={`ml-auto text-xs font-bold px-2 py-0.5 rounded-lg border ${cfg.badge}`}>
           {count}
         </span>
@@ -217,7 +208,7 @@ function KanbanColumn({ estado, label, count, isDropTarget, activeId, children }
         className={`flex-1 overflow-y-auto flex flex-col gap-3 p-3 rounded-2xl min-h-48 transition-all border ${
           isOver && isDropTarget
             ? `${cfg.dropBg} ring-2 ${cfg.ring} border-transparent`
-            : 'bg-white border-gray-200'
+            : 'bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800'
         }`}
       >
         {children}
@@ -300,26 +291,26 @@ function CarteraPage() {
   ]
 
   if (loading) return (
-    <div className="flex-1 flex items-center justify-center bg-slate-100">
+    <div className="flex-1 flex items-center justify-center bg-slate-100 dark:bg-gray-950">
       <Loader2 size={24} className="animate-spin text-violet-400" />
     </div>
   )
 
   return (
-    <div className="flex-1 p-8 overflow-hidden flex flex-col bg-slate-100">
+    <div className="flex-1 p-4 md:p-8 pb-24 md:pb-8 overflow-hidden flex flex-col bg-slate-100 dark:bg-gray-950">
 
       {/* Stat cards */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-3 gap-2 md:gap-4 mb-4 md:mb-6">
         {STAT_CONFIG.map(({ estado, label, icon, iconBg, cardBg, border, count_text }) => {
           const count = pagos.filter(p => p.estado === estado).length
           return (
-            <div key={estado} className={`${cardBg} rounded-2xl p-5 border ${border} flex items-center gap-4`}>
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${iconBg}`}>
+            <div key={estado} className={`${cardBg} rounded-2xl p-3 md:p-5 border ${border} flex flex-col md:flex-row md:items-center gap-2 md:gap-4`}>
+              <div className={`w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center flex-shrink-0 ${iconBg}`}>
                 {icon}
               </div>
-              <div className="flex-1">
-                <p className={`text-sm font-semibold ${count_text}`}>{label}</p>
-                <p className={`text-2xl font-bold ${count_text}`}>{count}</p>
+              <div className="flex-1 min-w-0">
+                <p className={`text-xs md:text-sm font-semibold truncate ${count_text}`}>{label}</p>
+                <p className={`text-xl md:text-2xl font-bold ${count_text}`}>{count}</p>
               </div>
             </div>
           )
@@ -328,7 +319,7 @@ function CarteraPage() {
 
       {/* Kanban */}
       <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-        <div className="flex gap-5 flex-1 overflow-hidden">
+        <div className="flex gap-4 flex-1 overflow-x-auto pb-2">
           {cols.map(({ estado, label, isDropTarget }) => {
             const items = pagos.filter(p => p.estado === estado)
             return (
@@ -358,7 +349,6 @@ function CarteraPage() {
             )
           })}
         </div>
-
         <DragOverlay>
           {activePago && <CardPreview pago={activePago} />}
         </DragOverlay>
@@ -367,19 +357,19 @@ function CarteraPage() {
       {/* Modal rechazo */}
       {pendingRechazo !== null && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl shadow-xl w-full max-w-sm p-6">
-            <h3 className="text-base font-bold text-gray-800 mb-1">Motivo del rechazo</h3>
+          <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl w-full max-w-sm p-6 border border-gray-100 dark:border-gray-800">
+            <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 mb-1">Motivo del rechazo</h3>
             <p className="text-xs text-gray-400 mb-4">El estudiante verá este mensaje en su billetera</p>
             <textarea
               value={motivo}
               onChange={e => setMotivo(e.target.value)}
               placeholder="Ej: El comprobante no es legible..."
-              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 resize-none h-24 outline-none focus:ring-2 focus:ring-red-100 focus:border-red-300 transition"
+              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 dark:placeholder-gray-500 resize-none h-24 outline-none focus:ring-2 focus:ring-red-100 focus:border-red-300 transition"
             />
             <div className="flex gap-3 mt-4">
               <button
                 onClick={() => { setPendingRechazo(null); setMotivo('') }}
-                className="flex-1 py-2.5 border border-gray-200 text-gray-500 rounded-xl text-sm font-semibold hover:bg-gray-50 transition">
+                className="flex-1 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 rounded-xl text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition">
                 Cancelar
               </button>
               <button

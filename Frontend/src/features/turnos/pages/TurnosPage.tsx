@@ -13,22 +13,20 @@ function TurnosPage() {
 
   const totalReservas = turnos.length
   const rangosActivos = rangos.filter(r => r.activo).length
-
   const casiLlenos = rangos.filter(r => {
     const ocu = turnos.filter(t => t.hora_inicio === r.hora_inicio).length
     return ocu / r.capacidad_maxima >= 0.7 && ocu < r.capacidad_maxima
   }).length
-
   const completos = rangos.filter(r => {
     const ocu = turnos.filter(t => t.hora_inicio === r.hora_inicio).length
     return ocu >= r.capacidad_maxima
   }).length
 
   const stats = [
-    { title: 'Total Reservas',   value: totalReservas,  icon: <Users size={22} className="text-white" />,         gradient: 'bg-gradient-to-br from-pink-500 to-rose-400' },
-    { title: 'Horarios activos', value: rangosActivos,  icon: <Clock size={22} className="text-white" />,         gradient: 'bg-gradient-to-br from-violet-500 to-indigo-400' },
-    { title: 'Casi Llenos',      value: casiLlenos,     icon: <AlertTriangle size={22} className="text-white" />, gradient: 'bg-gradient-to-br from-orange-500 to-amber-300' },
-    { title: 'Completos',        value: completos,      icon: <CheckCircle size={22} className="text-white" />,   gradient: 'bg-gradient-to-br from-cyan-400 to-blue-400' },
+    { title: 'Total Reservas',   value: totalReservas, icon: <Users size={22} className="text-white" />,         gradient: 'bg-gradient-to-br from-pink-500 to-rose-400' },
+    { title: 'Horarios activos', value: rangosActivos, icon: <Clock size={22} className="text-white" />,         gradient: 'bg-gradient-to-br from-violet-500 to-indigo-400' },
+    { title: 'Casi Llenos',      value: casiLlenos,    icon: <AlertTriangle size={22} className="text-white" />, gradient: 'bg-gradient-to-br from-orange-500 to-amber-300' },
+    { title: 'Completos',        value: completos,     icon: <CheckCircle size={22} className="text-white" />,   gradient: 'bg-gradient-to-br from-cyan-400 to-blue-400' },
   ]
 
   const alertasCompletos = rangos.filter(r => turnos.filter(t => t.hora_inicio === r.hora_inicio).length >= r.capacidad_maxima)
@@ -38,37 +36,37 @@ function TurnosPage() {
   })
 
   return (
-    <div className="flex-1 p-8 overflow-y-auto bg-slate-100">
+    <div className="flex-1 p-4 md:p-8 pb-24 md:pb-8 overflow-y-auto bg-slate-100 dark:bg-gray-950">
 
       <div className="flex items-center justify-between mb-6">
         <input
           type="date"
           value={fecha}
           onChange={(e) => setFecha(e.target.value)}
-          className="border border-gray-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 bg-white shadow-sm"
+          className="border border-gray-300 dark:border-gray-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 bg-white dark:bg-gray-800 dark:text-gray-200 shadow-sm"
         />
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {stats.map((s) => (
-          <div key={s.title} className="bg-white rounded-2xl p-5 shadow-md border border-gray-700 flex items-center gap-4">
+          <div key={s.title} className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-md border border-gray-200 dark:border-gray-800 flex items-center gap-4">
             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${s.gradient}`}>
               {s.icon}
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-800">{s.value}</p>
-              <p className="text-sm text-gray-500">{s.title}</p>
+              <p className="text-2xl font-bold text-gray-800 dark:text-white">{s.value}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{s.title}</p>
             </div>
           </div>
         ))}
       </div>
 
       {/* Main grid */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
         {/* Rangos + turnos */}
-        <div className="col-span-2 flex flex-col gap-4">
+        <div className="col-span-1 md:col-span-2 flex flex-col gap-4">
           <div className="relative">
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -76,7 +74,7 @@ function TurnosPage() {
               placeholder="Buscar estudiante o cédula..."
               value={buscar}
               onChange={(e) => setBuscar(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-300 bg-white"
+              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-300 bg-white dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
             />
           </div>
           {loading ? (
@@ -98,24 +96,23 @@ function TurnosPage() {
         {/* Panel derecho */}
         <div className="flex flex-col gap-4">
 
-          <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-700">
+          {/* Alertas */}
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-md border border-gray-200 dark:border-gray-800">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-xl bg-violet-50 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center">
                 <Bell size={15} className="text-violet-500" />
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-gray-700">Alertas</h3>
-              </div>
+              <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200">Alertas</h3>
             </div>
             {alertasCompletos.length === 0 && alertasCasi.length === 0 ? (
               <p className="text-xs text-gray-400">Sin alertas por ahora</p>
             ) : (
               <div className="flex flex-col gap-2">
                 {alertasCompletos.map(r => (
-                  <div key={r.id_configuracion} className="flex items-center gap-2 px-3 py-2 bg-red-50 rounded-xl">
+                  <div key={r.id_configuracion} className="flex items-center gap-2 px-3 py-2 bg-red-50 dark:bg-red-900/20 rounded-xl">
                     <AlertTriangle size={16} className="text-red-500 flex-shrink-0" />
                     <div>
-                      <p className="text-xs font-semibold text-red-600">{r.hora_inicio} – {r.hora_fin}</p>
+                      <p className="text-xs font-semibold text-red-600 dark:text-red-400">{r.hora_inicio} – {r.hora_fin}</p>
                       <p className="text-xs text-red-400">Rango completo</p>
                     </div>
                   </div>
@@ -123,10 +120,10 @@ function TurnosPage() {
                 {alertasCasi.map(r => {
                   const ocu = turnos.filter(t => t.hora_inicio === r.hora_inicio).length
                   return (
-                    <div key={r.id_configuracion} className="flex items-center gap-2 px-3 py-2 bg-amber-50 rounded-xl">
+                    <div key={r.id_configuracion} className="flex items-center gap-2 px-3 py-2 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
                       <AlertTriangle size={16} className="text-amber-500 flex-shrink-0" />
                       <div>
-                        <p className="text-xs font-semibold text-amber-600">{r.hora_inicio} – {r.hora_fin}</p>
+                        <p className="text-xs font-semibold text-amber-600 dark:text-amber-400">{r.hora_inicio} – {r.hora_fin}</p>
                         <p className="text-xs text-amber-400">{r.capacidad_maxima - ocu} cupos restantes</p>
                       </div>
                     </div>
@@ -136,12 +133,13 @@ function TurnosPage() {
             )}
           </div>
 
-          <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-700">
+          {/* Rangos horarios */}
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-md border border-gray-200 dark:border-gray-800">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-xl bg-violet-50 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center">
                 <Clock size={15} className="text-violet-500" />
               </div>
-              <h3 className="text-sm font-bold text-gray-700">Rangos horarios</h3>
+              <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200">Rangos horarios</h3>
             </div>
             <div className="flex flex-col gap-2">
               {rangos.filter(r => r.activo).map(r => {
@@ -150,9 +148,9 @@ function TurnosPage() {
                 const lleno = ocu >= r.capacidad_maxima
                 const casi = !lleno && pct >= 70
                 return (
-                  <div key={r.id_configuracion} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                  <div key={r.id_configuracion} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-800 last:border-0">
                     <div>
-                      <p className="text-xs font-semibold text-gray-700">{r.hora_inicio} – {r.hora_fin}</p>
+                      <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">{r.hora_inicio} – {r.hora_fin}</p>
                       <p className="text-xs text-gray-400">{ocu}/{r.capacidad_maxima} · {pct}%</p>
                     </div>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${

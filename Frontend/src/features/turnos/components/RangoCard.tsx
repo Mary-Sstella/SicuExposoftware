@@ -38,14 +38,14 @@ function RangoCard({ rango, turnos, onToggle }: Props) {
   }
 
   return (
-    <div className={`bg-white rounded-2xl shadow-md border border-gray-600 overflow-hidden ${!rango.activo ? 'opacity-50 grayscale' : ''}`}>
-      <div className="px-5 py-4 flex items-center justify-between border-b border-gray-600">
+    <div className={`bg-white dark:bg-gray-900 rounded-2xl shadow-md border border-gray-200 dark:border-gray-800 overflow-hidden ${!rango.activo ? 'opacity-50 grayscale' : ''}`}>
+      <div className="px-5 py-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
         <div className="flex items-center gap-3">
           <button onClick={() => setExpandido(!expandido)} className="text-gray-400 hover:text-violet-500">
             {expandido ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
           <div>
-            <p className="text-sm font-bold text-gray-700">{rango.hora_inicio} – {rango.hora_fin}</p>
+            <p className="text-sm font-bold text-gray-700 dark:text-gray-200">{rango.hora_inicio} – {rango.hora_fin}</p>
             <p className="text-xs text-gray-400">{ocupados} / {rango.capacidad_maxima} cupos ocupados</p>
           </div>
         </div>
@@ -57,7 +57,7 @@ function RangoCard({ rango, turnos, onToggle }: Props) {
           </span>
           <button
             onClick={handleToggle}
-            className="text-xs px-3 py-1 rounded-full font-semibold border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors"
+            className="text-xs px-3 py-1 rounded-full font-semibold border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
           >
             {rango.activo ? 'Desactivar' : 'Activar'}
           </button>
@@ -67,14 +67,14 @@ function RangoCard({ rango, turnos, onToggle }: Props) {
       {expandido && (
         <div className="px-5 py-4">
           {turnos.length === 0 ? (
-            <div className="flex items-center justify-center gap-2 py-5 border border-gray-200 rounded-xl text-gray-400">
+            <div className="flex items-center justify-center gap-2 py-5 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-400">
               <Calendar size={16} className="text-violet-300" />
               <span className="text-sm">Sin reservas en este horario</span>
             </div>
           ) : (
             <table className="w-full text-xs mt-1">
               <thead>
-                <tr className="border-b border-gray-200">
+                <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th className="text-left pb-2 font-semibold text-violet-500 uppercase tracking-wide">#</th>
                   <th className="text-left pb-2 font-semibold text-violet-500 uppercase tracking-wide">Estudiante</th>
                   <th className="text-left pb-2 font-semibold text-violet-500 uppercase tracking-wide">Cédula</th>
@@ -84,16 +84,16 @@ function RangoCard({ rango, turnos, onToggle }: Props) {
               </thead>
               <tbody>
                 {turnos.map((t, i) => (
-                  <tr key={i} className="border-t border-gray-100">
+                  <tr key={i} className="border-t border-gray-100 dark:border-gray-800">
                     <td className="py-2 text-violet-600 font-bold">#{t.numero_turno}</td>
-                    <td className="py-2 text-gray-700 font-semibold">{t.nombres} {t.apellidos}</td>
+                    <td className="py-2 text-gray-700 dark:text-gray-300 font-semibold">{t.nombres} {t.apellidos}</td>
                     <td className="py-2 text-gray-400">{t.numero_identificacion}</td>
                     <td className="py-2 text-gray-400">{t.programa}</td>
                     <td className="py-2">
                       <span className={`px-2 py-0.5 rounded-full font-semibold ${
                         t.estado === 'ENTREGADA' || t.estado === 'CONFIRMADO'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-yellow-100 text-yellow-700'
+                          ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                          : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
                       }`}>
                         {t.estado}
                       </span>
