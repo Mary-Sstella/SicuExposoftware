@@ -16,6 +16,11 @@ function HuellaModal({ onClose, onAsistenciaRegistrada }: Props) {
     const [estado, setEstado] = useState<'esperando' | 'procesando' | 'exito' | 'error'>('esperando')
     const [resultado, setResultado] = useState<Resultado | null>(null)
     const wsRef = useRef<WebSocket | null>(null)
+    const onCloseRef = useRef(onClose)
+    const onAsistenciaRegistradaRef = useRef(onAsistenciaRegistrada)
+
+    useEffect(() => { onCloseRef.current = onClose }, [onClose])
+    useEffect(() => { onAsistenciaRegistradaRef.current = onAsistenciaRegistrada }, [onAsistenciaRegistrada])
 
     useEffect(() => {
         const backendUrl = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000/sicu')
@@ -42,8 +47,8 @@ function HuellaModal({ onClose, onAsistenciaRegistrada }: Props) {
                 })
                 setEstado(data.success ? 'exito' : 'error')
                 if (data.success) {
-                    onAsistenciaRegistrada()
-                    setTimeout(onClose, 2500)
+                    onAsistenciaRegistradaRef.current()
+                    setTimeout(() => onCloseRef.current(), 2500)
                 }
             }
         }
