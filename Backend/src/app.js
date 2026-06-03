@@ -11,20 +11,6 @@ const createApp = () => {
     const app = express()
 
     const whitelist = ['http://localhost:5174', 'http://localhost:5173']
-
-<<<<<<< HEAD
-const corsOptions = {
-    origin: function (origin, callback) {
-        if (whitelist.indexOf(origin) !== -1 || !origin) { // quitar !origin cuando no necesite las pruebas de postman 
-            callback(null, true)
-        } else {
-            callback(new Error('Not allowed by CORS'))
-        }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-=======
     const corsOptions = {
         origin: function (origin, callback) {
             if (whitelist.indexOf(origin) !== -1 || !origin) { // quitar !origin cuando no necesite pruebas de postman
@@ -62,7 +48,6 @@ const corsOptions = {
         .catch(err => console.error('Error en la conexión:', err))
 
     return app
->>>>>>> dev
 }
 
 module.exports = { createApp }
