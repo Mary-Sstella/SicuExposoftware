@@ -1,7 +1,8 @@
 require('dotenv').config()
 const env = require('./config/env')
-const app = require('./app')
-const { iniciarCronJobs } = require('./shared/utils/cronJobs')
+const { createApp } = require('./app')
+const app = createApp()
+const { iniciarCronJobs } = require('./jobs/cronJobs')
 
 BigInt.prototype.toJSON = function() {
     return this.toString()

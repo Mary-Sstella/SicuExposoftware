@@ -50,61 +50,62 @@ function BilleteraPage() {
   )
 
   return (
-    <div className="flex-1 p-8 overflow-y-auto bg-slate-100">
+    <div className="flex-1 p-4 md:p-8 overflow-y-auto bg-slate-100">
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4 md:mb-6 gap-3">
         <div>
           <h1 className="text-base font-semibold text-gray-700">Mi Billetera</h1>
-          <p className="text-xs text-gray-400">Historial y estado de tus comprobantes de pago</p>
+          <p className="text-xs text-gray-400 hidden sm:block">Historial y estado de tus comprobantes de pago</p>
         </div>
         <button
           onClick={() => setModalAbierto(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition shadow-sm"
+          className="flex items-center gap-1.5 px-3 py-2 md:px-4 bg-violet-600 hover:bg-violet-700 text-white text-xs md:text-sm font-semibold rounded-xl transition shadow-sm flex-shrink-0"
         >
-          <Plus size={15} />
-          Subir comprobante
+          <Plus size={14} />
+          <span className="hidden sm:inline">Subir comprobante</span>
+          <span className="sm:hidden">Subir</span>
         </button>
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-700 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-400 flex items-center justify-center flex-shrink-0">
-            <Wallet size={22} className="text-white" />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
+        <div className="bg-white rounded-2xl p-3 md:p-5 shadow-sm md:shadow-md border border-gray-700 flex items-center gap-3 md:gap-4">
+          <div className="w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-gradient-to-br from-violet-500 to-purple-400 flex items-center justify-center flex-shrink-0">
+            <Wallet size={18} className="text-white" />
           </div>
           <div>
-            <p className="text-2xl font-bold text-gray-800">{saldo}</p>
+            <p className="text-xl md:text-2xl font-bold text-gray-800">{saldo}</p>
             <p className="text-xs text-gray-500">Almuerzos disponibles</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-700 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-300 flex items-center justify-center flex-shrink-0">
-            <Clock size={22} className="text-white" />
+        <div className="bg-white rounded-2xl p-3 md:p-5 shadow-sm md:shadow-md border border-gray-700 flex items-center gap-3 md:gap-4">
+          <div className="w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-gradient-to-br from-amber-400 to-orange-300 flex items-center justify-center flex-shrink-0">
+            <Clock size={18} className="text-white" />
           </div>
           <div>
-            <p className="text-2xl font-bold text-gray-800">{pendientes}</p>
+            <p className="text-xl md:text-2xl font-bold text-gray-800">{pendientes}</p>
             <p className="text-xs text-gray-500">Pendientes</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-700 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-400 flex items-center justify-center flex-shrink-0">
-            <CheckCircle size={22} className="text-white" />
+        <div className="bg-white rounded-2xl p-3 md:p-5 shadow-sm md:shadow-md border border-gray-700 flex items-center gap-3 md:gap-4">
+          <div className="w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-gradient-to-br from-green-500 to-emerald-400 flex items-center justify-center flex-shrink-0">
+            <CheckCircle size={18} className="text-white" />
           </div>
           <div>
-            <p className="text-2xl font-bold text-gray-800">{aprobados}</p>
+            <p className="text-xl md:text-2xl font-bold text-gray-800">{aprobados}</p>
             <p className="text-xs text-gray-500">Aprobados</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-700 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500 to-rose-400 flex items-center justify-center flex-shrink-0">
-            <XCircle size={22} className="text-white" />
+        <div className="bg-white rounded-2xl p-3 md:p-5 shadow-sm md:shadow-md border border-gray-700 flex items-center gap-3 md:gap-4">
+          <div className="w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-gradient-to-br from-red-500 to-rose-400 flex items-center justify-center flex-shrink-0">
+            <XCircle size={18} className="text-white" />
           </div>
           <div>
-            <p className="text-2xl font-bold text-gray-800">{rechazados}</p>
+            <p className="text-xl md:text-2xl font-bold text-gray-800">{rechazados}</p>
             <p className="text-xs text-gray-500">Rechazados</p>
           </div>
         </div>
@@ -114,7 +115,7 @@ function BilleteraPage() {
       <div className="bg-white rounded-2xl shadow-md border border-gray-700 overflow-hidden">
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 px-5 py-4 border-b border-gray-100">
+        <div className="flex items-center gap-1 flex-wrap px-4 py-3 md:px-5 md:py-4 border-b border-gray-100">
           {(['TODOS', 'PENDIENTE', 'APROBADO', 'RECHAZADO'] as Filtro[]).map(f => {
             const count = f === 'PENDIENTE' ? pendientes : f === 'APROBADO' ? aprobados : rechazados
             return (
@@ -155,8 +156,8 @@ function BilleteraPage() {
             pagosFiltrados.map(pago => {
               const { icon: Icon, color, bg, border, label, dot } = ESTADO_CONFIG[pago.estado as keyof typeof ESTADO_CONFIG]
               return (
-                <div key={pago.id_pago} className="px-5 py-4 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center justify-between gap-4">
+                <div key={pago.id_pago} className="px-4 py-3 md:px-5 md:py-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
 
                     <div className="flex items-center gap-3 min-w-0">
                       <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center flex-shrink-0`}>

@@ -29,7 +29,7 @@ function EscanerQR() {
     }
 
     const handleScan = async (detected: { rawValue: string }[]) => {
-        console.log('detectado:', detected)  
+        console.log('detectado:', detected)
         if (procesando || !detected.length) return
         setProcesando(true)
         setActivo(false)
@@ -40,15 +40,13 @@ function EscanerQR() {
             const msg = (err as { response?: { data?: { msg?: string } } })?.response?.data?.msg
             setError(msg || 'QR inválido o ya utilizado')
         }
-
     }
-    
 
     return (
-        <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col gap-4 border border-gray-700">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm flex flex-col gap-4 border border-gray-200 dark:border-gray-800">
             <div className="flex items-center gap-2">
                 <Camera size={18} className="text-violet-500" />
-                <p className="text-sm font-bold text-gray-700">Escáner QR</p>
+                <p className="text-sm font-bold text-gray-700 dark:text-gray-200">Escáner QR</p>
                 <p className="text-xs text-gray-400 ml-auto">Escanea el QR del estudiante</p>
             </div>
 
@@ -56,7 +54,7 @@ function EscanerQR() {
                 <select
                     value={deviceId ?? ''}
                     onChange={e => setDeviceId(e.target.value || undefined)}
-                    className="text-xs border border-gray-200 rounded-xl px-3 py-2 text-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-300"
+                    className="text-xs border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-violet-300"
                 >
                     <option value="">Cámara por defecto</option>
                     {devices.map((d: MediaDeviceInfo) => (
@@ -67,7 +65,7 @@ function EscanerQR() {
 
             {!activo && !resultado && !error && (
                 <div className="flex flex-col items-center gap-3 py-4">
-                    <div className="w-14 h-14 rounded-2xl bg-violet-100 flex items-center justify-center">
+                    <div className="w-14 h-14 rounded-2xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
                         <Camera size={28} className="text-violet-500" />
                     </div>
                     <button
@@ -94,22 +92,22 @@ function EscanerQR() {
 
             {resultado && (
                 <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-2 text-green-600">
+                    <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
                         <CheckCircle2 size={18} />
                         <span className="text-sm font-bold">Asistencia registrada</span>
                     </div>
-                    <div className="bg-green-50 rounded-xl p-4 flex flex-col gap-1.5">
-                        <p className="text-base font-black text-gray-800">{resultado.nombres} {resultado.apellidos}</p>
-                        <p className="text-xs text-gray-500">C.C. {resultado.numero_identificacion}</p>
+                    <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 flex flex-col gap-1.5 border border-green-100 dark:border-green-900/40">
+                        <p className="text-base font-black text-gray-800 dark:text-gray-200">{resultado.nombres} {resultado.apellidos}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">C.C. {resultado.numero_identificacion}</p>
                         <p className="text-xs text-gray-400">{resultado.programa}</p>
                         <div className="flex items-center gap-2 mt-1">
-                            <span className="bg-violet-100 text-violet-700 text-xs font-black px-3 py-1 rounded-lg">
+                            <span className="bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 text-xs font-black px-3 py-1 rounded-lg">
                                 Turno #{resultado.numero_turno}
                             </span>
-                            <span className="text-xs text-gray-500">{resultado.hora_inicio} – {resultado.hora_fin}</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">{resultado.hora_inicio} – {resultado.hora_fin}</span>
                         </div>
                     </div>
-                    <button onClick={iniciarScanner} className="flex items-center justify-center gap-1.5 text-xs text-violet-600 hover:underline">
+                    <button onClick={iniciarScanner} className="flex items-center justify-center gap-1.5 text-xs text-violet-600 dark:text-violet-400 hover:underline">
                         <RefreshCw size={12} /> Escanear otro
                     </button>
                 </div>
@@ -117,11 +115,11 @@ function EscanerQR() {
 
             {error && (
                 <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-2 text-red-500">
+                    <div className="flex items-center gap-2 text-red-500 dark:text-red-400">
                         <XCircle size={18} />
                         <span className="text-sm font-bold">{error}</span>
                     </div>
-                    <button onClick={iniciarScanner} className="flex items-center justify-center gap-1.5 text-xs text-violet-600 hover:underline">
+                    <button onClick={iniciarScanner} className="flex items-center justify-center gap-1.5 text-xs text-violet-600 dark:text-violet-400 hover:underline">
                         <RefreshCw size={12} /> Intentar de nuevo
                     </button>
                 </div>

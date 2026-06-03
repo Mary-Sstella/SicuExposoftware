@@ -21,14 +21,13 @@ function Sidebar() {
   const { pathname } = useLocation()
 
   return (
-    <div className={`relative flex flex-col h-screen bg-violet-100 rounded-2xl my-3 ml-3 shadow-md transition-all duration-300 ${collapsed ? 'w-20' : 'w-60'}`}>
-
+    <div className={`hidden md:flex relative flex-col h-screen bg-violet-100 dark:bg-gray-900 rounded-2xl my-3 ml-3 shadow-md transition-all duration-300 ${collapsed ? 'w-20' : 'w-60'}`}>
       {/* Logo */}
       <div className={`flex items-center gap-3 px-5 py-6 ${collapsed ? 'justify-center' : ''}`}>
         <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-400 flex items-center justify-center flex-shrink-0 shadow-md">
           <span className="font-black text-lg text-white">S</span>
         </div>
-        {!collapsed && <span className="text-gray-800 font-bold text-lg tracking-wide">SICU</span>}
+        {!collapsed && <span className="text-gray-800 dark:text-white font-bold text-lg tracking-wide">SICU</span>}
       </div>
 
       {/* Nav */}
@@ -40,7 +39,10 @@ function Sidebar() {
               key={label}
               onClick={() => navigate(path)}
               className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 w-full text-left
-                ${isActive ? 'bg-violet-600 text-white font-semibold shadow-sm' : 'text-gray-800 hover:bg-violet-100 hover:text-violet-700'}
+                ${isActive
+                  ? 'bg-violet-600 text-white font-semibold shadow-sm'
+                  : 'text-gray-800 dark:text-gray-300 hover:bg-violet-200 dark:hover:bg-gray-800 hover:text-violet-700 dark:hover:text-white'
+                }
                 ${collapsed ? 'justify-center' : ''}
               `}
             >
@@ -56,30 +58,30 @@ function Sidebar() {
         <button
           onClick={() => navigate('/configuracion')}
           className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 w-full text-left
-            ${pathname === '/configuracion' ? 'bg-violet-600 text-white font-semibold shadow-sm' : 'text-gray-800 hover:bg-violet-100 hover:text-violet-700'}
+            ${pathname === '/configuracion'
+              ? 'bg-violet-600 text-white font-semibold shadow-sm'
+              : 'text-gray-800 dark:text-gray-300 hover:bg-violet-200 dark:hover:bg-gray-800 hover:text-violet-700 dark:hover:text-white'
+            }
             ${collapsed ? 'justify-center' : ''}
           `}
         >
-          <Settings
-            size={20}
-            className="flex-shrink-0 transition-transform duration-500 group-hover:rotate-180"
-          />
+          <Settings size={20} className="flex-shrink-0 transition-transform duration-500 group-hover:rotate-180" />
           {!collapsed && <span className="text-sm font-medium">Configuración</span>}
         </button>
 
         <button
           onClick={() => { logout(); navigate('/login') }}
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-800 font-medium hover:text-red-500 hover:bg-red-50 transition-all w-full ${collapsed ? 'justify-center' : ''}`}
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-800 dark:text-gray-400 font-medium hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950 transition-all w-full ${collapsed ? 'justify-center' : ''}`}
         >
           <LogOut size={20} />
           {!collapsed && <span className="text-sm">Cerrar sesión</span>}
         </button>
       </div>
 
-      {/* Toggle */}
+      {/* Toggle colapsar */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-8 z-10 w-6 h-6 bg-white border border-gray-200 text-gray-400 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all"
+        className="absolute -right-3 top-8 z-10 w-6 h-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-400 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all"
       >
         {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
       </button>
