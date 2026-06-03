@@ -2,7 +2,7 @@ const prisma = require('../../config/prisma');
 
 const getHuellaConEstudiante = (finger_id) => {
     return prisma.huellas.findUnique({
-        where: { finger_id },
+        where: { finger_id: parseInt(finger_id) },
         include: {
             estudiante: {
                 select: { id_estudiante: true, nombres: true, apellidos: true },
@@ -12,31 +12,33 @@ const getHuellaConEstudiante = (finger_id) => {
 };
 
 const getDetalleHoy = (id_estudiante, estado) => {
-    return prisma.detalle_reserva.findFirst({
+    const hoy = new Date()
+    const inicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate())
+    const fin   = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1)
+
+    return prisma.reservas.findFirst({
         where: {
             id_estudiante,
-            fecha_comida: new Date(new Date().toDateString()),
+            fecha: { gte: inicio, lt: fin },
             estado,
         },
     });
 };
 
-const marcarEntregado = (id_detalle) => {
-    return prisma.detalle_reserva.update({
-        where: { id_detalle },
+const marcarEntregado = (id_reserva) => {
+    return prisma.reservas.update({
+        where: { id_reserva },
         data: {
-            estado: 'ENTREGADO',
-            asistio: 'SI',
-            fecha_entrega: new Date(),
+            estado: 'ENTREGADA',
         },
     });
 };
 
 const registrarHuella = (id_estudiante, finger_id) => {
     return prisma.huellas.upsert({
-        where: { finger_id },
-        update: { id_estudiante },
-        create: { id_estudiante, finger_id },
+        where: { finger_id: parseInt(finger_id) },
+        update: { id_estudiante: parseInt(id_estudiante) },
+        create: { id_estudiante: parseInt(id_estudiante), finger_id: parseInt(finger_id) },
     })
 }
 
