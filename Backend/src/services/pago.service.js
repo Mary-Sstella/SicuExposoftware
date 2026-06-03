@@ -50,8 +50,10 @@ const createPago = async (data, file, id_estudiante) => {
     const diasInvalidos = dias_pagados.filter((d) => !diasAprobados.includes(d));
     if (diasInvalidos.length > 0) throw new Error('DIAS_NO_APROBADOS');
 
-    const minimo = MINIMOS[data.tipo_periodo];
-    if (!minimo || dias_pagados.length < minimo) throw new Error('CANTIDAD_INVALIDA');
+    const minimoBase = MINIMOS[data.tipo_periodo];
+    if (!minimoBase) throw new Error('CANTIDAD_INVALIDA');
+    const minimo = Math.min(minimoBase, diasAprobados.length);
+    if (dias_pagados.length < minimo) throw new Error('CANTIDAD_INVALIDA');
 
     const cantidad_almuerzos =
         data.tipo_periodo === 'SEMANAL'

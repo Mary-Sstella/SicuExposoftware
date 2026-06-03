@@ -95,9 +95,9 @@ function SoporteModal() {
                                             className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-transparent" />
                                     </div>
                                     <div>
-                                        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1 block">Correo institucional</label>
+                                        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1 block">Correo</label>
                                         <input value={correo} onChange={e => setCorreo(e.target.value)}
-                                            placeholder="usuario@unicesar.edu.co"
+                                            placeholder="ejemplo@correo.com"
                                             type="email"
                                             className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-transparent" />
                                     </div>

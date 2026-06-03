@@ -88,7 +88,8 @@ useEffect(() => {
 
 
   const fechas = useMemo(() => getProximasFechas(diasRegistrados, fechaInicio, fechaFin), [diasRegistrados, fechaInicio, fechaFin])
-  const minimo = tipo === 'SEMANAL' ? 2 : 8
+  const minimoBase = tipo === 'SEMANAL' ? 2 : 8
+  const minimo = Math.min(minimoBase, diasRegistrados.length)
   const cantidad = seleccionados.length
   const cumpleMinimo = cantidad >= minimo
   const subtotal = cantidad * precioPorAlmuerzo
