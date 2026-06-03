@@ -1,11 +1,22 @@
 const biometriaService = require('../services/biometria.service')
 const { AppError } = require('../middleware/error.middleware')
+const { notificarFrontend } = require('../websocket')
 
 const validarHuella = async (req, res, next) => {
     try {
         const { finger_id } = req.body
         if (!finger_id) return next(new AppError(400, 'finger_id es requerido'))
-        const resultado = await biometriaService.validarHuella(finger_id)
+
+        const resultado = await biometriaService.validarHuella(parseInt(finger_id))
+
+        // Notificar al frontend por WebSocket con el resultado
+        notificarFrontend({
+            evento: 'ASISTENCIA_RESULTADO',
+            success: resultado.success,
+            mensaje: resultado.mensaje,
+            estudiante: resultado.estudiante ?? null
+        })
+
         return res.json(resultado)
     } catch (error) {
         next(error)
@@ -16,7 +27,7 @@ const registrarHuella = async (req, res, next) => {
     try {
         const { id_estudiante, finger_id } = req.body
         if (!id_estudiante || !finger_id) return next(new AppError(400, 'id_estudiante y finger_id son requeridos'))
-        await biometriaService.registrarHuella(id_estudiante, finger_id)
+        await biometriaService.registrarHuella(parseInt(id_estudiante), parseInt(finger_id))
         return res.json({ msg: 'Huella registrada correctamente' })
     } catch (error) { next(error) }
 }

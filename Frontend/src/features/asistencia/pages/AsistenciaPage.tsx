@@ -1,14 +1,10 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { useAsistencia } from '../hooks/useAsistencia'
 import AsistenciaTable from '../components/AsistenciaTable'
-import { Keyboard, Monitor } from 'lucide-react'
+import { Keyboard, Monitor, Fingerprint } from 'lucide-react'
 import api from '../../../shared/api/axios'
 import EscanerQR from '../components/EscanerQR'
-<<<<<<< HEAD
 import HuellaPanel from '../components/HuellaPanel'
-import { Fingerprint } from 'lucide-react'
-=======
->>>>>>> 3e9fbb1942619f49aed9d576bdd0703e5e23e5ee
 
 function AsistenciaPage() {
   const { asistencias, loading, refetch } = useAsistencia()
@@ -37,41 +33,32 @@ function AsistenciaPage() {
   return (
     <div className="flex-1 p-8 overflow-y-auto bg-gray-50 dark:bg-gray-950">
 
-<<<<<<< HEAD
       <div className="grid grid-cols-3 gap-4 mb-6">
         <EscanerQR />
 
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-700 flex flex-col items-center justify-center gap-4">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-700 flex flex-col items-center justify-center gap-4">
           <div className="w-14 h-14 rounded-2xl bg-violet-50 flex items-center justify-center">
-              <Fingerprint size={28} className="text-violet-500" strokeWidth={1.5} />
+            <Fingerprint size={28} className="text-violet-500" strokeWidth={1.5} />
           </div>
           <div className="text-center">
-              <p className="text-sm font-bold text-gray-700">Huella Digital</p>
-              <p className="text-xs text-gray-400 mt-1">Asistencia biométrica</p>
+            <p className="text-sm font-bold text-gray-700 dark:text-gray-200">Huella Digital</p>
+            <p className="text-xs text-gray-400 mt-1">Asistencia biométrica</p>
           </div>
           <button
-              onClick={() => setMostrarHuellaPanel(true)}
-              className="w-full py-2.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold rounded-xl transition"
+            onClick={() => setMostrarHuellaPanel(true)}
+            className="w-full py-2.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold rounded-xl transition"
           >
-              Registrar por Huella
+            Registrar por Huella
           </button>
-      </div>
+        </div>
 
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-700">
-          <div className="flex items-center gap-2 mb-4">
-            <Keyboard size={18} className="text-violet-500" />
-            <p className="text-sm font-bold text-gray-700">Ingreso Manual</p>
-=======
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <EscanerQR />
-        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-800">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-700 dark:border-gray-800">
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
               <Keyboard size={18} className="text-violet-500" />
               <p className="text-sm font-bold text-gray-700 dark:text-gray-200">Ingreso Manual</p>
             </div>
             <p className="text-xs text-gray-400">Alternativa por teclado</p>
->>>>>>> 3e9fbb1942619f49aed9d576bdd0703e5e23e5ee
           </div>
           <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1 block mt-3">Cédula del Estudiante</label>
           <input
@@ -80,11 +67,7 @@ function AsistenciaPage() {
             value={cedula}
             onChange={(e) => setCedula(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleRegistrar()}
-<<<<<<< HEAD
-            className="w-full border border-gray-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-500 mb-3"
-=======
             className="w-full border border-gray-300 dark:border-gray-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-500 mb-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 dark:placeholder-gray-500"
->>>>>>> 3e9fbb1942619f49aed9d576bdd0703e5e23e5ee
           />
           {mensaje && (
             <p className={`text-xs px-3 py-2 rounded-xl mb-2 ${
@@ -104,17 +87,10 @@ function AsistenciaPage() {
         </div>
       </div>
 
-<<<<<<< HEAD
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-700">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-base font-semibold text-gray-700">Asistencias de Hoy</h2>
-=======
       <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-800">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-base font-semibold text-gray-700 dark:text-gray-200">Asistencias de Hoy</h2>
->>>>>>> 3e9fbb1942619f49aed9d576bdd0703e5e23e5ee
             <p className="text-xs text-gray-400">{asistencias.length} estudiantes con reserva</p>
           </div>
           <button
@@ -130,16 +106,16 @@ function AsistenciaPage() {
         ) : (
           <AsistenciaTable asistencias={asistencias} />
         )}
-          </div>
-          {mostrarHuellaPanel && (
+      </div>
+
+      {mostrarHuellaPanel && (
         <HuellaPanel
-            onClose={() => setMostrarHuellaPanel(false)}
-            onAsistenciaRegistrada={refetch}
+          onClose={() => setMostrarHuellaPanel(false)}
+          onAsistenciaRegistrada={refetch}
         />
-    )}
+      )}
     </div>
   )
-  
 }
 
 export default AsistenciaPage

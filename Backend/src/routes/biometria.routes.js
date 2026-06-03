@@ -1,10 +1,6 @@
 const { Router } = require('express')
-<<<<<<< HEAD:Backend/src/modules/biometria/biometria.routes.js
-const controller = require('./biometria.controller')
-const { enviarComandoESP32, guardarOperacion } = require('../../shared/websocket')
-=======
 const controller = require('../controllers/biometria.controller')
->>>>>>> 3e9fbb1942619f49aed9d576bdd0703e5e23e5ee:Backend/src/routes/biometria.routes.js
+const { enviarComandoESP32, guardarOperacion } = require('../websocket')
 
 const router = Router()
 

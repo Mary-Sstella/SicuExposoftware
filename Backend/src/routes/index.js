@@ -34,11 +34,8 @@ router.use('/soporte', soporteRoutes)
 router.use('/resenas', resenaRoutes)
 router.use('/menu', menuRoutes)
 router.use('/qr', qrRoutes)
-<<<<<<< HEAD
 router.use('/biometria', biometriaRoutes)
-=======
 router.use('/huellas', biometriaRoutes)
 router.use('/notificaciones', notificacionRoutes)
 
->>>>>>> 3e9fbb1942619f49aed9d576bdd0703e5e23e5ee
 module.exports = router
