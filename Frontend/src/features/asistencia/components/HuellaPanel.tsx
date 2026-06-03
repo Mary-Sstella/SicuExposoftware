@@ -17,6 +17,11 @@ function HuellaPanel({ onClose, onAsistenciaRegistrada }: Props) {
     const [resultado, setResultado] = useState<Resultado | null>(null)
     const wsRef = useRef<WebSocket | null>(null)
     const montado = useRef(true)
+    const onCloseRef = useRef(onClose)
+    const onAsistenciaRef = useRef(onAsistenciaRegistrada)
+
+    useEffect(() => { onCloseRef.current = onClose }, [onClose])
+    useEffect(() => { onAsistenciaRef.current = onAsistenciaRegistrada }, [onAsistenciaRegistrada])
 
     useEffect(() => {
         montado.current = true
@@ -51,6 +56,11 @@ function HuellaPanel({ onClose, onAsistenciaRegistrada }: Props) {
                     setEstado('procesando')
                 }
 
+                if (data.evento === 'HUELLA_NO_ENCONTRADA') {
+                    setResultado({ success: false, mensaje: data.mensaje ?? 'Huella no registrada' })
+                    setEstado('error')
+                }
+
                 if (data.evento === 'ASISTENCIA_RESULTADO') {
                     setResultado({
                         success: data.success ?? false,
@@ -59,30 +69,28 @@ function HuellaPanel({ onClose, onAsistenciaRegistrada }: Props) {
                     })
                     setEstado(data.success ? 'exito' : 'error')
                     if (data.success) {
-                        onAsistenciaRegistrada()
+                        onAsistenciaRef.current()
                         setTimeout(() => {
-                            if (montado.current) onClose()
+                            if (montado.current) onCloseRef.current()
                         }, 2500)
                     }
                 }
             }
 
             ws.onclose = () => {
-                // Reconectar si el componente sigue montado
                 if (montado.current) {
                     setTimeout(conectar, 500)
                 }
             }
         }
 
-        // Pequeño delay para evitar el problema con React StrictMode
         const timer = setTimeout(conectar, 100)
 
         return () => {
             montado.current = false
             clearTimeout(timer)
             if (wsRef.current) {
-                wsRef.current.onclose = null // evitar reconexión al desmontar
+                wsRef.current.onclose = null
                 wsRef.current.close()
             }
         }

@@ -109,23 +109,25 @@ model detalle_reserva {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model estudiante {
-  id_estudiante          Int               @id @default(autoincrement())
-  numero_identificacion  BigInt?           @unique
+  id_estudiante          Int                  @id @default(autoincrement())
+  numero_identificacion  BigInt?              @unique
   tipo_identificacion    tipo_id_enum?
-  nombres                String?           @db.VarChar(30)
-  apellidos              String?           @db.VarChar(30)
-  correo_personal        String?           @db.VarChar(30)
-  correo_institucional   String?           @db.VarChar(30)
-  programa               String?           @db.VarChar(50)
-  estado                 String            @default("ACTIVO") @db.VarChar(10)
-  contador_inasistencias Int               @default(0)
-  limite_inasistencias   Int               @default(3)
-  fecha_registro         DateTime          @default(now()) @db.Timestamp(6)
+  nombres                String?              @db.VarChar(30)
+  apellidos              String?              @db.VarChar(30)
+  correo_personal        String?              @db.VarChar(30)
+  correo_institucional   String?              @db.VarChar(30)
+  programa               String?              @db.VarChar(50)
+  estado                 String               @default("ACTIVO") @db.VarChar(10)
+  contador_inasistencias Int                  @default(0)
+  limite_inasistencias   Int                  @default(3)
+  fecha_registro         DateTime             @default(now()) @db.Timestamp(6)
   cartera                cartera[]
   comprobantes           comprobantes[]
   detalle_reserva        detalle_reserva[]
   huellas                huellas[]
+  notificaciones         notificaciones[]
   pagos                  pagos[]
+  push_suscripciones     push_suscripciones[]
   qr_generados           qr_generados[]
   resenas                resenas[]
   reservas               reservas[]
@@ -272,13 +274,11 @@ model pagos {
   observacion        String?
   fecha_subida       DateTime   @default(now()) @db.Timestamp(6)
   fecha_revision     DateTime?  @db.Timestamp(6)
-  estudiante         estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
   codigo_qr          String?    @db.VarChar(1000)
   url_qr             String?    @db.VarChar(1000)
-  subtotal_sistema  Decimal?   @db.Decimal(10, 2)
-  monto_estudiante  Decimal?   @db.Decimal(10, 2)
-
-
+  monto_estudiante   Decimal?   @db.Decimal(10, 2)
+  subtotal_sistema   Decimal?   @db.Decimal(10, 2)
+  estudiante         estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model huellas {
@@ -296,6 +296,29 @@ model menu {
   subido_por   Int?
   fecha_subida DateTime  @default(now()) @db.Timestamp(6)
   usuarios     usuarios? @relation(fields: [subido_por], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model notificaciones {
+  id_notificacion Int        @id @default(autoincrement())
+  id_estudiante   Int
+  tipo            String     @db.VarChar(50)
+  titulo          String     @db.VarChar(150)
+  mensaje         String
+  leida           Boolean    @default(false)
+  fecha_creacion  DateTime   @default(now()) @db.Timestamp(6)
+  estudiante      estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model push_suscripciones {
+  id             Int        @id @default(autoincrement())
+  id_estudiante  Int
+  endpoint       String     @db.VarChar(500)
+  p256dh         String     @db.VarChar(200)
+  auth           String     @db.VarChar(100)
+  fecha_creacion DateTime   @default(now()) @db.Timestamp(6)
+  estudiante     estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([id_estudiante, endpoint])
 }
 
 enum dia_enum {
