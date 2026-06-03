@@ -2,6 +2,7 @@ import { LogOut, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../../../features/auth/store/authStore'
+import NotificacionesCampana from '../../../features/student/components/NotificacionesCampana'
 
 const tabs = [
     { label: 'Mi Turno', path: '/student' },
@@ -26,7 +27,9 @@ function StudentTopbar() {
                     <span className="font-bold text-lg text-gray-800 tracking-wide">SICU</span>
                 </div>
 
-                {/* Avatar + dropdown */}
+                {/* Campanita + Avatar */}
+                <div className="flex items-center gap-2">
+                <NotificacionesCampana />
                 <div className="relative">
                     <button
                         onClick={() => setMenuOpen(!menuOpen)}
@@ -35,7 +38,7 @@ function StudentTopbar() {
                         <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-purple-400 flex items-center justify-center text-xs font-black text-white">
                             {username?.charAt(0).toUpperCase() ?? 'E'}
                         </div>
-                        <span className="text-sm font-medium text-gray-700">{username}</span>
+                        <span className="hidden sm:inline text-sm font-medium text-gray-700">{username}</span>
                         <ChevronDown size={14} className="text-gray-400" />
                     </button>
                     {menuOpen && (
@@ -49,6 +52,7 @@ function StudentTopbar() {
                             </button>
                         </div>
                     )}
+                </div>
                 </div>
             </div>
 

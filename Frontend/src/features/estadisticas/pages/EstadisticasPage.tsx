@@ -12,23 +12,20 @@ function EstadisticasPage() {
 
     const handleExportar = async () => {
         setExportando(true)
-        try {
-            await exportarEstadisticas()
-        } finally {
-            setExportando(false)
-        }
+        try { await exportarEstadisticas() }
+        finally { setExportando(false) }
     }
 
     if (loading) return (
-        <div className="flex-1 flex items-center justify-center bg-slate-100">
+        <div className="flex-1 flex items-center justify-center bg-slate-100 dark:bg-gray-950">
             <p className="text-sm text-gray-400">Cargando estadísticas...</p>
         </div>
     )
 
     return (
-        <div className="flex-1 p-8 overflow-y-auto bg-slate-100">
+        <div className="flex-1 p-4 md:p-8 pb-24 md:pb-8 overflow-y-auto bg-slate-100 dark:bg-gray-950">
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Estadísticas</h1>
+                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Estadísticas</h1>
                 <button
                     onClick={handleExportar}
                     disabled={exportando}
@@ -40,7 +37,7 @@ function EstadisticasPage() {
                     }
                 </button>
             </div>
-            <div className="grid grid-cols-2 gap-6 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                 <TurnosChart data={rangos} />
                 <AsistenciaMensualChart data={asistencia} />
                 <CarreraChart data={carreras} />

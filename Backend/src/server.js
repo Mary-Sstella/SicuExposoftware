@@ -1,10 +1,16 @@
 require('dotenv').config()
 const env = require('./config/env')
+<<<<<<< HEAD
 const app = require('./app')
 const http = require('http')
 const { Bonjour } = require('bonjour-service')
 const { iniciarWebSocket } = require('./shared/websocket')
 const { iniciarCronJobs } = require('./shared/utils/cronJobs')
+=======
+const { createApp } = require('./app')
+const app = createApp()
+const { iniciarCronJobs } = require('./jobs/cronJobs')
+>>>>>>> 3e9fbb1942619f49aed9d576bdd0703e5e23e5ee
 
 BigInt.prototype.toJSON = function() {
     return this.toString()

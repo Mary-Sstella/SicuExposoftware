@@ -1,9 +1,9 @@
 import StudentTopbar from './StudentTopbar'
 import { Outlet } from "react-router-dom"
-
-//es el contenedor general de la página del estudiante
+import usePushNotificaciones from '../../../features/student/hooks/usePushNotificaciones'
 
 function StudentLayout() {
+    usePushNotificaciones()
     return (
         <div className="flex flex-col h-screen bg-slate-100">
             <StudentTopbar />

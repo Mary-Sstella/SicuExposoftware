@@ -23,7 +23,7 @@ const Estrellas = ({ valor }: { valor: number }) => (
 const Toggle = ({ activo, onChange }: { activo: boolean; onChange: (v: boolean) => void }) => (
     <button
         onClick={() => onChange(!activo)}
-        className={`relative w-11 h-6 rounded-full transition-colors duration-300 focus:outline-none ${activo ? 'bg-violet-500' : 'bg-gray-200'}`}
+        className={`relative w-11 h-6 rounded-full transition-colors duration-300 focus:outline-none ${activo ? 'bg-violet-500' : 'bg-gray-200 dark:bg-gray-700'}`}
     >
         <span className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-300 ${activo ? 'translate-x-5' : 'translate-x-0'}`} />
     </button>
@@ -48,13 +48,13 @@ function ResenasPage() {
     const publicas = resenas.filter(r => r.publicado).length
 
     return (
-        <div className="p-8 flex flex-col gap-6">
+        <div className="p-4 md:p-8 pb-24 md:pb-8 flex flex-col gap-6">
             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
                     <MessageSquare size={20} className="text-violet-500" />
                 </div>
                 <div>
-                    <h1 className="text-lg font-bold text-gray-800">Buzón</h1>
+                    <h1 className="text-lg font-bold text-gray-800 dark:text-gray-200">Buzón</h1>
                     <p className="text-xs text-gray-400">Reseñas y tickets de soporte</p>
                 </div>
             </div>
@@ -62,18 +62,26 @@ function ResenasPage() {
             <div className="flex gap-2">
                 <button
                     onClick={() => setTab('resenas')}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition ${tab === 'resenas' ? 'bg-violet-500 text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition ${
+                        tab === 'resenas'
+                            ? 'bg-violet-500 text-white shadow-sm'
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
                 >
                     <Star size={14} /> Reseñas
                     {resenas.length > 0 && (
-                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${tab === 'resenas' ? 'bg-white/20' : 'bg-gray-200 text-gray-500'}`}>
+                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${tab === 'resenas' ? 'bg-white/20' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}>
                             {resenas.length}
                         </span>
                     )}
                 </button>
                 <button
                     onClick={() => setTab('soporte')}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition ${tab === 'soporte' ? 'bg-violet-500 text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition ${
+                        tab === 'soporte'
+                            ? 'bg-violet-500 text-white shadow-sm'
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
                 >
                     <LifeBuoy size={14} /> Soporte
                 </button>
@@ -84,9 +92,9 @@ function ResenasPage() {
                     <p className="text-xs text-gray-400 -mt-2">{resenas.length} reseñas · {publicas} públicas</p>
 
                     {loading && (
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             {[1, 2, 3, 4, 5, 6].map(i => (
-                                <div key={i} className="h-44 bg-white rounded-2xl border border-gray-100 animate-pulse" />
+                                <div key={i} className="h-44 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 animate-pulse" />
                             ))}
                         </div>
                     )}
@@ -98,22 +106,22 @@ function ResenasPage() {
                     )}
 
                     {!loading && resenas.length > 0 && (
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             {resenas.map(r => (
-                                <div key={r.id_rese_a} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-3">
+                                <div key={r.id_rese_a} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 flex flex-col gap-3">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center flex-shrink-0">
-                                            <span className="text-sm font-bold text-violet-600">
+                                        <div className="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0">
+                                            <span className="text-sm font-bold text-violet-600 dark:text-violet-400">
                                                 {r.estudiante.nombres[0]}{r.estudiante.apellidos[0]}
                                             </span>
                                         </div>
                                         <div>
-                                            <p className="text-sm font-semibold text-gray-800">{r.estudiante.nombres} {r.estudiante.apellidos}</p>
+                                            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{r.estudiante.nombres} {r.estudiante.apellidos}</p>
                                             <Estrellas valor={r.calificacion} />
                                         </div>
                                     </div>
-                                    <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">{r.texto}</p>
-                                    <div className="flex items-center justify-between pt-1 border-t border-gray-50">
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3">{r.texto}</p>
+                                    <div className="flex items-center justify-between pt-1 border-t border-gray-50 dark:border-gray-800">
                                         <span className="text-xs text-gray-400">
                                             {new Date(r.fecha_creacion).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}
                                         </span>

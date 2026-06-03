@@ -36,7 +36,11 @@
     "prisma": "^7.8.0",
     "react-router-dom": "^7.14.1",
     "tailwindcss": "^4.2.2",
+<<<<<<< HEAD
     "ws": "^8.21.0"
+=======
+    "web-push": "^3.6.7"
+>>>>>>> 3e9fbb1942619f49aed9d576bdd0703e5e23e5ee
   },
   "devDependencies": {
     "@types/node": "^25.8.0",

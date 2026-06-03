@@ -61,7 +61,7 @@ function ResenasEstudiantePage() {
     }
 
     return (
-        <div className="p-6 flex gap-5 items-start">
+        <div className="p-4 md:p-6 flex flex-col md:flex-row gap-4 md:gap-5 items-start">
 
             {/* Reseñas públicas */}
             <div className="flex-1 flex flex-col gap-4">
@@ -103,7 +103,7 @@ function ResenasEstudiantePage() {
             </div>
 
             {/* Mis reseñas */}
-            <div className="w-72 flex-shrink-0 flex flex-col gap-3">
+            <div className="w-full md:w-72 md:flex-shrink-0 flex flex-col gap-3">
                 <button onClick={() => setModalOpen(true)}
                     className="w-full flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-violet-600 to-purple-500 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition">
                     <Plus size={16} /> Dejar reseña
