@@ -139,6 +139,12 @@ const aprobarInscripcion = async (id, dias) => {
       });
     }
 
+    const reservaExistente = await tx.reservas.findFirst({
+      where: { id_estudiante: estudiante.id_estudiante }
+    })
+    if (reservaExistente) throw new Error('RESERVA_YA_EXISTE')
+
+
     await tx.reservas.create({
       data: {
         id_estudiante: estudiante.id_estudiante,

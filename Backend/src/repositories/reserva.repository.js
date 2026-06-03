@@ -92,7 +92,14 @@ const getAsistenciaHoy = async () => {
         ]
     })
 
-    return reservas.map(r => ({
+    const vistos = new Set()
+    return reservas
+    .filter(r => {
+        if (vistos.has(r.id_estudiante)) return false
+        vistos.add(r.id_estudiante)
+        return true
+    })
+    .map(r => ({
         hora_reserva: r.hora_inicio,
         nombres: r.estudiante.nombres,
         apellidos: r.estudiante.apellidos,
@@ -102,6 +109,7 @@ const getAsistenciaHoy = async () => {
         metodo: r.metodo,
         estado: r.estado
     }))
+
 }
 
 module.exports = { createReserva, getAsistenciaHoy }
