@@ -232,6 +232,8 @@ function InscripcionPage() {
                   <option value="">- Selecciona -</option>
                   <option value="Masculino">Masculino</option>
                   <option value="Femenino">Femenino</option>
+                  <option value="Otro">Otro</option>
+                  <option value="Prefiero no decirlo">Prefiero no decirlo</option>
                 </select>
                 {errores.genero && <p className="text-xs text-red-500 mt-1">{errores.genero}</p>}
               </div>

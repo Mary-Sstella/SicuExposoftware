@@ -41,43 +41,43 @@ function MenuAdmin() {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm col-span-2">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm col-span-2 border border-transparent dark:border-gray-800">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-violet-100 rounded-xl flex items-center justify-center">
+          <div className="w-9 h-9 bg-violet-100 dark:bg-violet-900/30 rounded-xl flex items-center justify-center">
             <UtensilsCrossed size={18} className="text-violet-600" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-gray-800">Menú del comedor</h2>
+            <h2 className="text-sm font-bold text-gray-800 dark:text-gray-200">Menú del comedor</h2>
             <p className="text-xs text-gray-400">Sube una imagen (PNG, JPG) o PDF</p>
           </div>
         </div>
         {menu && (
           <button onClick={handleEliminar} disabled={eliminando}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-500 hover:bg-red-50 transition disabled:opacity-50">
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition disabled:opacity-50">
             <Trash2 size={14} /> {eliminando ? 'Eliminando...' : 'Eliminar menú'}
           </button>
         )}
       </div>
 
       {error && (
-        <div className="mb-4 px-4 py-3 bg-red-50 rounded-xl text-xs text-red-500 font-medium">
+        <div className="mb-4 px-4 py-3 bg-red-50 dark:bg-red-900/20 rounded-xl text-xs text-red-500 font-medium">
           {error}
         </div>
       )}
 
       {menu ? (
         <div className="flex gap-4 items-center">
-          <div style={{ width: '80px', height: '80px', flexShrink: 0, overflow: 'hidden', borderRadius: '12px', border: '1px solid #f3f4f6', background: '#f9fafb' }}>
+          <div className="w-20 h-20 flex-shrink-0 overflow-hidden rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
             {menu.tipo_archivo.startsWith('image/') ? (
-              <img src={menu.archivo_firmada_url} alt="Menú actual" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              <img src={menu.archivo_firmada_url} alt="Menú actual" className="w-full h-full object-contain" />
             ) : (
-              <iframe src={menu.archivo_firmada_url} style={{ width: '100%', height: '100%', border: 0 }} title="Menú actual" />
+              <iframe src={menu.archivo_firmada_url} className="w-full h-full border-0" title="Menú actual" />
             )}
           </div>
           <div className="flex flex-col gap-2">
-            <p className="text-sm text-gray-600">Menú cargado correctamente.</p>
-            <label className="flex items-center gap-2 px-4 py-2 bg-violet-50 hover:bg-violet-100 text-violet-600 rounded-xl text-sm font-semibold cursor-pointer transition w-fit">
+            <p className="text-sm text-gray-600 dark:text-gray-400">Menú cargado correctamente.</p>
+            <label className="flex items-center gap-2 px-4 py-2 bg-violet-50 dark:bg-violet-900/20 hover:bg-violet-100 dark:hover:bg-violet-900/30 text-violet-600 rounded-xl text-sm font-semibold cursor-pointer transition w-fit">
               <Upload size={14} />
               {subiendo ? 'Subiendo...' : 'Reemplazar'}
               <input type="file" accept="image/*,application/pdf" className="hidden"
@@ -87,15 +87,15 @@ function MenuAdmin() {
         </div>
       ) : (
         <label
-          className="flex flex-col items-center gap-3 p-8 border-2 border-dashed border-gray-200 rounded-2xl hover:border-violet-300 hover:bg-gray-50 cursor-pointer transition"
+          className="flex flex-col items-center gap-3 p-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl hover:border-violet-300 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition"
           onDragOver={e => e.preventDefault()}
           onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleArchivo(f) }}
         >
-          <Upload size={28} className="text-gray-300" />
+          <Upload size={28} className="text-gray-300 dark:text-gray-600" />
           <p className="text-sm text-gray-400 font-medium">
             {subiendo ? 'Subiendo...' : 'Arrastra o haz clic para subir el menú'}
           </p>
-          <p className="text-xs text-gray-300">PNG, JPG, WEBP o PDF · Máx 5MB</p>
+          <p className="text-xs text-gray-300 dark:text-gray-600">PNG, JPG, WEBP o PDF · Máx 5MB</p>
           <input type="file" accept="image/*,application/pdf" className="hidden"
             onChange={e => { const f = e.target.files?.[0]; if (f) handleArchivo(f) }} />
         </label>
@@ -113,7 +113,7 @@ const DIAS = [
   { key: 'cupo_viernes',   label: 'Viernes' },
 ]
 
-const inputClass = 'w-full px-3 py-2 rounded-xl border border-gray-200 text-sm text-gray-700 outline-none focus:ring-2 focus:ring-violet-200'
+const inputClass = 'w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 outline-none focus:ring-2 focus:ring-violet-200'
 
 function ConfiguracionPage() {
   const [turnos, setTurnos] = useState<ConfiguracionTurno[]>([])
@@ -136,7 +136,7 @@ function ConfiguracionPage() {
   })
   const [totalTurnos, setTotalTurnos] = useState(0)
 
-  useEffect(() => { // Carga inicial de configuración y turnos
+  useEffect(() => {
     const fetchAll = async () => {
       try {
         const [cfg, trns] = await Promise.all([getConfiguracion(), getConfiguracionTurnos()])
@@ -163,8 +163,8 @@ function ConfiguracionPage() {
     fetchAll()
   }, [])
 
-  const capacidadPorTurno = turnos.length > 0 
-      ? turnos.map ((_, i)=>{ 
+  const capacidadPorTurno = turnos.length > 0
+    ? turnos.map((_, i) => {
         const base = Math.floor(totalTurnos / turnos.length)
         const resto = totalTurnos % turnos.length
         return i < resto ? base + 1 : base
@@ -181,7 +181,7 @@ function ConfiguracionPage() {
         fecha_fin_semestre: form.fecha_fin_semestre ? form.fecha_fin_semestre + 'T00:00:00.000Z' : null,
       })
       await Promise.all(
-        turnos.map((t,i)=> updateConfiguracionTurno(t.id_configuracion, capacidadPorTurno[i]))
+        turnos.map((t, i) => updateConfiguracionTurno(t.id_configuracion, capacidadPorTurno[i]))
       )
       setGuardado(true)
       setTimeout(() => setGuardado(false), 3000)
@@ -193,13 +193,13 @@ function ConfiguracionPage() {
   }
 
   if (loading) return (
-    <div className="flex-1 flex items-center justify-center bg-gray-50">
+    <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-950">
       <Loader2 size={24} className="animate-spin text-violet-400" />
     </div>
   )
 
   return (
-    <div className="flex-1 p-8 overflow-y-auto bg-gray-50">
+    <div className="flex-1 p-8 overflow-y-auto bg-gray-50 dark:bg-gray-950">
 
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
@@ -208,7 +208,7 @@ function ConfiguracionPage() {
             <Settings size={26} className="text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Configuración</h1>
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Configuración</h1>
             <p className="text-sm text-gray-400">Ajustes generales del sistema</p>
           </div>
         </div>
@@ -223,7 +223,7 @@ function ConfiguracionPage() {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 mb-6 px-4 py-3 bg-red-50 rounded-2xl text-sm text-red-500">
+        <div className="flex items-center gap-2 mb-6 px-4 py-3 bg-red-50 dark:bg-red-900/20 rounded-2xl text-sm text-red-500">
           <AlertCircle size={15} /> {error}
         </div>
       )}
@@ -231,13 +231,13 @@ function ConfiguracionPage() {
       <div className="grid grid-cols-2 gap-6 items-start">
 
         {/* Periodo activo */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-transparent dark:border-gray-800">
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-9 h-9 bg-violet-100 rounded-xl flex items-center justify-center">
+            <div className="w-9 h-9 bg-violet-100 dark:bg-violet-900/30 rounded-xl flex items-center justify-center">
               <Calendar size={18} className="text-violet-600" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-gray-800">Periodo activo</h2>
+              <h2 className="text-sm font-bold text-gray-800 dark:text-gray-200">Periodo activo</h2>
               <p className="text-xs text-gray-400">Fechas del comedor universitario</p>
             </div>
           </div>
@@ -254,50 +254,50 @@ function ConfiguracionPage() {
                 onChange={e => setForm(f => ({ ...f, fecha_fin_semestre: e.target.value }))}
                 className={`mt-1.5 ${inputClass}`} />
             </div>
-
             <div>
               <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Precio por almuerzo ($)</label>
-                <input
-                  type="number" min={0} step={100}
-                  value={form.precio_comida}
-                  onChange={e => setForm(f => ({ ...f, precio_comida: Number(e.target.value) || 0 }))}
-                  className={`mt-1.5 ${inputClass}`}
-                />
-          </div>
+              <input
+                type="number" min={0} step={100}
+                value={form.precio_comida}
+                onChange={e => setForm(f => ({ ...f, precio_comida: Number(e.target.value) || 0 }))}
+                className={`mt-1.5 ${inputClass}`}
+              />
+            </div>
           </div>
         </div>
+
         {/* Cupos por día */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-transparent dark:border-gray-800">
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-9 h-9 bg-violet-100 rounded-xl flex items-center justify-center">
+            <div className="w-9 h-9 bg-violet-100 dark:bg-violet-900/30 rounded-xl flex items-center justify-center">
               <Users size={18} className="text-violet-600" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-gray-800">Cupos por día</h2>
+              <h2 className="text-sm font-bold text-gray-800 dark:text-gray-200">Cupos por día</h2>
               <p className="text-xs text-gray-400">Máximo de estudiantes por día</p>
             </div>
           </div>
           <div className="flex flex-col gap-3">
             {DIAS.map(({ key, label }) => (
               <div key={key} className="flex items-center justify-between gap-4">
-                <span className="text-sm text-gray-600 w-24">{label}</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400 w-24">{label}</span>
                 <input type="number" min={0}
                   value={form[key as keyof typeof form] as number}
                   onChange={e => setForm(f => ({ ...f, [key]: parseInt(e.target.value) || 0 }))}
-                  className="w-28 px-3 py-1.5 rounded-xl border border-gray-200 text-sm text-gray-700 text-center outline-none focus:ring-2 focus:ring-violet-200" />
+                  className="w-28 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 text-center outline-none focus:ring-2 focus:ring-violet-200" />
               </div>
             ))}
           </div>
         </div>
 
         {/* Límite de turnos */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-transparent dark:border-gray-800">
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-9 h-9 bg-violet-100 rounded-xl flex items-center justify-center">
+            <div className="w-9 h-9 bg-violet-100 dark:bg-violet-900/30 rounded-xl flex items-center justify-center">
               <Clock size={18} className="text-violet-600" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-gray-800">Límite de turnos</h2>
+              <h2 className="text-sm font-bold text-gray-800 dark:text-gray-200">Límite de turnos</h2>
               <p className="text-xs text-gray-400">Se divide en {turnos.length} rangos horarios iguales</p>
             </div>
           </div>
@@ -310,8 +310,8 @@ function ConfiguracionPage() {
           </div>
           <div className="flex flex-col gap-2">
             {turnos.map((t, i) => (
-              <div key={t.id_configuracion} className="flex items-center justify-between px-3 py-2.5 bg-gray-50 rounded-xl">
-                <span className="text-xs text-gray-500">Turno {i + 1} &nbsp;·&nbsp; {t.hora_inicio} – {t.hora_fin}</span>
+              <div key={t.id_configuracion} className="flex items-center justify-between px-3 py-2.5 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                <span className="text-xs text-gray-500 dark:text-gray-400">Turno {i + 1} &nbsp;·&nbsp; {t.hora_inicio} – {t.hora_fin}</span>
                 <span className="text-xs font-bold text-violet-600">{capacidadPorTurno[i]} estudiantes</span>
               </div>
             ))}
@@ -319,13 +319,13 @@ function ConfiguracionPage() {
         </div>
 
         {/* Registro público */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-transparent dark:border-gray-800">
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-9 h-9 bg-violet-100 rounded-xl flex items-center justify-center">
+            <div className="w-9 h-9 bg-violet-100 dark:bg-violet-900/30 rounded-xl flex items-center justify-center">
               <Settings size={18} className="text-violet-600" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-gray-800">Registro público</h2>
+              <h2 className="text-sm font-bold text-gray-800 dark:text-gray-200">Registro público</h2>
               <p className="text-xs text-gray-400">Controla el botón "Registrarse" del inicio</p>
             </div>
           </div>
@@ -333,12 +333,12 @@ function ConfiguracionPage() {
             onClick={() => setForm(f => ({ ...f, activo: !f.activo }))}
             className={`w-full flex items-center justify-between px-4 py-3.5 rounded-2xl border-2 transition-all ${
               form.activo
-                ? 'border-violet-300 bg-violet-50'
-                : 'border-gray-200 bg-gray-50'
+                ? 'border-violet-300 dark:border-violet-700 bg-violet-50 dark:bg-violet-900/20'
+                : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800'
             }`}
           >
             <div>
-              <p className={`text-sm font-semibold ${form.activo ? 'text-violet-700' : 'text-gray-500'}`}>
+              <p className={`text-sm font-semibold ${form.activo ? 'text-violet-700 dark:text-violet-400' : 'text-gray-500 dark:text-gray-400'}`}>
                 {form.activo ? 'Registro habilitado' : 'Registro deshabilitado'}
               </p>
               <p className="text-xs text-gray-400 mt-0.5">
@@ -347,7 +347,7 @@ function ConfiguracionPage() {
                   : 'El botón de registro está oculto'}
               </p>
             </div>
-            <div className={`relative w-14 h-7 rounded-full transition-all duration-300 shrink-0 ${form.activo ? 'bg-violet-500' : 'bg-gray-200'}`}>
+            <div className={`relative w-14 h-7 rounded-full transition-all duration-300 shrink-0 ${form.activo ? 'bg-violet-500' : 'bg-gray-200 dark:bg-gray-600'}`}>
               <div className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 ${form.activo ? 'left-8' : 'left-1'}`} />
             </div>
           </button>

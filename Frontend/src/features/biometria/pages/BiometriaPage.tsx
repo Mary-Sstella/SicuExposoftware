@@ -200,27 +200,32 @@ function BiometriaPage() {
     }
 
     const colorLog = (tipo: string) => {
-        if (tipo === 'ok') return 'text-green-600'
-        if (tipo === 'error') return 'text-red-500'
-        if (tipo === 'warn') return 'text-amber-500'
-        return 'text-gray-600'
+        if (tipo === 'ok') return 'text-green-600 dark:text-green-400'
+        if (tipo === 'error') return 'text-red-500 dark:text-red-400'
+        if (tipo === 'warn') return 'text-amber-500 dark:text-amber-400'
+        return 'text-gray-600 dark:text-gray-400'
     }
 
     return (
-        <div className="flex-1 p-8 overflow-y-auto bg-gray-50">
+        <div className="flex-1 p-8 overflow-y-auto bg-gray-50 dark:bg-gray-950">
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Biometría</h1>
-                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${esp32Conectado ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-500'}`}>
+                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Biometría</h1>
+                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${
+                    esp32Conectado
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                        : 'bg-red-100 dark:bg-red-900/30 text-red-500 dark:text-red-400'
+                }`}>
                     <div className={`w-2 h-2 rounded-full ${esp32Conectado ? 'bg-green-500' : 'bg-red-400'}`} />
                     {esp32Conectado ? 'Sensor conectado' : 'Sensor desconectado'}
                 </div>
             </div>
 
             <div className="grid grid-cols-2 gap-6">
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 flex flex-col gap-5">
+                {/* Panel izquierdo */}
+                <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-800 flex flex-col gap-5">
                     <div className="flex items-center gap-2">
                         <UserCheck size={18} className="text-violet-500" />
-                        <p className="text-sm font-bold text-gray-700">Gestión de Huellas</p>
+                        <p className="text-sm font-bold text-gray-700 dark:text-gray-300">Gestión de Huellas</p>
                     </div>
 
                     <div>
@@ -232,7 +237,7 @@ function BiometriaPage() {
                                 value={busqueda}
                                 onChange={e => setBusqueda(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && buscarEstudiante()}
-                                className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300"
+                                className="flex-1 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 placeholder:text-gray-400"
                             />
                             <button
                                 onClick={() => buscarEstudiante()}
@@ -246,15 +251,15 @@ function BiometriaPage() {
                     </div>
 
                     {estudiante && (
-                        <div className="bg-violet-50 rounded-xl p-4 flex flex-col gap-2">
-                            <p className="text-sm font-black text-gray-800">{estudiante.nombres} {estudiante.apellidos}</p>
-                            <p className="text-xs text-gray-500">C.C. {estudiante.numero_identificacion}</p>
+                        <div className="bg-violet-50 dark:bg-violet-900/20 rounded-xl p-4 flex flex-col gap-2">
+                            <p className="text-sm font-black text-gray-800 dark:text-gray-200">{estudiante.nombres} {estudiante.apellidos}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">C.C. {estudiante.numero_identificacion}</p>
                             <p className="text-xs text-gray-400">{estudiante.programa}</p>
                             <div className="flex items-center gap-2 mt-1">
                                 {estudiante.finger_id !== null ? (
                                     <>
                                         <CheckCircle2 size={14} className="text-green-500" />
-                                        <span className="text-xs text-green-600 font-semibold">Huella registrada — Slot {estudiante.finger_id}</span>
+                                        <span className="text-xs text-green-600 dark:text-green-400 font-semibold">Huella registrada — Slot {estudiante.finger_id}</span>
                                     </>
                                 ) : (
                                     <>
@@ -281,18 +286,18 @@ function BiometriaPage() {
                                     </button>
                                     {!confirmarEliminar ? (
                                         <button onClick={() => setConfirmarEliminar(true)}
-                                            className="flex items-center justify-center gap-2 w-full py-2.5 border-2 border-red-200 text-red-500 hover:bg-red-50 text-sm font-bold rounded-xl transition">
+                                            className="flex items-center justify-center gap-2 w-full py-2.5 border-2 border-red-200 dark:border-red-900 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 text-sm font-bold rounded-xl transition">
                                             <Trash2 size={16} /> Eliminar Huella
                                         </button>
                                     ) : (
-                                        <div className="bg-red-50 rounded-xl p-3 flex flex-col gap-2">
+                                        <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-3 flex flex-col gap-2">
                                             <div className="flex items-center gap-2 text-red-500">
                                                 <AlertTriangle size={14} />
                                                 <span className="text-xs font-semibold">¿Confirmas eliminar la huella de {estudiante.nombres}?</span>
                                             </div>
                                             <div className="flex gap-2">
                                                 <button onClick={() => setConfirmarEliminar(false)}
-                                                    className="flex-1 py-1.5 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-50 transition">
+                                                    className="flex-1 py-1.5 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
                                                     Cancelar
                                                 </button>
                                                 <button onClick={handleEliminar} disabled={!esp32Conectado}
@@ -309,16 +314,17 @@ function BiometriaPage() {
 
                     {operacion && (
                         <button onClick={handleCancelar}
-                            className="w-full py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-500 hover:bg-gray-50 transition">
+                            className="w-full py-2 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-semibold text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
                             Cancelar operación
                         </button>
                     )}
                 </div>
 
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 flex flex-col gap-4">
+                {/* Panel derecho - logs */}
+                <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-800 flex flex-col gap-4">
                     <div className="flex items-center gap-2">
                         <Fingerprint size={18} className="text-violet-500" />
-                        <p className="text-sm font-bold text-gray-700">Estado en tiempo real</p>
+                        <p className="text-sm font-bold text-gray-700 dark:text-gray-300">Estado en tiempo real</p>
                         {operacion && (
                             <span className="ml-auto flex items-center gap-1.5 text-xs text-violet-500 font-semibold">
                                 <Loader2 size={12} className="animate-spin" />
@@ -326,10 +332,10 @@ function BiometriaPage() {
                             </span>
                         )}
                     </div>
-                    <div className="flex-1 bg-gray-50 rounded-xl p-4 min-h-[300px] max-h-[400px] overflow-y-auto flex flex-col gap-2">
+                    <div className="flex-1 bg-gray-50 dark:bg-gray-800 rounded-xl p-4 min-h-[300px] max-h-[400px] overflow-y-auto flex flex-col gap-2">
                         {logs.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
-                                <div className="w-14 h-14 rounded-2xl bg-violet-50 flex items-center justify-center">
+                                <div className="w-14 h-14 rounded-2xl bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center">
                                     <Fingerprint size={28} className="text-violet-300" strokeWidth={1.5} />
                                 </div>
                                 <p className="text-xs text-gray-400">Los eventos del sensor aparecerán aquí<br />en tiempo real</p>

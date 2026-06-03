@@ -18,7 +18,7 @@ function MenuDelDia() {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <UtensilsCrossed size={16} className="text-violet-500" />
-                    <p className="text-sm font-bold text-gray-700">Menú del día</p>
+                    <p className="text-sm font-bold text-gray-700">Menú de la semana</p>
                 </div>
                 {menu && (
                     <a href={menu.archivo_firmada_url} target="_blank" rel="noopener noreferrer"
