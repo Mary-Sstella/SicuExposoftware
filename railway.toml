@@ -1,0 +1,6 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "cd Backend && npx prisma generate && node src/server.js"
+restartPolicyType = "ON_FAILURE"

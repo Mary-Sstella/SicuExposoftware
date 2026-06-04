@@ -10,7 +10,9 @@ const { loggerMiddleware } = require('./middleware/logger.middleware')
 const createApp = () => {
     const app = express()
 
-    const whitelist = ['http://localhost:5174', 'http://localhost:5173']
+    const whitelist = process.env.ALLOWED_ORIGINS
+        ? process.env.ALLOWED_ORIGINS.split(',')
+        : ['http://localhost:5173', 'http://localhost:5174']
     const corsOptions = {
         origin: function (origin, callback) {
             if (whitelist.indexOf(origin) !== -1 || !origin) { // quitar !origin cuando no necesite pruebas de postman
