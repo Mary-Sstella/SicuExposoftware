@@ -46,7 +46,10 @@ const updateEstudiante = async (id, data) => {
             apellidos: data.apellidos,
             correo_personal: data.correo_personal,
             programa: data.programa,
-            estado: data.estado
+            estado: data.estado,
+            ...(typeof data.contador_inasistencias === 'number' && {
+                contador_inasistencias: data.contador_inasistencias
+            })
         }
     })
 }
