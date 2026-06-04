@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useAuthStore } from '../../auth/store/authStore'
-import { getDiasEstudiante, getReservaActiva, getDisponibilidad, crearReserva } from '../services/estudianteService'
+import { getDiasEstudiante, getReservaActiva, getDisponibilidad, crearReserva, cancelarReserva } from '../services/estudianteService'
 
 interface Dias {
     lunes: boolean | null
@@ -46,6 +46,9 @@ export function useHacerReserva(){
     const [reservaCreada, setReservaCreada] = useState<ReservaCreada | null>(null)
     const [error, setError] = useState('')
     const [loadingConfirmar, setLoadingConfirmar] = useState(false)
+    const [cancelando, setCancelando] = useState(false)
+    const [confirmandoCancelar, setConfirmandoCancelar] = useState(false)
+
 
     const cargarDatos = useCallback(async()=>{ // carga dos cosas cuando el componente abre
         if(!id_estudiante) return
@@ -98,10 +101,28 @@ export function useHacerReserva(){
         setError('')
     }
 
+    const cancelar = async () => {
+    if (!reservaActiva) return
+    setCancelando(true)
+    try {
+        await cancelarReserva(reservaActiva.id_reserva)
+        setReservaActiva(null)
+        setConfirmandoCancelar(false)
+    } catch (e: unknown) {
+        const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message
+        setError(msg ?? 'Error al cancelar')
+    } finally {
+        setCancelando(false)
+    }
+}
+
+
     return {
         loading, dias, reservaActiva, paso, fechaSeleccionada,
         disponibilidad, reservaCreada, error, loadingConfirmar,
-        seleccionarFecha, confirmar, volver
+        seleccionarFecha, confirmar, volver,
+        cancelar, cancelando, confirmandoCancelar, setConfirmandoCancelar
     }
+
 
 }

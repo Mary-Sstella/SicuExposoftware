@@ -7,7 +7,7 @@ const BUCKET = 'pagos-docs';
 
 const MINIMOS = {
     SEMANAL: 2,
-    MENSUAL: 8,
+    MENSUAL: 4,
 };
 
 const subirComprobante = async (file) => {
@@ -50,13 +50,17 @@ const createPago = async (data, file, id_estudiante) => {
     const diasInvalidos = dias_pagados.filter((d) => !diasAprobados.includes(d));
     if (diasInvalidos.length > 0) throw new Error('DIAS_NO_APROBADOS');
 
-    const minimo = MINIMOS[data.tipo_periodo];
-    if (!minimo || dias_pagados.length < minimo) throw new Error('CANTIDAD_INVALIDA');
+    const minimoBase = MINIMOS[data.tipo_periodo];
+    if (!minimoBase) throw new Error('CANTIDAD_INVALIDA');
+    const minimo = data.tipo_periodo === 'SEMANAL'
+        ? Math.min(minimoBase, diasAprobados.length)
+        : minimoBase;
+    if (dias_pagados.length < minimo) throw new Error('CANTIDAD_INVALIDA');
 
     const cantidad_almuerzos =
         data.tipo_periodo === 'SEMANAL'
             ? dias_pagados.length
-            : Number(data.cantidad_almuerzos);
+            : (Number(data.cantidad_almuerzos) || dias_pagados.length);
 
     const config = await prisma.configuracion_formulario.findFirst()
     const precio = config?.precio_comida ? Number(config.precio_comida) : 0
@@ -65,12 +69,12 @@ const createPago = async (data, file, id_estudiante) => {
     const pdf_url = await subirComprobante(file);
 
     return pagoRepository.createPago({
-        id_estudiante,
+        id_estudiante: Number(id_estudiante),
         tipo_periodo: data.tipo_periodo,
         dias_pagados,
-        cantidad_almuerzos,
+        cantidad_almuerzos: Number(cantidad_almuerzos),
         pdf_url,
-        subtotal_sistema,
+        subtotal_sistema: Number(subtotal_sistema) || 0,
         monto_estudiante,
         estado: 'PENDIENTE',
     });

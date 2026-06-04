@@ -9,6 +9,8 @@ interface Estudiante {
   correo_institucional: string
   programa: string
   estado: 'ACTIVO' | 'INACTIVO'
+  contador_inasistencias: number
+  limite_inasistencias?: number
   dias: {
     lunes: boolean
     martes: boolean
@@ -40,6 +42,7 @@ function EditarEstModal({ estudiante, onClose, onSuccess }: Props) {
     correo_institucional: estudiante.correo_institucional ?? '',
     programa: estudiante.programa,
     estado: estudiante.estado,
+    contador_inasistencias: estudiante.contador_inasistencias ?? 0,
   })
   const [dias, setDias] = useState({
     lunes: estudiante.dias?.lunes ?? false,
@@ -51,9 +54,17 @@ function EditarEstModal({ estudiante, onClose, onSuccess }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => { //React.ChangeEvent<HTMLInputElement... esta diciendo que esto solo puede venir de un input o select
-    setForm({ ...form, [e.target.name]: e.target.value }) //e: es el evento del input tiene el nombre del campo y el valor nuevo
-  } //copia lo que contiene el input y solo actualiza eso
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    if (name === 'estado' && value === 'ACTIVO') {
+        setForm(prev => ({ ...prev, estado: 'ACTIVO', contador_inasistencias: 0 }))
+    } else if (name === 'contador_inasistencias') {
+        setForm(prev => ({ ...prev, contador_inasistencias: Math.max(0, parseInt(value) || 0) }))
+    } else {
+        setForm(prev => ({ ...prev, [name]: value }))
+    }
+}
+
 
   const handleDia = (dia: string) => { //editar el dia si esta seleccionado o no 
     setDias(prev => ({ ...prev, [dia]: !prev[dia as keyof typeof prev] }))
@@ -133,6 +144,29 @@ function EditarEstModal({ estudiante, onClose, onSuccess }: Props) {
               <option value="INACTIVO">Inactivo</option>
             </select>
           </div>
+          <div>
+    <label className="text-xs font-semibold text-gray-600 mb-1 block">
+        Inasistencias registradas
+        <span className="text-gray-400 font-normal ml-1">(máx. {estudiante.limite_inasistencias ?? 3})</span>
+    </label>
+    <div className="flex items-center gap-2">
+        <button type="button"
+            onClick={() => setForm(prev => ({ ...prev, contador_inasistencias: Math.max(0, prev.contador_inasistencias - 1) }))}
+            className="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 font-bold hover:bg-red-100 hover:text-red-500 transition-colors text-lg leading-none">
+            −
+        </button>
+        <span className="w-8 text-center text-sm font-bold text-gray-700">{form.contador_inasistencias}</span>
+        <button type="button"
+            onClick={() => setForm(prev => ({ ...prev, contador_inasistencias: prev.contador_inasistencias + 1 }))}
+            className="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition-colors text-lg leading-none">
+            +
+        </button>
+        {form.contador_inasistencias !== estudiante.contador_inasistencias && (
+            <span className="text-xs text-amber-500 font-medium">modificado</span>
+        )}
+    </div>
+</div>
+
 
           <div>
             <label className="text-xs font-semibold text-gray-600 mb-2 block">Días de almuerzo</label>

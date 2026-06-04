@@ -71,7 +71,7 @@ const aprobarInscripcion = async (id, dias) => {
     ? dias
     : inscripcion.dias_semana.split(',').map(d => d.trim());
 
-  const config = await prisma.configuracion_formulario.findFirst();
+  const config = await prisma.configuracion_formulario.findFirst({ orderBy: { id: 'asc' } });
 
   const diasAprobados = [];
   for (const dia of diasSolicitados) {
@@ -190,7 +190,7 @@ const rechazarInscripcion = async (id) => {
 };
 
 const getCupos = async () => {
-  const config = await prisma.configuracion_formulario.findFirst();
+  const config = await prisma.configuracion_formulario.findFirst({ orderBy: { id: 'asc' } });
 
   const [oLunes, oMartes, oMiercoles, oJueves, oViernes] = await Promise.all([
     prisma.reservas.count({ where: { lunes: true } }),
@@ -201,11 +201,11 @@ const getCupos = async () => {
   ]);
 
   return {
-    lunes:     { ocupados: oLunes,     total: config.cupo_lunes },
-    martes:    { ocupados: oMartes,    total: config.cupo_martes },
-    miercoles: { ocupados: oMiercoles, total: config.cupo_miercoles },
-    jueves:    { ocupados: oJueves,    total: config.cupo_jueves },
-    viernes:   { ocupados: oViernes,   total: config.cupo_viernes },
+    lunes:     { ocupados: oLunes,     total: config?.cupo_lunes     ?? 0 },
+    martes:    { ocupados: oMartes,    total: config?.cupo_martes    ?? 0 },
+    miercoles: { ocupados: oMiercoles, total: config?.cupo_miercoles ?? 0 },
+    jueves:    { ocupados: oJueves,    total: config?.cupo_jueves    ?? 0 },
+    viernes:   { ocupados: oViernes,   total: config?.cupo_viernes   ?? 0 },
   };
 };
 

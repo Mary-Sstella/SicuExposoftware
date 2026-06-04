@@ -19,6 +19,7 @@ import CarteraPage from '../../features/cartera/pages/CarteraPage'
 import ResenasPage from '../../features/resenas/pages/ResenasPage'
 import ResenasEstudiantePage from '../../features/resenas/pages/ResenasEstudiantePage'
 import TurneroPage from '../../features/turnero/pages/TurneroPage'
+import BiometriaPage from '../../features/biometria/pages/BiometriaPage' 
 //Rutas protegidas 
 import ProtectedRoute from './ProtectedRoute'
 
@@ -45,6 +46,7 @@ function AppRouter() {
           <Route path={ROUTES.CARTERA} element={<CarteraPage />} />
           <Route path={ROUTES.CONFIGURACION} element={<ConfiguracionPage />} />
           <Route path={ROUTES.BUZON} element={<ResenasPage />} />
+          <Route path={ROUTES.BIOMETRIA} element={<BiometriaPage />} />
         </Route>
         </Route>
 

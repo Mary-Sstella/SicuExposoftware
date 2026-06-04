@@ -28,12 +28,15 @@ function getProximasFechas(
   const hoy = new Date()
   hoy.setHours(12, 0, 0, 0)
 
-  const inicio = fechaInicio ? new Date(fechaInicio + 'T12:00:00') : hoy
+  const manana = new Date(hoy)
+  manana.setDate(hoy.getDate() + 1)
+
+  const inicio = fechaInicio ? new Date(fechaInicio + 'T12:00:00') : manana
   const fin = fechaFin
     ? new Date(fechaFin + 'T12:00:00')
     : new Date(hoy.getTime() + 28 * 24 * 60 * 60 * 1000)
 
-  const desde = inicio > hoy ? inicio : hoy
+  const desde = inicio > manana ? inicio : manana
   const current = new Date(desde)
   const resultado: { label: string; iso: string; dia: string }[] = []
 
@@ -88,7 +91,8 @@ useEffect(() => {
 
 
   const fechas = useMemo(() => getProximasFechas(diasRegistrados, fechaInicio, fechaFin), [diasRegistrados, fechaInicio, fechaFin])
-  const minimo = tipo === 'SEMANAL' ? 2 : 8
+  const minimoBase = tipo === 'SEMANAL' ? 2 : 4
+  const minimo = tipo === 'SEMANAL' ? Math.min(minimoBase, diasRegistrados.length) : minimoBase
   const cantidad = seleccionados.length
   const cumpleMinimo = cantidad >= minimo
   const subtotal = cantidad * precioPorAlmuerzo

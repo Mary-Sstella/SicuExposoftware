@@ -149,6 +149,24 @@ const getTurneroActual = async (req, res, next) => {
     }
 }
 
+const cancelarReserva = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const id_estudiante = req.usuario.id_estudiante
+        await turnoService.cancelarReserva(id, id_estudiante)
+        res.json({ msg: 'Reserva cancelada' })
+    } catch (error) {
+        const errores = {
+            RESERVA_NO_ENCONTRADA: [404, 'La reserva no existe'],
+            YA_CANCELADA:          [400, 'Esta reserva ya fue cancelada'],
+            NO_CANCELABLE:         [400, 'Solo puedes cancelar reservas futuras'],
+        }
+        const [status, msg] = errores[error.message] ?? [500, 'Error al cancelar']
+        next(new AppError(status, msg))
+    }
+}
+
+
 module.exports = {
     getConfiguracionTurnos,
     getDisponibilidad,
@@ -161,5 +179,6 @@ module.exports = {
     getHistorialEstudiante,
     getFechasPagadas,
     getEstudianteStats,
-    getTurneroActual
+    getTurneroActual,
+    cancelarReserva
 }

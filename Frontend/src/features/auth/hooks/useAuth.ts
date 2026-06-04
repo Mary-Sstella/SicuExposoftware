@@ -31,8 +31,9 @@ export function useAuth() {
       }
       setAuth(data.token, data.rol, data.username, null)
       navigate(ROUTES.DASHBOARD)
-    } catch {
-      setAdminError('Usuario o contraseña incorrectos')
+    } catch (error: unknown) {
+      const message = (error as any)?.response?.data?.msg ?? 'Usuario o contraseña incorrectos'
+      setAdminError(message)
     } finally {
       setAdminLoading(false)
     }
@@ -47,10 +48,11 @@ export function useAuth() {
         setStudentError('Ingresa desde el panel administrativo')
         return
       }
-      setAuth(data.token, data.rol, data.username,data.id_estudiante)
+      setAuth(data.token, data.rol, data.username, data.id_estudiante)
       navigate(ROUTES.STUDENT)
-    } catch {
-      setStudentError('Usuario o contraseña incorrectos')
+    } catch (error: unknown) {
+      const message = (error as any)?.response?.data?.msg ?? 'Usuario o contraseña incorrectos'
+      setStudentError(message)
     } finally {
       setStudentLoading(false)
     }

@@ -34,6 +34,7 @@ router.use('/soporte', soporteRoutes)
 router.use('/resenas', resenaRoutes)
 router.use('/menu', menuRoutes)
 router.use('/qr', qrRoutes)
+router.use('/biometria', biometriaRoutes)
 router.use('/huellas', biometriaRoutes)
 router.use('/notificaciones', notificacionRoutes)
 

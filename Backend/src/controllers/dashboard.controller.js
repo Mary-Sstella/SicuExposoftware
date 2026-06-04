@@ -33,9 +33,9 @@ const getSummary = async (req, res, next) => {
             prisma.estudiante.count({ where: { fecha_registro: { lt: inicioEsteMes } } }),
             prisma.estudiante.count({ where: { estado: 'ACTIVO' } }),
             prisma.estudiante.count({ where: { estado: 'ACTIVO', fecha_registro: { lt: inicioEsteMes } } }),
-            prisma.cartera.count({ where: { estado: 'PENDIENTE' } }),
-            prisma.cartera.count({ where: { fecha_factura: { gte: inicioEsteMes } } }),
-            prisma.cartera.count({ where: { fecha_factura: { gte: inicioMesPasado, lte: finMesPasado } } }),
+            prisma.pagos.count({ where: { estado: 'PENDIENTE' } }),
+            prisma.pagos.count({ where: { fecha_subida: { gte: inicioEsteMes } } }),
+            prisma.pagos.count({ where: { fecha_subida: { gte: inicioMesPasado, lte: finMesPasado } } }),
             prisma.reservas.count({ where: { estado: 'ENTREGADA', fecha: hoy } }),
             prisma.reservas.count({ where: { estado: 'ENTREGADA', fecha: ayer } })
         ])

@@ -1,7 +1,9 @@
 const biometriaRepository = require('../repositories/biometria.repository')
 
 const validarHuella = async (finger_id) => {
+    console.log('🔍 Buscando huella:', finger_id)
     const huella = await biometriaRepository.getHuellaConEstudiante(finger_id)
+    console.log('🔍 Huella encontrada:', JSON.stringify(huella))
 
     if (!huella) {
         return { success: false, mensaje: 'Huella no registrada' }
@@ -10,7 +12,8 @@ const validarHuella = async (finger_id) => {
     const { id_estudiante, nombres, apellidos } = huella.estudiante
     const nombre = `${nombres} ${apellidos}`
 
-    const yaEntregado = await biometriaRepository.getDetalleHoy(id_estudiante, 'ENTREGADO')
+    const yaEntregado = await biometriaRepository.getDetalleHoy(id_estudiante, 'ENTREGADA')
+    console.log('🔍 Ya entregado:', JSON.stringify(yaEntregado))
 
     if (yaEntregado) {
         return {
@@ -21,6 +24,7 @@ const validarHuella = async (finger_id) => {
     }
 
     const almuerzoPendiente = await biometriaRepository.getDetalleHoy(id_estudiante, 'PENDIENTE')
+    console.log('🔍 Almuerzo pendiente:', JSON.stringify(almuerzoPendiente))
 
     if (!almuerzoPendiente) {
         return {
@@ -30,7 +34,8 @@ const validarHuella = async (finger_id) => {
         }
     }
 
-    await biometriaRepository.marcarEntregado(almuerzoPendiente.id_detalle)
+    await biometriaRepository.marcarEntregado(almuerzoPendiente.id_reserva)
+    console.log('✅ Marcado como entregado')
 
     return {
         success: true,
@@ -39,4 +44,21 @@ const validarHuella = async (finger_id) => {
     }
 }
 
-module.exports = { validarHuella }
+const registrarHuella = (id_estudiante, finger_id) => {
+    return biometriaRepository.registrarHuella(id_estudiante, finger_id)
+}
+
+const getEstudiantePorCedula = async (cedula) => {
+    const est = await biometriaRepository.getEstudiantePorCedula(cedula)
+    if (!est) return null
+    return {
+        id_estudiante: est.id_estudiante,
+        nombres: est.nombres,
+        apellidos: est.apellidos,
+        numero_identificacion: est.numero_identificacion?.toString(),
+        programa: est.programa,
+        finger_id: est.huellas[0]?.finger_id ?? null
+    }
+}
+
+module.exports = { validarHuella, registrarHuella, getEstudiantePorCedula }

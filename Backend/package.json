@@ -18,9 +18,8 @@
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@supabase/supabase-js": "^2.105.4",
-    "@tailwindcss/vite": "^4.2.2",
-    "@types/react-router-dom": "^5.3.3",
     "bcryptjs": "^3.0.3",
+    "bonjour-service": "^1.4.0",
     "cors": "^2.8.6",
     "exceljs": "^4.4.0",
     "express": "^5.2.1",
@@ -30,12 +29,11 @@
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.1.1",
     "node-cron": "^4.2.1",
-    "nodemailer": "^8.0.8",
+    "nodemailer": "^8.0.10",
     "pg": "^8.20.0",
     "prisma": "^7.8.0",
-    "react-router-dom": "^7.14.1",
-    "tailwindcss": "^4.2.2",
-    "web-push": "^3.6.7"
+    "web-push": "^3.6.7",
+    "ws": "^8.21.0"
   },
   "devDependencies": {
     "@types/node": "^25.8.0",

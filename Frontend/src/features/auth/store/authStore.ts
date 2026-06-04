@@ -16,12 +16,16 @@ export const useAuthStore = create<AuthState>((set) => ({
   username: localStorage.getItem('username'),
   id_estudiante: localStorage.getItem('id_estudiante') ? Number(localStorage.getItem('id_estudiante')) : null,
 
-  setAuth: (token, rol, username,id_estudiante) => {
+  setAuth: (token, rol, username, id_estudiante) => {
     localStorage.setItem('token', token)
     localStorage.setItem('rol', rol)
     localStorage.setItem('username', username)
-    if (id_estudiante) localStorage.setItem('id_estudiante', String(id_estudiante))
-      set({ token, rol, username, id_estudiante })
+    if (id_estudiante !== null && id_estudiante !== undefined) {
+      localStorage.setItem('id_estudiante', String(id_estudiante))
+    } else {
+      localStorage.removeItem('id_estudiante')
+    }
+    set({ token, rol, username, id_estudiante })
   },
 
   logout: () => {
