@@ -178,23 +178,30 @@ const asignarTurnoAutomatico = async (id_estudiante, fecha, id_configuracion) =>
 
     if (!pagoValido) throw new Error('SIN_PAGO_PARA_DIA')
 
-    const ocupados = await prisma.reservas.count({
-        where: {
-            fecha: fechaReserva,
-            hora_inicio: config.hora_inicio,
-            numero_turno: { not: null }
-        }
-    })
-
-    if (ocupados >= config.capacidad_maxima) throw new Error('SIN_CAPACIDAD')
-
     const estudiante = await prisma.estudiante.findUnique({
         where: { id_estudiante: parseInt(id_estudiante) },
         select: { numero_identificacion: true, nombres: true, apellidos: true }
     })
 
-    // Crear reserva y descontar un almuerzo del pago 
+    // Crear reserva y descontar un almuerzo del pago
     return await prisma.$transaction(async (tx) => {
+        const ocupadosRango = await tx.reservas.count({
+            where: {
+                fecha: fechaReserva,
+                hora_inicio: config.hora_inicio,
+                numero_turno: { not: null }
+            }
+        })
+
+        if (ocupadosRango >= config.capacidad_maxima) throw new Error('SIN_CAPACIDAD')
+
+        const ocupadosDia = await tx.reservas.count({
+            where: {
+                fecha: fechaReserva,
+                numero_turno: { not: null }
+            }
+        })
+
         const nuevaReserva = await tx.reservas.create({
             data: {
                 id_estudiante: parseInt(id_estudiante),
@@ -206,7 +213,7 @@ const asignarTurnoAutomatico = async (id_estudiante, fecha, id_configuracion) =>
                 miercoles: diaSemana === 'miercoles',
                 jueves: diaSemana === 'jueves',
                 viernes: diaSemana === 'viernes',
-                numero_turno: ocupados + 1,
+                numero_turno: ocupadosDia + 1,
                 estado: 'PENDIENTE',
                 numero_identificacion: estudiante?.numero_identificacion,
                 nombre_estudiante: `${estudiante?.nombres} ${estudiante?.apellidos}`

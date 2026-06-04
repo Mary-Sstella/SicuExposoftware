@@ -74,7 +74,8 @@ const getAsistenciaHoy = async () => {
     const reservas = await prisma.reservas.findMany({
         where: {
             fecha: hoy,
-            [campo]: true
+            [campo]: true,
+            numero_turno: { not: null }
         },
         include: {
             estudiante: {

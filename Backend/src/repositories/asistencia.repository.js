@@ -43,10 +43,13 @@ const registrarAsistencia = async (numero_identificacion) => {
 
 // Obtener asistencias por fecha
 const getAsistenciasPorFecha = async (fecha) => {
+    const diaSemana = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'][new Date(fecha).getDay()]
+
     return await prisma.reservas.findMany({
         where: {
             fecha: new Date(fecha),
-            numero_turno: { not: null }
+            numero_turno: { not: null },
+            [diaSemana]: true,
         },
         include: {
             estudiante: {
