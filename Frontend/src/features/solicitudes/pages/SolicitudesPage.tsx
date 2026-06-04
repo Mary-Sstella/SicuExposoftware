@@ -73,6 +73,7 @@ function SolicitudesPage() {
   const [cupos, setCupos] = useState<CuposDias | null>(null)
   const [pagina, setPagina] = useState(1)
   const [confirmModal, setConfirmModal] = useState<ConfirmModal | null>(null)
+  const [errorModal, setErrorModal] = useState<{ title: string; message: string } | null>(null)
 
   useEffect(() => {
     fetchSolicitudes()
@@ -112,7 +113,7 @@ function SolicitudesPage() {
           setDrawerOpen(false); setSelected(null); fetchSolicitudes()
         } catch (e: any) {
           const msg = e?.response?.data?.msg ?? 'Error al aprobar la solicitud'
-          alert(msg)
+          setErrorModal({ title: 'Sin cupos disponibles', message: msg })
         } finally { setConfirmModal(null) }
       }
     })
@@ -359,6 +360,25 @@ function SolicitudesPage() {
                 {confirmModal.type === 'aprobar' ? 'Aprobar' : 'Rechazar'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de error */}
+      {errorModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-sm p-6 flex flex-col items-center gap-4 border border-gray-100 dark:border-gray-800">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-red-50 dark:bg-red-900/20">
+              <AlertTriangle size={28} className="text-red-500" />
+            </div>
+            <div className="text-center">
+              <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 mb-1">{errorModal.title}</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{errorModal.message}</p>
+            </div>
+            <button onClick={() => setErrorModal(null)}
+              className="w-full py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition">
+              Entendido
+            </button>
           </div>
         </div>
       )}
