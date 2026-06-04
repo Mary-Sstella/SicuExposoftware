@@ -69,7 +69,7 @@ function CredencialCard({ onQRGenerado }: Props) {
     const tieneTurnoPendiente = turno?.id_reserva && turno.estado !== 'ENTREGADA' && turno.estado !== 'AUSENTE'
 
     return (
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col h-full">
 
             <div className="relative">
                 <div className="bg-gradient-to-br from-violet-600 to-purple-500 px-4 pt-4 pb-10 rounded-t-3xl overflow-hidden">
@@ -87,23 +87,23 @@ function CredencialCard({ onQRGenerado }: Props) {
                     </div>
                 </div>
                 <div className="absolute -bottom-8 left-1/2 -translate-x-1/2">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center shadow-lg border-4 border-white">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center shadow-lg border-4 border-white dark:border-gray-900">
                         <span className="text-xl font-black text-white">{inicial}</span>
                     </div>
                 </div>
             </div>
 
             <div className="flex flex-col items-center pt-10 px-4 pb-2 text-center">
-                <p className="text-base font-black text-gray-800">
+                <p className="text-base font-black text-gray-800 dark:text-white">
                     {perfil ? `${perfil.nombres} ${perfil.apellidos}` : '—'}
                 </p>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                     {perfil?.programa ?? '—'}
                     {perfil?.semestre ? ` · Semestre ${perfil.semestre}` : ''}
                 </p>
             </div>
 
-            <div className="mx-4 mt-3 flex-1 rounded-2xl border border-dashed border-gray-200 p-4 flex flex-col gap-3">
+            <div className="mx-4 mt-3 flex-1 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 p-4 flex flex-col gap-3">
                 <div className="flex items-center gap-1.5">
                     <Ticket size={12} className="text-violet-400" />
                     <span className="text-[10px] font-bold text-violet-400 uppercase tracking-wider">
@@ -113,7 +113,7 @@ function CredencialCard({ onQRGenerado }: Props) {
 
                 <div className="flex flex-col items-center gap-2 flex-1 justify-center">
                     {codigoQR ? (
-                        <div ref={qrRef} className="bg-white p-2 rounded-xl border border-violet-100">
+                        <div ref={qrRef} className="bg-white p-2 rounded-xl border border-violet-100 dark:border-violet-900">
                             {/* QR visible en pantalla */}
                             <QRCodeSVG value={codigoQR} size={130} />
                             {/* Canvas oculto solo para descarga a alta resolución */}
@@ -141,11 +141,11 @@ function CredencialCard({ onQRGenerado }: Props) {
                             disabled={!tieneTurnoPendiente || cargandoQR}
                             className={`flex flex-col items-center gap-2 w-full py-3 rounded-2xl transition
                                 ${tieneTurnoPendiente
-                                    ? 'hover:bg-violet-50 cursor-pointer'
+                                    ? 'hover:bg-violet-50 dark:hover:bg-violet-900/20 cursor-pointer'
                                     : 'cursor-default opacity-60'
                                 }`}
                         >
-                            <div className="w-16 h-16 rounded-2xl bg-violet-50 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-2xl bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center">
                                 <QrCode size={36} className="text-violet-500" strokeWidth={1.5} />
                             </div>
                             <p className="text-sm font-bold text-violet-600">
@@ -164,7 +164,7 @@ function CredencialCard({ onQRGenerado }: Props) {
             {turno?.hora_inicio && (
                 <div className="mx-4 mt-3 flex items-start gap-2">
                     <Info size={12} className="text-violet-400 flex-shrink-0 mt-0.5" />
-                    <p className="text-[10px] text-gray-500 leading-relaxed">
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-relaxed">
                         Muestra este QR al ingresar al comedor entre{' '}
                         <span className="font-bold text-gray-700">{turno.hora_inicio} – {turno.hora_fin}</span>.
                     </p>
@@ -175,14 +175,14 @@ function CredencialCard({ onQRGenerado }: Props) {
                 <button
                     onClick={handleDescargar}
                     disabled={!codigoQR}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 border border-gray-200 rounded-2xl text-xs font-semibold text-gray-600 hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 border border-gray-200 dark:border-gray-700 rounded-2xl text-xs font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                     <Download size={13} /> Descargar
                 </button>
                 <button
                     onClick={handleGenerarQR}
                     disabled={!tieneTurnoPendiente || cargandoQR}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 border border-gray-200 rounded-2xl text-xs font-semibold text-gray-600 hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 border border-gray-200 dark:border-gray-700 rounded-2xl text-xs font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                     <RefreshCw size={13} /> Regenerar
                 </button>

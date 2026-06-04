@@ -67,36 +67,36 @@ function ResenasEstudiantePage() {
             <div className="flex-1 flex flex-col gap-4">
                 <div className="flex items-center gap-2">
                     <MessageCircle size={18} className="text-violet-500" />
-                    <h2 className="text-sm font-bold text-gray-700">Reseñas del comedor</h2>
-                    <span className="text-xs text-gray-400">({publicas.length})</span>
+                    <h2 className="text-sm font-bold text-gray-700 dark:text-gray-200">Reseñas del comedor</h2>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">({publicas.length})</span>
                 </div>
 
                 {loading && [1, 2, 3].map(i => (
                     <div key={i} className="flex gap-3 animate-pulse">
-                        <div className="w-10 h-10 rounded-full bg-gray-100 flex-shrink-0" />
-                        <div className="flex-1 h-24 bg-gray-100 rounded-2xl" />
+                        <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex-shrink-0" />
+                        <div className="flex-1 h-24 bg-gray-100 dark:bg-gray-800 rounded-2xl" />
                     </div>
                 ))}
 
                 {!loading && publicas.length === 0 && (
-                    <p className="text-sm text-gray-400">Aún no hay reseñas públicas.</p>
+                    <p className="text-sm text-gray-400 dark:text-gray-500">Aún no hay reseñas públicas.</p>
                 )}
 
                 {!loading && publicas.map(r => (
                     <div key={r.id_rese_a} className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-full bg-violet-200 flex items-center justify-center flex-shrink-0 text-sm font-bold text-violet-700">
+                        <div className="w-10 h-10 rounded-full bg-violet-200 dark:bg-violet-900/50 flex items-center justify-center flex-shrink-0 text-sm font-bold text-violet-700 dark:text-violet-300">
                             {r.estudiante?.nombres[0]}{r.estudiante?.apellidos[0]}
                         </div>
-                        <div className="relative bg-violet-50 border border-violet-100 rounded-2xl rounded-tl-sm p-3 flex-1">
-                            <div className="absolute -left-2 top-3 w-3 h-3 bg-violet-50 border-l border-b border-violet-100 rotate-45" />
+                        <div className="relative bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-900/40 rounded-2xl rounded-tl-sm p-3 flex-1">
+                            <div className="absolute -left-2 top-3 w-3 h-3 bg-violet-50 dark:bg-violet-900/20 border-l border-b border-violet-100 dark:border-violet-900/40 rotate-45" />
                             <div className="flex items-center justify-between mb-1">
-                                <p className="text-sm font-semibold text-gray-800">
+                                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                                     {r.estudiante?.nombres} {r.estudiante?.apellidos}
                                 </p>
                                 <Estrellas valor={r.calificacion} />
                             </div>
-                            <p className="text-sm text-gray-600 leading-relaxed">{r.texto}</p>
-                            <p className="text-xs text-gray-400 mt-1">{formatFecha(r.fecha_creacion)}</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{r.texto}</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{formatFecha(r.fecha_creacion)}</p>
                         </div>
                     </div>
                 ))}
@@ -110,19 +110,19 @@ function ResenasEstudiantePage() {
                 </button>
 
                 <div className="flex items-center gap-2 mt-1">
-                    <h3 className="text-sm font-bold text-gray-700">Mis reseñas</h3>
-                    <span className="text-xs text-gray-400">({misResenas.length})</span>
+                    <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200">Mis reseñas</h3>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">({misResenas.length})</span>
                 </div>
 
                 {!loading && misResenas.length === 0 && (
-                    <p className="text-xs text-gray-400">Aún no has dejado ninguna reseña.</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">Aún no has dejado ninguna reseña.</p>
                 )}
 
                 {misResenas.map(r => (
-                    <div key={r.id_rese_a} className="bg-white border border-gray-100 rounded-xl p-3 flex flex-col gap-1 shadow-sm">
+                    <div key={r.id_rese_a} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl p-3 flex flex-col gap-1 shadow-sm">
                         <Estrellas valor={r.calificacion} />
-                        <p className="text-sm text-gray-600 line-clamp-2">{r.texto}</p>
-                        <p className="text-xs text-gray-400">{formatFecha(r.fecha_creacion)}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{r.texto}</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500">{formatFecha(r.fecha_creacion)}</p>
                     </div>
                 ))}
             </div>
@@ -130,32 +130,32 @@ function ResenasEstudiantePage() {
             {/* Modal */}
             {modalOpen && (
                 <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
-                    <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md flex flex-col gap-4">
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-6 w-full max-w-md flex flex-col gap-4">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-base font-bold text-gray-800">Dejar una reseña</h3>
-                            <button onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition">
+                            <h3 className="text-base font-bold text-gray-800 dark:text-white">Dejar una reseña</h3>
+                            <button onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition">
                                 <X size={18} />
                             </button>
                         </div>
 
                         <div>
-                            <p className="text-xs text-gray-500 mb-2">Calificación</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Calificación</p>
                             <div className="flex gap-1">
                                 {[1, 2, 3, 4, 5].map(i => (
                                     <Star key={i} size={28} onClick={() => setCalificacion(i)}
-                                        className={`cursor-pointer transition-colors ${i <= calificacion ? 'text-violet-500 fill-violet-500' : 'text-gray-200 fill-gray-200'}`}
+                                        className={`cursor-pointer transition-colors ${i <= calificacion ? 'text-violet-500 fill-violet-500' : 'text-gray-200 dark:text-gray-700 fill-gray-200 dark:fill-gray-700'}`}
                                     />
                                 ))}
                             </div>
-                            <p className="text-xs text-gray-400 mt-1">Haz clic para calificar</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Haz clic para calificar</p>
                         </div>
 
                         <div>
-                            <p className="text-xs text-gray-500 mb-2">Comentario</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Comentario</p>
                             <textarea value={texto} onChange={e => setTexto(e.target.value)}
                                 placeholder="Cuéntanos tu experiencia en el comedor..."
                                 rows={4}
-                                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-violet-300"
+                                className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl px-3 py-2 text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-600 resize-none focus:outline-none focus:ring-2 focus:ring-violet-300"
                             />
                         </div>
 

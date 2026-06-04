@@ -12,25 +12,25 @@ function MiTurnoHoy({ codigoQR }: Props) {
     const [mostrarQR, setMostrarQR] = useState(false)
 
     if (loading) return (
-        <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-4 animate-pulse flex flex-col gap-3">
-            <div className="h-4 bg-gray-100 rounded w-1/4" />
-            <div className="h-16 bg-gray-100 rounded" />
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm rounded-2xl p-4 animate-pulse flex flex-col gap-3">
+            <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded w-1/4" />
+            <div className="h-16 bg-gray-100 dark:bg-gray-800 rounded" />
         </div>
     )
 
     if (!turno || !turno.numero_turno) return (
-        <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-5 flex flex-col gap-4 h-full">
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm rounded-2xl p-5 flex flex-col gap-4 h-full">
             <div className="flex items-center justify-between">
-                <p className="text-sm font-bold text-gray-800">Mi turno de hoy</p>
-                <div className="w-2 h-2 rounded-full bg-gray-200" />
+                <p className="text-sm font-bold text-gray-800 dark:text-white">Mi turno de hoy</p>
+                <div className="w-2 h-2 rounded-full bg-gray-200 dark:bg-gray-700" />
             </div>
             <div className="flex flex-col items-center justify-center gap-3 flex-1 py-2">
-                <div className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center">
-                    <CalendarDays size={24} className="text-gray-300" />
+                <div className="w-14 h-14 rounded-2xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+                    <CalendarDays size={24} className="text-gray-300 dark:text-gray-600" />
                 </div>
                 <div className="text-center">
-                    <p className="text-xs font-black text-gray-500 tracking-wide">SIN RESERVAR TODAVÍA</p>
-                    <p className="text-xs text-gray-400 mt-1">No tienes turno asignado para hoy</p>
+                    <p className="text-xs font-black text-gray-500 dark:text-gray-400 tracking-wide">SIN RESERVAR TODAVÍA</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">No tienes turno asignado para hoy</p>
                 </div>
             </div>
         </div>
@@ -41,9 +41,9 @@ function MiTurnoHoy({ codigoQR }: Props) {
 
     return (
         <>
-            <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-5 flex flex-col gap-4">
+            <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm rounded-2xl p-5 flex flex-col gap-4">
                 <div className="flex items-center justify-between">
-                    <p className="text-sm font-bold text-gray-800">Mi turno de hoy</p>
+                    <p className="text-sm font-bold text-gray-800 dark:text-white">Mi turno de hoy</p>
                     <div className={`w-2 h-2 rounded-full ${llego ? 'bg-green-400' : ausente ? 'bg-red-400' : 'bg-amber-400'}`} />
                 </div>
 
@@ -53,11 +53,11 @@ function MiTurnoHoy({ codigoQR }: Props) {
                         <span className="text-2xl font-black text-white leading-none">#{turno.numero_turno}</span>
                     </div>
                     <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-1.5 text-gray-500 text-xs">
+                        <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 text-xs">
                             <Clock size={12} />
                             <span className="font-medium">{turno.hora_inicio} – {turno.hora_fin}</span>
                         </div>
-                        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl w-fit ${llego ? 'bg-green-50' : ausente ? 'bg-red-50' : 'bg-amber-50'}`}>
+                        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl w-fit ${llego ? 'bg-green-50 dark:bg-green-900/30' : ausente ? 'bg-red-50 dark:bg-red-900/30' : 'bg-amber-50 dark:bg-amber-900/30'}`}>
                             {llego ? <CheckCircle2 size={13} className="text-green-500" />
                                 : ausente ? <XCircle size={13} className="text-red-400" />
                                 : <Clock size={13} className="text-amber-400" />}
@@ -72,7 +72,7 @@ function MiTurnoHoy({ codigoQR }: Props) {
                     <button
                         onClick={() => setMostrarQR(true)}
                         disabled={!codigoQR}
-                        className="flex items-center justify-center gap-2 w-full py-2 rounded-xl border-2 border-violet-200 text-violet-600 text-xs font-semibold hover:bg-violet-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="flex items-center justify-center gap-2 w-full py-2 rounded-xl border-2 border-violet-200 dark:border-violet-800 text-violet-600 dark:text-violet-400 text-xs font-semibold hover:bg-violet-50 dark:hover:bg-violet-900/30 transition disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                         <QrCode size={14} /> Ver mi QR
                     </button>
@@ -81,11 +81,11 @@ function MiTurnoHoy({ codigoQR }: Props) {
 
             {mostrarQR && codigoQR && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-3xl shadow-xl w-full max-w-sm p-6">
+                    <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl w-full max-w-sm p-6">
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-2">
                                 <QrCode size={20} className="text-violet-600" />
-                                <h2 className="text-base font-bold text-gray-800">Tu QR de hoy</h2>
+                                <h2 className="text-base font-bold text-gray-800 dark:text-white">Tu QR de hoy</h2>
                             </div>
                             <button onClick={() => setMostrarQR(false)} className="text-gray-300 hover:text-gray-500 transition">
                                 <X size={20} />

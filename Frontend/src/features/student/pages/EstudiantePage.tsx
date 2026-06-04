@@ -39,8 +39,8 @@ function EstudiantePage() {
                 {/* Saludo */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-xl font-black text-gray-800">Hola, {nombre || '—'}</h1>
-                        <p className="text-xs text-gray-400 capitalize">{hoyLabel}</p>
+                        <h1 className="text-xl font-black text-gray-800 dark:text-white">Hola, {nombre || '—'}</h1>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 capitalize">{hoyLabel}</p>
                     </div>
                     <button
                         onClick={() => setModalReserva(true)}
@@ -75,9 +75,9 @@ function EstudiantePage() {
             {/* Modal: Hacer reserva */}
             {modalReserva && (
                 <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-3xl shadow-xl w-full max-w-sm">
-                        <div className="flex items-center justify-between p-5 border-b border-gray-100">
-                            <h2 className="text-base font-bold text-gray-800">Nueva reserva</h2>
+                    <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl w-full max-w-sm">
+                        <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-800">
+                            <h2 className="text-base font-bold text-gray-800 dark:text-white">Nueva reserva</h2>
                             <button onClick={() => setModalReserva(false)} className="text-gray-300 hover:text-gray-500 transition">
                                 <X size={20} />
                             </button>
