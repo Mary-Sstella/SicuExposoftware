@@ -193,11 +193,11 @@ const getCupos = async () => {
   const config = await prisma.configuracion_formulario.findFirst({ orderBy: { id: 'asc' } });
 
   const [oLunes, oMartes, oMiercoles, oJueves, oViernes] = await Promise.all([
-    prisma.reservas.count({ where: { lunes: true } }),
-    prisma.reservas.count({ where: { martes: true } }),
-    prisma.reservas.count({ where: { miercoles: true } }),
-    prisma.reservas.count({ where: { jueves: true } }),
-    prisma.reservas.count({ where: { viernes: true } }),
+    prisma.reservas.count({ where: { lunes: true,     estudiante: { estado: 'ACTIVO' } } }),
+    prisma.reservas.count({ where: { martes: true,    estudiante: { estado: 'ACTIVO' } } }),
+    prisma.reservas.count({ where: { miercoles: true, estudiante: { estado: 'ACTIVO' } } }),
+    prisma.reservas.count({ where: { jueves: true,    estudiante: { estado: 'ACTIVO' } } }),
+    prisma.reservas.count({ where: { viernes: true,   estudiante: { estado: 'ACTIVO' } } }),
   ]);
 
   return {

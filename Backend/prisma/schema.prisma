@@ -16,69 +16,6 @@ model actividades {
   usuarios     usuarios? @relation(fields: [id_usuario], references: [id_usuario], onUpdate: NoAction)
 }
 
-model auxiliar_beneficiados {
-  id_auxiliar_excel     Int           @id @default(autoincrement())
-  id_estudiante         BigInt?
-  numero_identificacion BigInt?
-  tipo_identificacion   tipo_id_enum?
-  nombre                String?       @db.VarChar(20)
-  apellidos             String?       @db.VarChar(20)
-  correo_personal       String?       @db.VarChar(30)
-  correo_institucional  String?       @db.VarChar(30)
-  lunes                 dia_enum?
-  martes                dia_enum?
-  miercoles             dia_enum?
-  jueves                dia_enum?
-  viernes               dia_enum?
-}
-
-model auxiliar_carrera {
-  id_auxiliar_carrera  Int       @id @default(autoincrement())
-  documento            BigInt?
-  programa             String?   @db.VarChar(100)
-  correo_institucional String?   @db.VarChar(60)
-  lunes                dia_enum?
-  martes               dia_enum?
-  miercoles            dia_enum?
-  jueves               dia_enum?
-  viernes              dia_enum?
-}
-
-model cartera {
-  id_cartera    Int                 @id @default(autoincrement())
-  id_estudiante Int
-  fecha_factura DateTime?           @db.Date
-  estado        estado_cartera_enum @default(PENDIENTE)
-  estudiante    estudiante          @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
-  comprobantes  comprobantes[]
-
-  @@index([id_estudiante], map: "idx_cartera_estudiante")
-  @@index([fecha_factura], map: "idx_cartera_fecha")
-}
-
-model comprobantes {
-  id_comprobante        Int         @id @default(autoincrement())
-  id_cartera            Int?
-  id_estudiante         Int?
-  numero_identificacion BigInt?
-  nombre_archivo        String?     @db.VarChar(255)
-  url_comprobante       String?     @db.VarChar(500)
-  archivo_id_drive      String?     @db.VarChar(255)
-  tipo_archivo          String?     @db.VarChar(50)
-  tamano_archivo        BigInt?
-  checksum_md5          String?     @db.VarChar(64)
-  fecha_subida          DateTime?   @default(now()) @db.Timestamp(6)
-  validacion_automatica String?     @default("0") @db.Char(1)
-  revisado              Boolean?    @default(false)
-  id_revisor            Int?
-  fecha_revision        DateTime?   @db.Timestamp(6)
-  observacion_revision  String?
-  cartera               cartera?    @relation(fields: [id_cartera], references: [id_cartera], onDelete: NoAction, onUpdate: NoAction)
-  estudiante            estudiante? @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([id_cartera], map: "idx_comprobantes_cartera")
-}
-
 model configuracion_turnos {
   id_configuracion Int     @id @default(autoincrement())
   hora_inicio      String  @db.VarChar(5)
@@ -88,42 +25,19 @@ model configuracion_turnos {
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model detalle_reserva {
-  id_detalle            Int        @id @default(autoincrement())
-  id_reserva            Int
-  id_estudiante         Int
-  numero_identificacion BigInt?
-  fecha_comida          DateTime?  @db.Date
-  estado                String     @default("PENDIENTE") @db.VarChar(20)
-  asistio               String     @default("NO") @db.VarChar(2)
-  numero_turno          Int?
-  fecha_entrega         DateTime?  @db.Timestamp(6)
-  fecha_registro        DateTime   @default(now()) @db.Timestamp(6)
-  estudiante            estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
-  reservas              reservas   @relation(fields: [id_reserva], references: [id_reserva], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([id_estudiante], map: "idx_detalle_estudiante")
-  @@index([fecha_comida], map: "idx_detalle_fecha")
-  @@index([id_reserva], map: "idx_detalle_reserva_id")
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model estudiante {
   id_estudiante          Int                  @id @default(autoincrement())
   numero_identificacion  BigInt?              @unique
   tipo_identificacion    tipo_id_enum?
-  nombres                String?              @db.VarChar(30)
-  apellidos              String?              @db.VarChar(30)
-  correo_personal        String?              @db.VarChar(30)
-  correo_institucional   String?              @db.VarChar(30)
-  programa               String?              @db.VarChar(50)
+  nombres                String?              @db.VarChar(100)
+  apellidos              String?              @db.VarChar(100)
+  correo_personal        String?              @db.VarChar(150)
+  correo_institucional   String?              @db.VarChar(150)
+  programa               String?              @db.VarChar(150)
   estado                 String               @default("ACTIVO") @db.VarChar(10)
   contador_inasistencias Int                  @default(0)
   limite_inasistencias   Int                  @default(3)
   fecha_registro         DateTime             @default(now()) @db.Timestamp(6)
-  cartera                cartera[]
-  comprobantes           comprobantes[]
-  detalle_reserva        detalle_reserva[]
   huellas                huellas[]
   notificaciones         notificaciones[]
   pagos                  pagos[]
@@ -172,7 +86,6 @@ model reservas {
   qr_valido_hasta       DateTime?           @db.Date
   id_comprobante        Int?
   metodo                String?             @default("MANUAL") @db.VarChar(10)
-  detalle_reserva       detalle_reserva[]
   qr_generados          qr_generados[]
   estudiante            estudiante          @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction)
 
