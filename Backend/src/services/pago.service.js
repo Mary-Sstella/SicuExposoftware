@@ -7,7 +7,7 @@ const BUCKET = 'pagos-docs';
 
 const MINIMOS = {
     SEMANAL: 2,
-    MENSUAL: 8,
+    MENSUAL: 4,
 };
 
 const subirComprobante = async (file) => {
@@ -52,7 +52,9 @@ const createPago = async (data, file, id_estudiante) => {
 
     const minimoBase = MINIMOS[data.tipo_periodo];
     if (!minimoBase) throw new Error('CANTIDAD_INVALIDA');
-    const minimo = Math.min(minimoBase, diasAprobados.length);
+    const minimo = data.tipo_periodo === 'SEMANAL'
+        ? Math.min(minimoBase, diasAprobados.length)
+        : minimoBase;
     if (dias_pagados.length < minimo) throw new Error('CANTIDAD_INVALIDA');
 
     const cantidad_almuerzos =
