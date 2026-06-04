@@ -1,6 +1,5 @@
 [build]
 builder = "NIXPACKS"
-nixpacksPlan = "nodejs"
 buildCommand = "cd Backend && npm install && npx prisma generate"
 
 [deploy]
