@@ -50,6 +50,9 @@ const getEstudianteStats = async (id) => {
 
 const getTurneroActual = () => turnoRepository.getTurneroActual()
 
+const cancelarReserva = async (id_reserva, id_estudiante) => {
+    return await turnoRepository.cancelarReserva(id_reserva, id_estudiante)
+}
 
 
 module.exports = {
@@ -65,5 +68,6 @@ module.exports = {
     getHistorialEstudiante,
     getFechasPagadas,
     getEstudianteStats, 
-    getTurneroActual
+    getTurneroActual,
+    cancelarReserva
 }

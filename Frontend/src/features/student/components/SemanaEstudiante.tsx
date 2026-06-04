@@ -96,7 +96,13 @@ function SemanaEstudiante() {
                             statusColor = esHoy ? 'text-amber-200' : 'text-amber-500'
                             dotColor = 'bg-amber-400'
                             subText = registro.hora_inicio?.slice(0, 5) ?? ''
+                        } else if (registro.estado === 'CANCELADA') {
+                            statusText = 'Cancelada'
+                            statusColor = esHoy ? 'text-gray-200' : 'text-gray-400'
+                            dotColor = 'bg-gray-300'
+                            subText = registro.hora_inicio?.slice(0, 5) ?? ''
                         }
+            
                     } else if (pagado && !esPasado) {
                         statusText = 'Pagado'
                         statusColor = esHoy ? 'text-violet-200' : 'text-violet-500'

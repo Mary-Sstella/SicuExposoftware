@@ -1,4 +1,4 @@
-import { Clock, CalendarCheck, CheckCircle2, ChevronLeft, AlertCircle } from 'lucide-react'
+import { Clock, CalendarCheck, CheckCircle2, ChevronLeft, AlertCircle, X } from 'lucide-react'
 import { useHacerReserva } from '../hooks/useHacerReserva'
 
 const DIAS_ETIQUETAS = [
@@ -30,8 +30,10 @@ function HacerReserva() {
     const {
         loading, dias, reservaActiva, paso, fechaSeleccionada,
         disponibilidad, reservaCreada, error, loadingConfirmar,
-        seleccionarFecha, confirmar, volver
+        seleccionarFecha, confirmar, volver,
+        cancelar, cancelando, confirmandoCancelar, setConfirmandoCancelar
     } = useHacerReserva()
+
 
     if (loading) return (
         <div className="bg-white border border-gray-700 shadow-md rounded-2xl p-4 animate-pulse flex flex-col gap-3">
@@ -42,30 +44,66 @@ function HacerReserva() {
     )
 
     if (reservaActiva) return (
-        <div className="bg-white border border-gray-700 shadow-md rounded-2xl p-3 flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-                <CalendarCheck size={18} className="text-violet-500" />
-                <h3 className="text-sm font-bold text-gray-700">Tu próxima reserva</h3>
-            </div>
-            <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-violet-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-2xl font-black text-violet-600">#{reservaActiva.numero_turno}</span>
-                </div>
-                <div className="flex flex-col gap-1">
-                    <span className="text-sm font-semibold text-gray-800 capitalize">
-                        {formatFecha(reservaActiva.fecha)}
-                    </span>
-                    <div className="flex items-center gap-1 text-gray-400 text-xs">
-                        <Clock size={12} />
-                        <span>{reservaActiva.hora_inicio} – {reservaActiva.hora_fin}</span>
-                    </div>
-                </div>
-            </div>
-            <span className="text-xs bg-violet-50 text-violet-600 font-semibold px-3 py-2 rounded-xl">
-                Estado: {reservaActiva.estado}
-            </span>
+    <div className="bg-white border border-gray-700 shadow-md rounded-2xl p-3 flex flex-col gap-2">
+        <div className="flex items-center gap-2">
+            <CalendarCheck size={18} className="text-violet-500" />
+            <h3 className="text-sm font-bold text-gray-700">Tu próxima reserva</h3>
         </div>
-    )
+        <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-violet-100 flex items-center justify-center flex-shrink-0">
+                <span className="text-2xl font-black text-violet-600">#{reservaActiva.numero_turno}</span>
+            </div>
+            <div className="flex flex-col gap-1">
+                <span className="text-sm font-semibold text-gray-800 capitalize">
+                    {formatFecha(reservaActiva.fecha)}
+                </span>
+                <div className="flex items-center gap-1 text-gray-400 text-xs">
+                    <Clock size={12} />
+                    <span>{reservaActiva.hora_inicio} – {reservaActiva.hora_fin}</span>
+                </div>
+            </div>
+        </div>
+        <span className="text-xs bg-violet-50 text-violet-600 font-semibold px-3 py-2 rounded-xl">
+            Estado: {reservaActiva.estado}
+        </span>
+
+        {!confirmandoCancelar ? (
+            <button
+                onClick={() => setConfirmandoCancelar(true)}
+                className="text-xs text-red-400 hover:text-red-600 hover:bg-red-50 py-2 rounded-xl transition font-semibold"
+            >
+                Cancelar reserva
+            </button>
+        ) : (
+            <div className="flex flex-col gap-2 bg-red-50 rounded-xl p-3">
+                <div className="flex items-center justify-between">
+                    <p className="text-xs text-red-600 font-semibold">¿Cancelar esta reserva?</p>
+                    <button onClick={() => setConfirmandoCancelar(false)} className="text-gray-300 hover:text-gray-500">
+                        <X size={14} />
+                    </button>
+                </div>
+                <p className="text-xs text-red-400">El almuerzo no se reembolsa. Los demás estudiantes subirán de turno.</p>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => setConfirmandoCancelar(false)}
+                        disabled={cancelando}
+                        className="flex-1 py-2 rounded-xl border border-gray-200 text-gray-500 text-xs font-semibold hover:bg-white transition disabled:opacity-50"
+                    >
+                        Volver
+                    </button>
+                    <button
+                        onClick={cancelar}
+                        disabled={cancelando}
+                        className="flex-1 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition disabled:opacity-50"
+                    >
+                        {cancelando ? 'Cancelando...' : 'Sí, cancelar'}
+                    </button>
+                </div>
+            </div>
+        )}
+    </div>
+)
+
 
     if (reservaCreada) return (
         <div className="bg-white border border-gray-700 shadow-md rounded-2xl p-4 flex flex-col items-center gap-4 text-center">

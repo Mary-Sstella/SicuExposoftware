@@ -17,5 +17,6 @@ router.get('/estudiante/:id/historial', verifyToken, controller.getHistorialEstu
 router.get('/estudiante/:id/fechas-pagadas', verifyToken, controller.getFechasPagadas)
 router.get('/estudiante/:id/stats', verifyToken, controller.getEstudianteStats)
 router.get('/turnero', controller.getTurneroActual)
+router.delete('/reserva/:id', verifyToken, verifyRole(ROLES.ESTUDIANTE), controller.cancelarReserva)
 
 module.exports = router

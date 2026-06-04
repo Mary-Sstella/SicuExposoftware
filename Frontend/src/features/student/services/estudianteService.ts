@@ -60,4 +60,9 @@ export const generarQR = async (id_reserva: number) => {
     return res.data as { codigo_qr: string }
 }
 
+export const cancelarReserva = async (id_reserva: number) => {
+    const res = await api.delete(`/turnos/reserva/${id_reserva}`)
+    return res.data
+}
+
 

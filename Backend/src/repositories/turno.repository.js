@@ -255,8 +255,12 @@ const getHistorialEstudiante = async (id_estudiante) => {
         where: {
             id_estudiante: parseInt(id_estudiante),
             fecha: { lte: hoy },
-            numero_turno: { not: null }
+            OR: [
+                { numero_turno: { not: null } },
+                { estado: 'CANCELADA' }
+            ]
         },
+
         select: {
             fecha: true,
             hora_inicio: true,
@@ -322,18 +326,20 @@ const getFechasPagadas = async (id_estudiante) => {
 }
 
 const getEstudianteStats = async (id_estudiante) => {
-    const [inasistencias, pagos] = await Promise.all([
+    const [inasistencias, pagos, almuerzos_consumidos] = await Promise.all([
         prisma.reservas.count({
             where: { id_estudiante: parseInt(id_estudiante), numero_turno: { not: null }, estado: 'CANCELADA' }
         }),
         prisma.pagos.findMany({
             where: { id_estudiante: parseInt(id_estudiante) },
-            select: { estado: true, almuerzos_usados: true }
+            select: { estado: true }
+        }),
+        prisma.reservas.count({
+            where: { id_estudiante: parseInt(id_estudiante), estado: 'ENTREGADA' }
         })
     ])
     const pagos_aprobados = pagos.filter(p => p.estado === 'APROBADO').length
     const pagos_rechazados = pagos.filter(p => p.estado === 'RECHAZADO').length
-    const almuerzos_consumidos = pagos.filter(p => p.estado === 'APROBADO').reduce((acc, p) => acc + p.almuerzos_usados, 0)
     return { inasistencias, almuerzos_consumidos, pagos_aprobados, pagos_rechazados }
 }
 
@@ -363,12 +369,54 @@ const getTurneroActual = async () => {
     }
 }
 
+const cancelarReserva = async (id_reserva, id_estudiante) => {
+    const reserva = await prisma.reservas.findFirst({
+        where: { id_reserva: parseInt(id_reserva), id_estudiante: parseInt(id_estudiante) }
+    })
+
+    if (!reserva) throw new Error('RESERVA_NO_ENCONTRADA')
+    if (reserva.estado === 'CANCELADA') throw new Error('YA_CANCELADA')
+
+    const hoy = new Date()
+    hoy.setHours(0, 0, 0, 0)
+    const fechaReserva = new Date(reserva.fecha)
+    fechaReserva.setHours(0, 0, 0, 0)
+    if (fechaReserva <= hoy) throw new Error('NO_CANCELABLE')
+
+    const turnoAnterior = reserva.numero_turno
+
+    return await prisma.$transaction(async (tx) => {
+        await tx.reservas.update({
+            where: { id_reserva: parseInt(id_reserva) },
+            data: { estado: 'CANCELADA', numero_turno: null }
+        })
+
+        if (turnoAnterior !== null) {
+            const afectadas = await tx.reservas.findMany({
+                where: {
+                    fecha: reserva.fecha,
+                    hora_inicio: reserva.hora_inicio,
+                    numero_turno: { gt: turnoAnterior }
+                },
+                select: { id_reserva: true, numero_turno: true }
+            })
+            for (const r of afectadas) {
+                await tx.reservas.update({
+                    where: { id_reserva: r.id_reserva },
+                    data: { numero_turno: r.numero_turno - 1 }
+                })
+            }
+        }
+    })
+}
+
 
 
 
 module.exports = {
     getConfiguracionTurnos,
     getDisponibilidad,
+    cancelarReserva,
     asignarTurnoAutomatico,
     getTurnosPorFecha,
     getTurnoEstudiante,
