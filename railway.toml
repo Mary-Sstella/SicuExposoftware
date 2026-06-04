@@ -1,7 +1,6 @@
 [build]
-builder = "NIXPACKS"
-buildCommand = "cd Backend && npm install && npx prisma generate"
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "cd Backend && node src/server.js"
 restartPolicyType = "ON_FAILURE"
