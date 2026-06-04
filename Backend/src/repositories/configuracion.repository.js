@@ -9,9 +9,10 @@ const getConfiguracion = () => {
 }
 
 const updateConfiguracion = (data) => {
-    return prisma.configuracion_formulario.update({
+    return prisma.configuracion_formulario.upsert({
         where: { id: 1 },
-        data,
+        update: data,
+        create: { id: 1, ...data },
     });
 };
 

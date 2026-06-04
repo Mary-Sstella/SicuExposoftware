@@ -201,11 +201,11 @@ const getCupos = async () => {
   ]);
 
   return {
-    lunes:     { ocupados: oLunes,     total: config.cupo_lunes },
-    martes:    { ocupados: oMartes,    total: config.cupo_martes },
-    miercoles: { ocupados: oMiercoles, total: config.cupo_miercoles },
-    jueves:    { ocupados: oJueves,    total: config.cupo_jueves },
-    viernes:   { ocupados: oViernes,   total: config.cupo_viernes },
+    lunes:     { ocupados: oLunes,     total: config?.cupo_lunes     ?? 0 },
+    martes:    { ocupados: oMartes,    total: config?.cupo_martes    ?? 0 },
+    miercoles: { ocupados: oMiercoles, total: config?.cupo_miercoles ?? 0 },
+    jueves:    { ocupados: oJueves,    total: config?.cupo_jueves    ?? 0 },
+    viernes:   { ocupados: oViernes,   total: config?.cupo_viernes   ?? 0 },
   };
 };
 

@@ -144,7 +144,7 @@ function SolicitudesPage() {
           {CUPOS_CONFIG.map(({ key, label, iconBg, bar, text, initial }) => {
             const data = cupos[key]
             const libres = data.total - data.ocupados
-            const pct = Math.round((data.ocupados / data.total) * 100)
+            const pct = data.total > 0 ? Math.round((data.ocupados / data.total) * 100) : 0
             return (
               <div key={key} className="flex-shrink-0 flex-1 min-w-[130px] bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-4 flex flex-col gap-2">
                 <div className="flex items-center gap-3">
