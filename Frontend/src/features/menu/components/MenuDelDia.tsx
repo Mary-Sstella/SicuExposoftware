@@ -14,15 +14,15 @@ function MenuDelDia() {
     }, [])
 
     return (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-3 h-full">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 flex flex-col gap-3 h-full">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <UtensilsCrossed size={16} className="text-violet-500" />
-                    <p className="text-sm font-bold text-gray-700">Menú de la semana</p>
+                    <p className="text-sm font-bold text-gray-700 dark:text-gray-200">Menú de la semana</p>
                 </div>
                 {menu && (
                     <a href={menu.archivo_firmada_url} target="_blank" rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-xs text-violet-500 hover:text-violet-700">
+                        className="flex items-center gap-1 text-xs text-violet-500 hover:text-violet-400">
                         <ExternalLink size={12} /> Ver completo
                     </a>
                 )}
@@ -36,11 +36,11 @@ function MenuDelDia() {
 
             {!loading && !menu && (
                 <div className="flex-1 flex flex-col items-center justify-center gap-2 py-4">
-                    <div className="w-14 h-14 rounded-2xl bg-violet-50 flex items-center justify-center">
+                    <div className="w-14 h-14 rounded-2xl bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center">
                         <UtensilsCrossed size={26} className="text-violet-300" />
                     </div>
                     <p className="text-sm font-semibold text-gray-400">Sin menú disponible</p>
-                    <p className="text-xs text-gray-300 text-center">El administrador aún no ha subido el menú</p>
+                    <p className="text-xs text-gray-300 dark:text-gray-600 text-center">El administrador aún no ha subido el menú</p>
                 </div>
             )}
 

@@ -36,7 +36,7 @@ function HacerReserva() {
 
 
     if (loading) return (
-        <div className="bg-white border border-gray-700 shadow-md rounded-2xl p-4 animate-pulse flex flex-col gap-3">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-2xl p-4 animate-pulse flex flex-col gap-3">
             <div className="h-4 bg-gray-100 rounded w-1/3" />
             <div className="h-10 bg-gray-100 rounded" />
             <div className="h-10 bg-gray-100 rounded w-2/3" />
@@ -44,26 +44,26 @@ function HacerReserva() {
     )
 
     if (reservaActiva) return (
-    <div className="bg-white border border-gray-700 shadow-md rounded-2xl p-3 flex flex-col gap-2">
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-2xl p-3 flex flex-col gap-2">
         <div className="flex items-center gap-2">
             <CalendarCheck size={18} className="text-violet-500" />
-            <h3 className="text-sm font-bold text-gray-700">Tu próxima reserva</h3>
+            <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200">Tu próxima reserva</h3>
         </div>
         <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-2xl bg-violet-100 flex items-center justify-center flex-shrink-0">
                 <span className="text-2xl font-black text-violet-600">#{reservaActiva.numero_turno}</span>
             </div>
             <div className="flex flex-col gap-1">
-                <span className="text-sm font-semibold text-gray-800 capitalize">
+                <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 capitalize">
                     {formatFecha(reservaActiva.fecha)}
                 </span>
-                <div className="flex items-center gap-1 text-gray-400 text-xs">
+                <div className="flex items-center gap-1 text-gray-400 dark:text-gray-500 text-xs">
                     <Clock size={12} />
                     <span>{reservaActiva.hora_inicio} – {reservaActiva.hora_fin}</span>
                 </div>
             </div>
         </div>
-        <span className="text-xs bg-violet-50 text-violet-600 font-semibold px-3 py-2 rounded-xl">
+        <span className="text-xs bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 font-semibold px-3 py-2 rounded-xl">
             Estado: {reservaActiva.estado}
         </span>
 
@@ -106,7 +106,7 @@ function HacerReserva() {
 
 
     if (reservaCreada) return (
-        <div className="bg-white border border-gray-700 shadow-md rounded-2xl p-4 flex flex-col items-center gap-4 text-center">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-2xl p-4 flex flex-col items-center gap-4 text-center">
             <CheckCircle2 size={40} className="text-green-500" />
             <div>
                 <p className="text-sm font-bold text-gray-800">¡Reserva confirmada!</p>
@@ -135,11 +135,11 @@ function HacerReserva() {
         }
 
         return (
-            <div className="bg-white border border-gray-700 shadow-md rounded-2xl p-3 flex flex-col gap-2">
-                <h3 className="text-sm font-bold text-gray-700">Hacer reserva</h3>
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-2xl p-3 flex flex-col gap-2">
+                <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200">Hacer reserva</h3>
 
                 <div>
-                    <p className="text-xs text-gray-400 mb-1">Tus días habilitados</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">Tus días habilitados</p>
                     <div className="flex gap-2">
                         {DIAS_ETIQUETAS.map(({ key, label }) => (
                             <span
@@ -157,12 +157,12 @@ function HacerReserva() {
                 </div>
 
                 <div>
-                    <p className="text-xs text-gray-400 mb-1">Selecciona una fecha (mínimo mañana, solo tus días)</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">Selecciona una fecha (mínimo mañana, solo tus días)</p>
                     <input
                         type="date"
                         min={manana()}
                         onChange={handleFecha}
-                        className="w-full border border-gray-200 rounded-xl px-3 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-violet-300"
+                        className="w-full border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-violet-300"
                     />
                 </div>
 
@@ -177,15 +177,15 @@ function HacerReserva() {
     }
 
     return (
-        <div className="bg-white border border-gray-700 shadow-md rounded-2xl p-3 flex flex-col gap-2">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-2xl p-3 flex flex-col gap-2">
             <div className="flex items-center gap-2">
                 <button onClick={volver} className="text-gray-400 hover:text-gray-600">
                     <ChevronLeft size={18} />
                 </button>
-                <h3 className="text-sm font-bold text-gray-700 capitalize">{formatFecha(fechaSeleccionada)}</h3>
+                <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200 capitalize">{formatFecha(fechaSeleccionada)}</h3>
             </div>
 
-            <p className="text-xs text-gray-400">Selecciona un horario disponible</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">Selecciona un horario disponible</p>
 
             <div className="flex flex-col gap-2">
                 {disponibilidad.map((rango) => (
@@ -194,13 +194,13 @@ function HacerReserva() {
                         onClick={() => rango.disponible && !loadingConfirmar && confirmar(rango.id_configuracion)}
                         className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-all ${
                             rango.disponible
-                                ? 'border-gray-200 hover:border-violet-300 hover:bg-violet-50 cursor-pointer'
-                                : 'border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed'
+                                ? 'border-gray-200 dark:border-gray-600 hover:border-violet-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 cursor-pointer'
+                                : 'border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 opacity-50 cursor-not-allowed'
                         }`}
                     >
                         <div className="flex items-center gap-2">
                             <Clock size={14} className={rango.disponible ? 'text-violet-400' : 'text-gray-300'} />
-                            <span className={`text-sm font-medium ${rango.disponible ? 'text-gray-700' : 'text-gray-400'}`}>
+                            <span className={`text-sm font-medium ${rango.disponible ? 'text-gray-700 dark:text-gray-200' : 'text-gray-400 dark:text-gray-500'}`}>
                                 {rango.hora_inicio} – {rango.hora_fin}
                             </span>
                         </div>

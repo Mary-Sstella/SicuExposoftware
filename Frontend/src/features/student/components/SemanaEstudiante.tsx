@@ -62,10 +62,10 @@ function SemanaEstudiante() {
     )
 
     return (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4">
             <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-bold text-gray-800">Tu semana</p>
-                <span className="text-xs text-gray-400 font-medium">{rangoLabel}</span>
+                <p className="text-sm font-bold text-gray-800 dark:text-white">Tu semana</p>
+                <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">{rangoLabel}</span>
             </div>
             <div className="grid grid-cols-5 gap-2">
                 {diasSemana.map(dia => {
@@ -110,19 +110,19 @@ function SemanaEstudiante() {
                     }
 
                     return (
-                        <div key={iso} className={`rounded-2xl p-3 flex flex-col gap-1 ${esHoy ? 'bg-violet-600' : 'bg-gray-50'}`}>
+                        <div key={iso} className={`rounded-2xl p-3 flex flex-col gap-1 ${esHoy ? 'bg-violet-600' : 'bg-gray-50 dark:bg-gray-800'}`}>
                             <div className="flex items-center justify-between">
-                                <p className={`text-[10px] font-bold uppercase tracking-wide ${esHoy ? 'text-white/70' : 'text-gray-400'}`}>
+                                <p className={`text-[10px] font-bold uppercase tracking-wide ${esHoy ? 'text-white/70' : 'text-gray-400 dark:text-gray-500'}`}>
                                     {DIAS_LABEL[dia.getDay()]}
                                 </p>
                                 <div className={`w-1.5 h-1.5 rounded-full ${esHoy ? 'bg-white/40' : dotColor}`} />
                             </div>
-                            <p className={`text-2xl font-black leading-none ${esHoy ? 'text-white' : 'text-gray-800'}`}>
+                            <p className={`text-2xl font-black leading-none ${esHoy ? 'text-white' : 'text-gray-800 dark:text-white'}`}>
                                 {dia.getDate()}
                             </p>
                             <p className={`text-[10px] font-semibold mt-0.5 ${statusColor}`}>{statusText}</p>
                             {subText && (
-                                <p className={`text-[9px] ${esHoy ? 'text-white/40' : 'text-gray-400'}`}>{subText}</p>
+                                <p className={`text-[9px] ${esHoy ? 'text-white/40' : 'text-gray-400 dark:text-gray-500'}`}>{subText}</p>
                             )}
                         </div>
                     )

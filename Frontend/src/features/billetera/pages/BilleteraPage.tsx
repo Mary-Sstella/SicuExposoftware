@@ -38,25 +38,25 @@ function BilleteraPage() {
   const pagosFiltrados = filtro === 'TODOS' ? pagos : pagos.filter(p => p.estado === filtro)
 
   if (loading) return (
-    <div className="flex-1 flex items-center justify-center bg-slate-100">
+    <div className="flex-1 flex items-center justify-center bg-slate-100 dark:bg-gray-950">
       <Loader2 size={24} className="animate-spin text-violet-400" />
     </div>
   )
 
   if (error) return (
-    <div className="flex-1 p-8 bg-slate-100">
+    <div className="flex-1 p-8 bg-slate-100 dark:bg-gray-950">
       <p className="text-sm text-red-500">{error}</p>
     </div>
   )
 
   return (
-    <div className="flex-1 p-4 md:p-8 overflow-y-auto bg-slate-100">
+    <div className="flex-1 p-4 md:p-8 overflow-y-auto bg-slate-100 dark:bg-gray-950">
 
       {/* Header */}
       <div className="flex items-center justify-between mb-4 md:mb-6 gap-3">
         <div>
-          <h1 className="text-base font-semibold text-gray-700">Mi Billetera</h1>
-          <p className="text-xs text-gray-400 hidden sm:block">Historial y estado de tus comprobantes de pago</p>
+          <h1 className="text-base font-semibold text-gray-700 dark:text-gray-200">Mi Billetera</h1>
+          <p className="text-xs text-gray-400 dark:text-gray-500 hidden sm:block">Historial y estado de tus comprobantes de pago</p>
         </div>
         <button
           onClick={() => setModalAbierto(true)}
@@ -70,52 +70,52 @@ function BilleteraPage() {
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
-        <div className="bg-white rounded-2xl p-3 md:p-5 shadow-sm md:shadow-md border border-gray-700 flex items-center gap-3 md:gap-4">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-3 md:p-5 shadow-sm md:shadow-md border border-gray-200 dark:border-gray-800 flex items-center gap-3 md:gap-4">
           <div className="w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-gradient-to-br from-violet-500 to-purple-400 flex items-center justify-center flex-shrink-0">
             <Wallet size={18} className="text-white" />
           </div>
           <div>
-            <p className="text-xl md:text-2xl font-bold text-gray-800">{saldo}</p>
-            <p className="text-xs text-gray-500">Almuerzos disponibles</p>
+            <p className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">{saldo}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Almuerzos disponibles</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-3 md:p-5 shadow-sm md:shadow-md border border-gray-700 flex items-center gap-3 md:gap-4">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-3 md:p-5 shadow-sm md:shadow-md border border-gray-200 dark:border-gray-800 flex items-center gap-3 md:gap-4">
           <div className="w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-gradient-to-br from-amber-400 to-orange-300 flex items-center justify-center flex-shrink-0">
             <Clock size={18} className="text-white" />
           </div>
           <div>
-            <p className="text-xl md:text-2xl font-bold text-gray-800">{pendientes}</p>
-            <p className="text-xs text-gray-500">Pendientes</p>
+            <p className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">{pendientes}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Pendientes</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-3 md:p-5 shadow-sm md:shadow-md border border-gray-700 flex items-center gap-3 md:gap-4">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-3 md:p-5 shadow-sm md:shadow-md border border-gray-200 dark:border-gray-800 flex items-center gap-3 md:gap-4">
           <div className="w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-gradient-to-br from-green-500 to-emerald-400 flex items-center justify-center flex-shrink-0">
             <CheckCircle size={18} className="text-white" />
           </div>
           <div>
-            <p className="text-xl md:text-2xl font-bold text-gray-800">{aprobados}</p>
-            <p className="text-xs text-gray-500">Aprobados</p>
+            <p className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">{aprobados}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Aprobados</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-3 md:p-5 shadow-sm md:shadow-md border border-gray-700 flex items-center gap-3 md:gap-4">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-3 md:p-5 shadow-sm md:shadow-md border border-gray-200 dark:border-gray-800 flex items-center gap-3 md:gap-4">
           <div className="w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-gradient-to-br from-red-500 to-rose-400 flex items-center justify-center flex-shrink-0">
             <XCircle size={18} className="text-white" />
           </div>
           <div>
-            <p className="text-xl md:text-2xl font-bold text-gray-800">{rechazados}</p>
-            <p className="text-xs text-gray-500">Rechazados</p>
+            <p className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">{rechazados}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Rechazados</p>
           </div>
         </div>
       </div>
 
       {/* Tabla con filtros */}
-      <div className="bg-white rounded-2xl shadow-md border border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-md border border-gray-200 dark:border-gray-800 overflow-hidden">
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 flex-wrap px-4 py-3 md:px-5 md:py-4 border-b border-gray-100">
+        <div className="flex items-center gap-1 flex-wrap px-4 py-3 md:px-5 md:py-4 border-b border-gray-100 dark:border-gray-800">
           {(['TODOS', 'PENDIENTE', 'APROBADO', 'RECHAZADO'] as Filtro[]).map(f => {
             const count = f === 'PENDIENTE' ? pendientes : f === 'APROBADO' ? aprobados : rechazados
             return (
@@ -123,13 +123,13 @@ function BilleteraPage() {
                 key={f}
                 onClick={() => setFiltro(f)}
                 className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                  filtro === f ? 'bg-violet-600 text-white shadow-sm' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
+                  filtro === f ? 'bg-violet-600 text-white shadow-sm' : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-600 dark:hover:text-gray-300'
                 }`}
               >
                 {f === 'TODOS' ? 'Todos' : ESTADO_CONFIG[f].label}
                 {f !== 'TODOS' && (
                   <span className={`px-1.5 py-0.5 rounded-full text-xs ${
-                    filtro === f ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'
+                    filtro === f ? 'bg-white/20 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'
                   }`}>
                     {count}
                   </span>
@@ -140,11 +140,11 @@ function BilleteraPage() {
         </div>
 
         {/* Lista */}
-        <div className="divide-y divide-gray-50">
+        <div className="divide-y divide-gray-50 dark:divide-gray-800">
           {pagosFiltrados.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-14 gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center">
-                <CreditCard size={22} className="text-gray-300" />
+              <div className="w-12 h-12 rounded-2xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+                <CreditCard size={22} className="text-gray-300 dark:text-gray-600" />
               </div>
               <p className="text-sm text-gray-400">
                 {filtro === 'TODOS'
@@ -156,7 +156,7 @@ function BilleteraPage() {
             pagosFiltrados.map(pago => {
               const { icon: Icon, color, bg, border, label, dot } = ESTADO_CONFIG[pago.estado as keyof typeof ESTADO_CONFIG]
               return (
-                <div key={pago.id_pago} className="px-4 py-3 md:px-5 md:py-4 hover:bg-gray-50 transition-colors">
+                <div key={pago.id_pago} className="px-4 py-3 md:px-5 md:py-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
 
                     <div className="flex items-center gap-3 min-w-0">
@@ -165,7 +165,7 @@ function BilleteraPage() {
                       </div>
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-sm font-semibold text-gray-700">
+                          <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">
                             {pago.tipo_periodo === 'SEMANAL' ? 'Pago semanal' : 'Pago mensual'}
                           </span>
                           <span className={`flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full border ${bg} ${color} ${border}`}>
@@ -174,17 +174,17 @@ function BilleteraPage() {
                           </span>
                         </div>
                         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                          <span className="text-xs text-gray-400">
+                          <span className="text-xs text-gray-400 dark:text-gray-500">
                             {new Date(pago.fecha_subida).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}
                           </span>
-                          <span className="text-xs text-gray-300">·</span>
-                          <span className="text-xs text-gray-500">
-                            <span className="font-semibold text-gray-700">{pago.cantidad_almuerzos}</span> almuerzos
+                          <span className="text-xs text-gray-300 dark:text-gray-600">·</span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            <span className="font-semibold text-gray-700 dark:text-gray-300">{pago.cantidad_almuerzos}</span> almuerzos
                           </span>
                           {pago.estado === 'APROBADO' && (
                             <>
-                              <span className="text-xs text-gray-300">·</span>
-                              <span className="text-xs text-violet-600 font-semibold">
+                              <span className="text-xs text-gray-300 dark:text-gray-600">·</span>
+                              <span className="text-xs text-violet-600 dark:text-violet-400 font-semibold">
                                 {pago.cantidad_almuerzos - pago.almuerzos_usados} disponibles
                               </span>
                             </>
@@ -196,7 +196,7 @@ function BilleteraPage() {
                     <div className="flex items-center gap-3 flex-shrink-0">
                       <div className="flex flex-wrap gap-1 justify-end">
                         {pago.dias_pagados.map(dia => (
-                          <span key={dia} className="text-xs px-2 py-0.5 bg-gray-100 text-gray-500 rounded-lg">
+                          <span key={dia} className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded-lg">
                             {DIA_LABEL[dia] ?? dia}
                           </span>
                         ))}
@@ -204,7 +204,7 @@ function BilleteraPage() {
                       <button
                         onClick={() => handleVerPdf(pago.id_pago)}
                         disabled={pdfCargando === pago.id_pago}
-                        className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-xl text-xs text-gray-500 hover:text-violet-600 hover:border-violet-200 font-medium transition-colors disabled:opacity-50"
+                        className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-xl text-xs text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 hover:border-violet-200 dark:hover:border-violet-700 font-medium transition-colors disabled:opacity-50"
                       >
                         {pdfCargando === pago.id_pago
                           ? <Loader2 size={13} className="animate-spin" />
@@ -215,7 +215,7 @@ function BilleteraPage() {
                   </div>
 
                   {pago.estado === 'RECHAZADO' && pago.observacion && (
-                    <div className="mt-3 px-3 py-2 bg-red-50 border border-red-100 rounded-xl text-xs text-red-500">
+                    <div className="mt-3 px-3 py-2 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/40 rounded-xl text-xs text-red-500">
                       <span className="font-semibold">Motivo: </span>{pago.observacion}
                     </div>
                   )}
