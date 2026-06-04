@@ -26,8 +26,7 @@ function HuellaPanel({ onClose, onAsistenciaRegistrada }: Props) {
     useEffect(() => {
         montado.current = true
 
-        const backendUrl = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000/sicu')
-            .replace('/sicu', '')
+        const backendUrl = (import.meta.env.VITE_API_URL ?? '').replace('/sicu', '')
         const wsUrl = backendUrl
             .replace('http://', 'ws://')
             .replace('https://', 'wss://') + '/sicu/ws'

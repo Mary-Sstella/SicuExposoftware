@@ -11,7 +11,7 @@ interface Estudiante {
     correo_institucional: string
     programa: string
     estado: 'ACTIVO' | 'INACTIVO'
-    limite_inasistencia: number
+    limite_inasistencias: number
     contador_inasistencias: number
     dias: {
         lunes: boolean
