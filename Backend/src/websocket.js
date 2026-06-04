@@ -6,7 +6,7 @@ let operacionPendiente = null
 let esp32Client = null  // referencia exclusiva al ESP32
 
 const iniciarWebSocket = (server) => {
-    wss = new WebSocket.Server({ server })
+    wss = new WebSocket.Server({ server, path: '/sicu/ws' })
 
     wss.on('connection', (ws) => {
         console.log(' Cliente conectado por WebSocket')

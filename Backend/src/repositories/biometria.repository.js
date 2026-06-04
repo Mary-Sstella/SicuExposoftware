@@ -30,6 +30,7 @@ const marcarEntregado = (id_reserva) => {
         where: { id_reserva },
         data: {
             estado: 'ENTREGADA',
+            metodo: 'HUELLA',
         },
     });
 };

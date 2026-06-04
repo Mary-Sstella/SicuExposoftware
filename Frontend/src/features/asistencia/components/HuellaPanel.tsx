@@ -30,7 +30,7 @@ function HuellaPanel({ onClose, onAsistenciaRegistrada }: Props) {
             .replace('/sicu', '')
         const wsUrl = backendUrl
             .replace('http://', 'ws://')
-            .replace('https://', 'wss://')
+            .replace('https://', 'wss://') + '/sicu/ws'
 
         let ws: WebSocket | null = null
 
