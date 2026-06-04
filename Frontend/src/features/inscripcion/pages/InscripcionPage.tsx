@@ -171,7 +171,7 @@ function InscripcionPage() {
 
   return (
     <div className="min-h-screen bg-purple-50 flex items-center justify-center p-6">
-      <div className="bg-white rounded-3xl shadow-xl w-full max-w-2xl p-10">
+      <div className="bg-white rounded-3xl shadow-xl w-full max-w-2xl p-6 sm:p-10">
 
         <div className="text-right text-sm mb-6">
           <span className="text-gray-400">¿Ya tienes cuenta? </span>
@@ -192,12 +192,12 @@ function InscripcionPage() {
                     : 'bg-gray-100 text-gray-400'}`}>
                   {s.number}
                 </div>
-                <span className={`text-xs mt-1.5 font-medium ${step >= s.number ? 'text-violet-600' : 'text-gray-400'}`}>
+                <span className={`text-xs mt-1.5 font-medium hidden sm:block ${step >= s.number ? 'text-violet-600' : 'text-gray-400'}`}>
                   {s.label}
                 </span>
               </div>
               {i < STEPS.length - 1 && (
-                <div className={`w-20 h-0.5 mb-5 mx-3 rounded transition-all ${step > s.number ? 'bg-violet-400' : 'bg-gray-200'}`} />
+                <div className={`w-10 sm:w-20 h-0.5 mb-5 mx-1 sm:mx-3 rounded transition-all ${step > s.number ? 'bg-violet-400' : 'bg-gray-200'}`} />
               )}
             </div>
           ))}
@@ -207,7 +207,7 @@ function InscripcionPage() {
         {step === 1 && (
           <div>
             <h2 className="text-base font-semibold text-gray-700 mb-5">Datos Personales</h2>
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label className="text-xs text-gray-500 mb-1.5 block">Nombre</label>
                 <input name="nombre" value={form.nombre} onChange={handleChange}
@@ -237,7 +237,7 @@ function InscripcionPage() {
                 </select>
                 {errores.genero && <p className="text-xs text-red-500 mt-1">{errores.genero}</p>}
               </div>
-              <div className="col-span-2">
+              <div className="sm:col-span-2">
                 <label className="text-xs text-gray-500 mb-1.5 block">Carrera</label>
                 <select name="carrera" value={form.carrera} onChange={handleChange} className={fieldClass('carrera')}>
                   <option value="">- Selecciona tu carrera -</option>
@@ -269,14 +269,14 @@ function InscripcionPage() {
         {step === 2 && (
           <div>
             <h2 className="text-base font-semibold text-gray-700 mb-5">Contacto e Información</h2>
-            <div className="grid grid-cols-2 gap-5">
-              <div className="col-span-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="sm:col-span-2">
                 <label className="text-xs text-gray-500 mb-1.5 block">Correo institucional</label>
                 <input name="correo_institucional" value={form.correo_institucional} onChange={handleChange}
                   placeholder="correo@unicesar.edu.co" className={fieldClass('correo_institucional')} />
                 {errores.correo_institucional && <p className="text-xs text-red-500 mt-1">{errores.correo_institucional}</p>}
               </div>
-              <div className="col-span-2">
+              <div className="sm:col-span-2">
                 <label className="text-xs text-gray-500 mb-1.5 block">
                   Correo personal <span className="text-gray-300">(opcional)</span>
                 </label>
@@ -324,7 +324,7 @@ function InscripcionPage() {
 
             <div className="mb-7">
               <label className="text-xs text-gray-500 mb-3 block">Días que asistirás al comedor</label>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {DIAS.map(dia => (
                   <button key={dia} type="button" onClick={() => handleDia(dia)}
                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-all
@@ -338,7 +338,7 @@ function InscripcionPage() {
               {errores.dias_semana && <p className="text-xs text-red-500 mt-2">{errores.dias_semana}</p>}
             </div>
 
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {(['sisben_pdf', 'cedula_pdf'] as const).map(field => (
                 <div key={field}>
                   <label className="text-xs text-gray-500 mb-2 block">

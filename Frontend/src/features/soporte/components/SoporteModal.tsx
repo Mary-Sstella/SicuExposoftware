@@ -87,7 +87,7 @@ function SoporteModal() {
                             </div>
                         ) : (
                             <div className="p-6 flex flex-col gap-4">
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div>
                                         <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1 block">Nombre</label>
                                         <input value={nombre} onChange={e => setNombre(e.target.value)}

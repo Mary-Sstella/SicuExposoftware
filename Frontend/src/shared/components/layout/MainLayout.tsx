@@ -26,7 +26,7 @@ function MainLayout() {
                 <div className={`transition-transform duration-300 ${topbarVisible ? 'translate-y-0' : '-translate-y-full'}`}>
                     <Topbar />
                 </div>
-                <div className="flex-1 overflow-y-auto" onScroll={handleScroll}>
+                <div className="flex-1 overflow-y-auto pb-24 md:pb-0" onScroll={handleScroll}>
                     <Outlet />
                 </div>
                 <BottomNav />

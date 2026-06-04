@@ -71,7 +71,7 @@ const aprobarInscripcion = async (id, dias) => {
     ? dias
     : inscripcion.dias_semana.split(',').map(d => d.trim());
 
-  const config = await prisma.configuracion_formulario.findFirst();
+  const config = await prisma.configuracion_formulario.findFirst({ orderBy: { id: 'asc' } });
 
   const diasAprobados = [];
   for (const dia of diasSolicitados) {
@@ -190,7 +190,7 @@ const rechazarInscripcion = async (id) => {
 };
 
 const getCupos = async () => {
-  const config = await prisma.configuracion_formulario.findFirst();
+  const config = await prisma.configuracion_formulario.findFirst({ orderBy: { id: 'asc' } });
 
   const [oLunes, oMartes, oMiercoles, oJueves, oViernes] = await Promise.all([
     prisma.reservas.count({ where: { lunes: true } }),
