@@ -10,7 +10,7 @@ const apiLimiter = rateLimit({
 
 const authLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hora
-    max: 10,                   // 10 intentos de login por hora
+    max: 50,                   // 50 intentos por hora
     message: {
         msg: 'Demasiados intentos de autenticación, intenta en 1 hora'
     }
