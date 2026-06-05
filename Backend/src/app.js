@@ -9,6 +9,7 @@ const { loggerMiddleware } = require('./middleware/logger.middleware')
 
 const createApp = () => {
     const app = express()
+    app.set('trust proxy', 1)
 
     const whitelist = process.env.ALLOWED_ORIGINS
         ? process.env.ALLOWED_ORIGINS.split(',')
