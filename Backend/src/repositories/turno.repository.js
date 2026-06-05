@@ -195,13 +195,6 @@ const asignarTurnoAutomatico = async (id_estudiante, fecha, id_configuracion) =>
 
         if (ocupadosRango >= config.capacidad_maxima) throw new Error('SIN_CAPACIDAD')
 
-        const ocupadosDia = await tx.reservas.count({
-            where: {
-                fecha: fechaReserva,
-                numero_turno: { not: null }
-            }
-        })
-
         const nuevaReserva = await tx.reservas.create({
             data: {
                 id_estudiante: parseInt(id_estudiante),
@@ -213,7 +206,7 @@ const asignarTurnoAutomatico = async (id_estudiante, fecha, id_configuracion) =>
                 miercoles: diaSemana === 'miercoles',
                 jueves: diaSemana === 'jueves',
                 viernes: diaSemana === 'viernes',
-                numero_turno: ocupadosDia + 1,
+                numero_turno: ocupadosRango + 1,
                 estado: 'PENDIENTE',
                 numero_identificacion: estudiante?.numero_identificacion,
                 nombre_estudiante: `${estudiante?.nombres} ${estudiante?.apellidos}`
