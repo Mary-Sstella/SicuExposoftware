@@ -47,7 +47,7 @@ function BiometriaPage() {
 
     useEffect(() => {
         const backendUrl = (import.meta.env.VITE_API_URL ?? '').replace('/sicu', '')
-        const wsUrl = backendUrl.replace('http', 'ws') + '/sicu/ws'
+        const wsUrl = backendUrl.replace('http', 'ws').replace('/sicu', '') + '/sicu/ws'
         const ws = new WebSocket(wsUrl)
         wsRef.current = ws
 
